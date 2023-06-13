@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="src/lib/p5.min.js"></script>
+        <script src="src/lib/p5.dom.js"></script>
+
+        <script src="src/sketch.js"></script>
+
+        <!-- add extra scripts below -->
+        <script src="src/toolbox.js"></script>
+        <script src="src/colourPalette.js"></script>
+        <script src="src/helperFunctions.js"></script>
+
+        <script src="src/freehandTool.js"></script>
+        <script src="src/lineToTool.js"></script>
+        <script src="src/mirrorDrawTool.js"></script>
+        <script src="src/sprayCanTool.js"></script>
+        <script src="src/ellipseTool.js"></script>
+        <script src="src/rectTool.js"></script>
+        <script src="src/star.js"></script>
+        <script src="src/moveableLineTool.js"></script>
+        <script src="src/scissorsTool.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="box header">My Drawing App
+
+                <button id="clearButton">Clear</button>
+                <button id="saveImageButton">Save Image</button>
+            </div>
+            <div class="box" id="sidebar"></div>
+            <div id="content">
+            </div>
+            <div class="box colourPalette"></div>
+            <div class="box options">
+                <div id="sizeOfStarControl">Size of stars:</div>
+                <div id="numberOfStarsControl">Number of stars</div>
+            </div>
+        </div>
+    </body>
+</html>
