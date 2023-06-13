@@ -1,0 +1,19 @@
+1.0.0
+    new features:
+- Added a stroke weight bar
+- Added resizing capability
+
+    TODO:
+* add infinite scrolling
+* add an eraser
+* add a graph mode where lines will snap to the nearest corner
+
+Make the base of the application look more appealing
+Add a color wheel?
+    <input type="color" id="color-picker">
+    let colorPicker = document.getElementById('color-picker');
+    let hex = colorPicker.value.replace('#', '');
+    hex = parseInt(hex, 16);
+    let col = [hex >> 16 & 255, hex >> 8 & 255, hex & 255];
+    select(".colorPalette").child(colorPicker);
+    self.selectedcolor = col;

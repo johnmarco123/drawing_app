@@ -1,12 +1,8 @@
 html, body {
   margin: 0px;
   height: 100%;
+  overflow: hidden;
 }
-
-/* #sidebar { */
-/* 	grid-area: sidebar; */
-/* 	overflow-y: scroll; */
-/* } */
 
 #content {
 	grid-area: content;
@@ -32,8 +28,8 @@ html, body {
 	max-Width:50px;
 }
 
-.colourPalette{
-	grid-area: colourP;
+.colorPalette{
+	grid-area: colorP;
 	display:flex;
 	flex-direction:grid;
 	flex-flow: wrap;
@@ -42,9 +38,10 @@ html, body {
 .options{
 	grid-area: options;
 	padding: 15px;
+    overflow: hi
 }
 
-.colourSwatches{
+.colorSwatches{
 	box-sizing: border-box;
 	width: 40px;
 	height: 40px;
@@ -62,7 +59,7 @@ html, body {
 		grid-template-areas:
                "header header header"
 				"sidebar content content"
-                "colourP colourP options";
+                "colorP colorP options";
 		background-color: #fff;
 		color: #444;
 	}

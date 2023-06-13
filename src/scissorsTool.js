@@ -1,4 +1,4 @@
-function scissorsTool(){
+function ScissorsTool(){
     this.name= "scissorsTool"
     this.icon= "assets/scissors.jpg"
     this.mode = 'cut'
@@ -11,8 +11,7 @@ function scissorsTool(){
     // 2. dragmode after click
     // 3. allow pasting from here
     // 4. back to cutmode again with fully reset setgings after click
-        let w;
-        let h;
+        let w; let h;
     this.draw = function(){
         rectMode(CORNER)
         updatePixels()

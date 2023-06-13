@@ -1,4 +1,4 @@
-function ellipseTool(){
+function EllipseTool(){
 	this.icon = "assets/ellipse.jpg";
 	this.name = "Circle";
 

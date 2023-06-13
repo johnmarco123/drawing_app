@@ -1,4 +1,4 @@
-function mirrorDrawTool() {
+function MirrorDrawTool() {
 	this.name = "mirrorDraw";
 	this.icon = "assets/mirrorDraw.jpg";
 
@@ -65,7 +65,7 @@ function mirrorDrawTool() {
 
 		loadPixels();
 
-		//push the drawing state so that we can set the stroke weight and colour
+		//push the drawing state so that we can set the stroke weight and color
 		push();
 		strokeWeight(3);
 		stroke("red");

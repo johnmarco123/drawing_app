@@ -1,4 +1,4 @@
-function moveableLineTool(){
+function MoveableLineTool(){
 	//set an icon and a name for the object
 	this.icon = "assets/moveableLine.jpg";
 	this.name = "moveableLine";

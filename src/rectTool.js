@@ -1,4 +1,4 @@
-function rectTool(){
+function RectTool(){
 	this.icon = "assets/rect.jpg";
 	this.name = "Square";
 

@@ -1,4 +1,4 @@
-function starTool(){
+function StarTool(){
 	this.icon = "assets/star.png";
 	this.name = "star";
 	this.draw = function(){

@@ -9,8 +9,10 @@ function FreehandTool(){
 	//we haven't started drawing yet.
 	var previousMouseX = -1;
 	var previousMouseY = -1;
-
 	this.draw = function(){
+        let line_size = select("#strokeSize").value();
+        strokeWeight(line_size);
+
 		//if the mouse is pressed
 		if(mouseIsPressed){
 			//check if they previousX and Y are -1. set them to the current
@@ -34,5 +36,15 @@ function FreehandTool(){
 			previousMouseX = -1;
 			previousMouseY = -1;
 		}
+	};
+
+	this.populateOptions = function() {
+		select(".options").html(
+            `Stroke weight: 
+            <input type='range'
+            min='2' max='15' 
+            value='2' class='slider'
+            id='strokeSize'>
+            `);
 	};
 }
