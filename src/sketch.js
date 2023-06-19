@@ -43,7 +43,7 @@ function setup() {
 
 function draw() {
     // call the draw function from the selected tool.
-        // hasOwnProperty is a javascript function that tests
+    // hasOwnProperty is a javascript function that tests
     // if an object contains a particular method or property
     // if there isn't a draw method the app will alert the user
     if (toolbox.selectedTool.hasOwnProperty("draw")) { 
