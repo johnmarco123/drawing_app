@@ -1,82 +1,93 @@
 function MoveableLineTool(){
-	//set an icon and a name for the object
-	this.icon = "assets/moveableLine.jpg";
-	this.name = "moveableLine";
+    //set an icon and a name for the object
+    this.icon = "assets/moveableLine.jpg";
+    this.name = "moveableLine";
     this.editMode = false;
+    this.currentPoint = null;
     this.currentShape = [];
+    this.mouseLocked = false;
+
     var self = this
 
     this.draw = function(){
         updatePixels();
-        function mousePressOnCanvas(canvas){
-            if (mouseX > canvas.elt.offsetLeft &&
-                mouseX < (canvas.elt.offsetLeft + canvas.width) &&
-                mouseY > canvas.elt.offsetTop && 
-                mouseY < (canvas.elt.offsetTop + canvas.height)
-            ){
-                return true
-            }
-            return false
-        }
-            if(mousePressOnCanvas(c) && mouseIsPressed){
-                if(!self.editMode){
-                    self.currentShape.push({
-                        x:mouseX, 
-                        y:mouseY
-                    })
+
+        if(mousePressOnCanvas() && mouseIsPressed ){
+
+            if(!self.editMode && !self.mouseLocked){
+                self.mouseLocked = true;
+                self.currentShape.push({
+                    x:mouseX, 
+                    y:mouseY
+                })
+            } else {
+                if (self.currentPoint !== null) {
+                        self.currentShape[self.currentPoint].x = mouseX;
+                        self.currentShape[self.currentPoint].y = mouseY
                 } else {
                     for(let i = 0; i < self.currentShape.length; i++){
                         if(dist(self.currentShape[i].x, self.currentShape[i].y,
-                            mouseX, mouseY) < 15){
-                            self.currentShape[i].x = mouseX;
-                            self.currentShape[i].y = mouseY
+                            mouseX, mouseY) < 20){
+                            self.currentPoint = i;
                         }
                     }
                 }
             }
+        } else {
+            self.currentPoint = null;
+            self.mouseLocked = false;
+        }
 
-        loadPixels()
-            noFill()
-            beginShape();
-            for(var i = 0; i < self.currentShape.length; i++){
-                vertex(self.currentShape[i].x,
-                    self.currentShape[i].y)
-                if(self.editMode){
-                    fill('red');
-                    ellipse(self.currentShape[i].x,
-                        self.currentShape[i].y, 10);
-                    noFill();
-                }
+        loadPixels();
+        push();
+        noFill();
+        beginShape();
+
+        for(var i = 0; i < self.currentShape.length; i++){
+            vertex(self.currentShape[i].x,
+                self.currentShape[i].y);
+        }
+        endShape();
+        pop();
+        if(self.editMode){
+        for(var i = 0; i < self.currentShape.length; i++){
+                push();
+                fill(255, 0, 0);
+                ellipse(self.currentShape[i].x, self.currentShape[i].y, 20);
+                pop();
             }
-            endShape()
+        }
     };
 
-	this.unselectTool = function() {
-		updatePixels();
+    this.unselectTool = function() {
+        updatePixels();
         self.editMode = false;
         draw();
         self.currentShape = [];
-		//clear options
-		select(".options").html("");
-	};
+        //clear options
+        select(".options").html("");
+    };
 
-	this.populateOptions = function() {
+    this.populateOptions = function() {
         select(".options").html(
-			"<button id='changingVerticies'>Edit shape</button> <button id='finishShape'>Finish shape</button>");
+            "<button id='changingVerticies'>Edit shape</button> <button id='finishShape'>Finish shape</button>");
         // 	//click handler
         select("#changingVerticies").mouseClicked(function() {
             var button = select("#" + this.elt.id);
             if (self.editMode) {
                 self.editMode = false;
+                self.draw();
                 button.html("Edit Shape");
             } else {
                 self.editMode = true;
+                self.draw();
                 button.html("Add Verticies");
             }
         });
+
         select("#finishShape").mouseClicked(function() {
             self.editMode = false;
-            draw();
+            self.draw();
             loadPixels();
             self.currentShape = [];
         });

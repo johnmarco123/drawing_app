@@ -6,7 +6,7 @@ function HelperFunctions() {
 
 	//event handler for the clear button event. Clears the screen
 	select("#clearButton").mouseClicked(function() {
-		background(255);
+		background(0);
 
 		//call loadPixels to update the drawing state
 		//this is needed for the mirror tool
@@ -18,4 +18,17 @@ function HelperFunctions() {
 	select("#saveImageButton").mouseClicked(function() {
 		saveCanvas();	
 	});
+}
+
+function mousePressOnCanvas(){
+    // if (mouseX > canvas.elt.offsetLeft - 50&&
+    //     mouseX < (canvas.elt.offsetLeft + canvas.width) &&
+    //     mouseY > canvas.elt.offsetTop && 
+    //     mouseY < (canvas.elt.offsetTop + canvas.height) - 25
+    // ){
+    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height
+    ){
+        return true
+    }
+    return false
 }

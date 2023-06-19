@@ -47,6 +47,12 @@ function Toolbox() {
 		}
 	};
 
+    this.addTools = function(tools) {
+        for (let tool of tools) {
+           self.addTool(new tool()); 
+        }
+    }
+
 	this.selectTool = function(toolName) {
 		//search through the tools for one that's name matches
 		//toolName

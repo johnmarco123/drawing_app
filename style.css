@@ -2,6 +2,33 @@ html, body {
   margin: 0px;
   height: 100%;
   overflow: hidden;
+  user-select: none;
+  color: #FFF
+}
+
+button {
+    margin-left: 20px;
+    width: 150px;
+    height: 25px;
+    text-align: center;
+    font-size: 18px;
+    background: #DDD;
+    border: none;
+    color: #000;
+    outline: none;
+    cursor: pointer;
+    border-radius: 20px;
+    transition: 0.1s;
+    box-shadow: 0 3px #999;
+}
+
+button:active {
+    transform: translateY(2px);
+    box-shadow: 0 1px #999;
+}
+
+button:hover {
+    background: #FFF
 }
 
 #content {
@@ -50,25 +77,29 @@ html, body {
 	margin: 5px;
 }
 
+#pageBook{
+}
 
-	.wrapper {
-		display: grid;
-		height: 100%;
-		grid-template-columns: 70px 230px  minmax(500px, 1fr);
-		grid-template-rows: 35px minmax(500px, 1fr) 160px;
-		grid-template-areas:
-               "header header header"
-				"sidebar content content"
-                "colorP colorP options";
-		background-color: #fff;
-		color: #444;
-	}
+.wrapper {
+    display: grid;
+    height: 100%;
+    grid-template-columns: 70px 230px  minmax(500px, 1fr);
+    grid-template-rows: 35px minmax(500px, 1fr) 160px;
+    grid-template-areas:
+    "header header header"
+    "sidebar content content"
+    "colorP colorP options";
+    background-color: #fff;
+    color: #444;
+}
 .box {
-  background-color: #444;
-  color: #fff;
-  font-size: 150%;
+    background-color: #444;
+    color: #fff;
+    font-size: 150%;
 }
 
 .header {
-  background-color: #999;
+    padding-left:50px;
+    background-color: #999;
+    color: #000;
 }

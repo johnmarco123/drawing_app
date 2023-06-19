@@ -23,8 +23,10 @@ function EllipseTool(){
 			else{
 				//update the screen with the saved pixels to hide any previous line between mouse pressed and released
 				updatePixels();
+                push();
 				ellipseMode(CORNERS);	
 				ellipse(startMouseX, startMouseY,mouseX, mouseY);
+                pop();
 			}
 
 		}

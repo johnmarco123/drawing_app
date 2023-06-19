@@ -10,6 +10,7 @@
         <script src="src/Toolbox.js"></script>
         <script src="src/ColorPalette.js"></script>
         <script src="src/HelperFunctions.js"></script>
+        <script src="src/PageBook.js"></script>
 
         <script src="src/FreehandTool.js"></script>
         <script src="src/LineToTool.js"></script>
@@ -20,24 +21,26 @@
         <script src="src/Star.js"></script>
         <script src="src/MoveableLineTool.js"></script>
         <script src="src/ScissorsTool.js"></script>
+        <script src="src/FillBucketTool.js"></script>
 
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
         <div class="wrapper">
-            <div class="box header">My Drawing App
+            <div class="box header">John's Drawing App
                 <button id="clearButton">Clear</button>
                 <button id="saveImageButton">Save Image</button>
+                <div id="pageBook"></div>
             </div>
+
             <div class="box" id="sidebar"></div>
-            <div id="content">
-            </div>
-            <div class="box colorPalette">
-            </div>
-            <div class="box options">
-                <!-- <div id="sizeOfStarControl">Size of stars:</div> -->
-                <!-- <div id="numberOfStarsControl">Number of stars</div> -->
-            </div>
+
+            <div id="content"></div>
+
+            <div class="box colorPalette"></div>
+
+            <div class="box options"> </div>
+
         </div>
     </body>
 </html>

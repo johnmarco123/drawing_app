@@ -1,25 +1,20 @@
-//Displays and handles the color palette.
-function ColorPalette() {
-	//a list of web color strings
-	this.colors = ["white", "silver", "gray", "black", "maroon", "red", "purple",
-		"orange", "pink", "fuchsia", "green", "lime", "olive", "yellow", "navy",
-		"blue", "teal", "aqua"
-	];
-    this.selectedColor = "white";
-	//make the start color be white
+// Manages the pages that the user has created
+function PageBook() {
 
+    this.pages = [];
+    this.currentPage = 1;
 	var self = this;
 
 	var colorClick = function() {
 		//remove the old border
-		var current = select("#" + self.selectedColor + "Swatch");
+		var current = select("#" + self.selectedPage + "page");
 		current.style("border", "0");
 
 		//get the new color from the id of the clicked element
-		var c = this.id().split("Swatch")[0];
+		var c = this.id().split("page")[0];
 
 		//set the selected color and fill and stroke
-		self.selectedColor = c;
+		self.selectedPage = c;
 		fill(c);
 		stroke(c);
 
@@ -27,16 +22,18 @@ function ColorPalette() {
 		this.style("border", "2px solid blue");
 	}
 
-	//load in the colors
-	this.loadcolors = function() {
-		//set the fill and stroke properties to be black at the start of the programme
-		//running
-		fill(this.colors[0]);
-		stroke(this.colors[0]);
+    function addPage() {
+        console.log(pixels);
+    }
+
+	// load in the pages
+	this.loadPages = function() {
+        // set the canvas to be page 1 (idx 0) on startup
+        addPage(0);
 
 		//for each color create a new div in the html for the colorSwatches
-		for (var i = 0; i < this.colors.length; i++) {
-			var colorID = this.colors[i] + "Swatch";
+		for (var i = 0; i < this.pages.length; i++) {
+			var pageID = this.pages[i] + "page";
 
 			//using p5.dom add the swatch to the palette and set its background color
 			//to be the color value.
@@ -44,7 +41,7 @@ function ColorPalette() {
 			colorSwatch.class('colorSwatches');
 			colorSwatch.id(colorID);
 
-			select(".colorPalette").child(colorSwatch);
+			select("#pages").child(colorSwatch);
 			select("#" + colorID).style("background-color", this.colors[i]);
 			colorSwatch.mouseClicked(colorClick)
 		}
@@ -52,5 +49,5 @@ function ColorPalette() {
 		select(".colorSwatches").style("border", "2px solid blue");
 	};
 	//call the loadcolors function now it is declared
-	this.loadcolors();
+	this.loadPages();
 }

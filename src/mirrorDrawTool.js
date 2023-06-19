@@ -127,10 +127,12 @@ function MirrorDrawTool() {
 			if (self.axis == "x") {
 				self.axis = "y";
 				self.lineOfSymmetry = height / 2;
+                self.draw();
 				button.html('Make Vertical');
 			} else {
 				self.axis = "x";
 				self.lineOfSymmetry = width / 2;
+                self.draw();
 				button.html('Make Horizontal');
 			}
 		});

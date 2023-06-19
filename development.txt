@@ -1,15 +1,55 @@
 1.0.0
-    new features:
-- Added a stroke weight bar
-- Added resizing capability
+    New features:
++ Added a stroke weight bar
++ Added window resizing capability
++ Added fill bucket tool
++ Added a graph mode where lines will snap to the nearest corner
+
+    Bug fixes:
++ Made resizable line not add multiple dots unless clicked multiple times
++ Fixed scissors bug where it leaves a border around where it cut after cutting
++ Fix bug where the circles for the movable line tool would be misplaced
++ Fixed the canvas being misaligned. It didn't not match what is shown on screen 
++ Fixed moveable line tool where it would finish showing the red moveable dot. 
+
+===============================================================================
+
+CURRENT:
+* There is so much free space at the bottom, re make the whole bottom section to allow for more drawing area.
+* Add ways to hide the menus to allow for more drawing space.
+* Add more room for more tools
+
+ Bug test:
+* Scissors tool sometimes doesn't paste? <-- FIXED I THINK?!?!?! TEST MORE
 
     TODO:
-* add infinite scrolling
-* add an eraser
-* add a graph mode where lines will snap to the nearest corner
+    BUGS:
+* Fix weird outlining from the fillbucket tool
+* Stuff breaks on resizing... currently i know that the graph breaks but maybe
+more does as well
+
+!!IMPORTANT
+    LOTS OF ISSUES ARE STEMMING FROM HAVING TO HAVE MOUSE ON CANVAS TO ACTIVATE CHANGES
+    I INTENTIONALLY MADE IT SO THE MOUSE MUST BE ON CANVAS TO PREVENT PAINTING WHEN ON AN ICON
+    PAINTING AND UPDATING SHOULD MAYBE BE SEPERATE TO AVOID THE ISSUES BELOW:
+    * Moveable line when changing color whist editing only updates when mouse on canvas
+    * When initially clicking the mirror tool, the line is not shown unless hovering the screen.
+
+    FEATURES:
+* Add a full screen mode that basically hides all of the tools
+* Add infinite scrolling
+* In full screen mode add a way to have more than a screen size worth of drawing area
+    What do i want? do i want to have a zoom/pan, or a simple scrolling?
+
+* Add a global stroke weight that is shared amongst any drawing tools
+* Allow all shapes to be moveable once they are created? 
+* Add a way to grab a a box of "elements" and move them
+* Add a transition between css buttons so it isn't instant.
+* Add an eraser (for object mode & normal eraser)
+
 
 Make the base of the application look more appealing
-Add a color wheel?
+* Add a color wheel?
     <input type="color" id="color-picker">
     let colorPicker = document.getElementById('color-picker');
     let hex = colorPicker.value.replace('#', '');
@@ -17,3 +57,4 @@ Add a color wheel?
     let col = [hex >> 16 & 255, hex >> 8 & 255, hex & 255];
     select(".colorPalette").child(colorPicker);
     self.selectedcolor = col;
+
