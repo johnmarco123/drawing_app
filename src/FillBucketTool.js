@@ -1,6 +1,6 @@
 function FillBucketTool(){
     this.name = "fillBucketTool"
-    this.icon = "assets/fillBucket.jpg"
+    this.icon = "images/fillBucket.jpg"
     this.changeColor = this.bucketColor = null;
     this.mouseLocked = false;
 

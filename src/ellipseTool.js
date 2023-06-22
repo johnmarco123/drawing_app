@@ -1,5 +1,5 @@
 function EllipseTool(){
-    this.icon = "assets/ellipse.jpg";
+    this.icon = "images/ellipse.jpg";
     this.name = "Circle";
     this.fillingShape = true;
     let self = this;

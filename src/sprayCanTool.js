@@ -1,7 +1,7 @@
 //spray can object literal
 function SprayCanTool() {
     this.name= "sprayCanTool"
-    this.icon= "assets/sprayCan.jpg"
+    this.icon= "images/sprayCan.jpg"
     this.points= 13
     this.spread= 10
     this.draw = function(){

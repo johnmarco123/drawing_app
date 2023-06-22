@@ -1,5 +1,5 @@
 function LineToTool() {
-    this.icon = "assets/lineTo.jpg";
+    this.icon = "images/lineTo.jpg";
     this.name = "LineTo";
 
     // The following values store the locations from the last frame, they start 

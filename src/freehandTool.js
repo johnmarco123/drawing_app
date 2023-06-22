@@ -1,6 +1,6 @@
 function FreehandTool(){
     // set an icon and a name for the object
-    this.icon = "assets/freehand.jpg";
+    this.icon = "images/freehand.jpg";
     this.name = "freehand";
     this.mode = "normal";
 

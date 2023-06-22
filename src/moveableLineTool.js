@@ -1,6 +1,6 @@
 function MoveableLineTool(){
     //set an icon and a name for the object
-    this.icon = "assets/moveableLine.jpg";
+    this.icon = "images/moveableLine.jpg";
     this.name = "moveableLine";
     this.editMode = false;
     this.currentPoint = null;

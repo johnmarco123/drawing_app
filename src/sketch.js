@@ -8,7 +8,7 @@ let global_stroke_weight = 3;
 let global_text_size = 25;
 
 function preload() {
-    star = loadImage('assets/star.png')
+    star = loadImage('images/star.png')
 }
 
 function setup() {

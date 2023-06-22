@@ -1,6 +1,6 @@
 function TextTool() {
     this.name = "text";
-    this.icon = "assets/text.jpg";
+    this.icon = "images/text.jpg";
     this.typing = false;
     this.txt = [];
     this.blinking = false;

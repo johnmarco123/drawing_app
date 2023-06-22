@@ -1,5 +1,5 @@
 function StarTool(){
-	this.icon = "assets/star.png";
+	this.icon = "images/star.png";
 	this.name = "star";
 	this.draw = function(){
         if (mouseOnCanvas()) {

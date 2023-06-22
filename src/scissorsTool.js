@@ -1,6 +1,6 @@
 function ScissorsTool(){
     this.name= "scissorsTool";
-    this.icon= "assets/scissors.jpg";
+    this.icon= "images/scissors.jpg";
     this.mode = 'cut';
     this.cutSection = this.endPos = this.startPos = null; 
     let self = this;

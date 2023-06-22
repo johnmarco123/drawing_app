@@ -1,5 +1,5 @@
 function RectTool(){
-    this.icon = "assets/rect.jpg";
+    this.icon = "images/rect.jpg";
     this.name = "Square";
 
     // The following values store the locations from the last frame, they start at -1 since no drawing has happened yet.
