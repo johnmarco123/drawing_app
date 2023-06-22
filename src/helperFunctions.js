@@ -18,17 +18,30 @@ function HelperFunctions() {
 	select("#saveImageButton").mouseClicked(function() {
 		saveCanvas();	
 	});
+
+	select("#fullscreen").mouseClicked(function() {
+        let fs = fullscreen();
+        fullscreen(!fs);
+        windowResized();
+    })
+	select("#dropDown").mouseClicked(function() {
+        if (hidden) {
+            select('#sidebar').show();
+            select('.colorPalette').show();
+            select('.options').show();
+            select('.colorPalette').style("display", "flex");
+            select('.wrapper').style( "grid-template-areas",
+                '"header header header" "sidebar content content" "colorP colorP options"');
+        } else {
+            select('#sidebar').hide();
+            select('.colorPalette').hide();
+            select('.options').hide();
+            select('.wrapper').style('grid-template-areas',
+                '"header header header" "content content content" "content content content"')
+        }
+            windowResized()
+            hidden = !hidden;
+	});
 }
 
-function mousePressOnCanvas(){
-    // if (mouseX > canvas.elt.offsetLeft - 50&&
-    //     mouseX < (canvas.elt.offsetLeft + canvas.width) &&
-    //     mouseY > canvas.elt.offsetTop && 
-    //     mouseY < (canvas.elt.offsetTop + canvas.height) - 25
-    // ){
-    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height
-    ){
-        return true
-    }
-    return false
-}
+const mousePressOnCanvas = () => mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height

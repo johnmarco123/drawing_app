@@ -3,7 +3,7 @@ function FreehandTool(){
     this.icon = "assets/freehand.jpg";
     this.name = "freehand";
     this.mode = "normal";
-
+    
     let graphPoints = [];
     const BOXDIMS = width / 60;
     for(let x = 0; x < width; x += BOXDIMS) {
@@ -76,11 +76,12 @@ function FreehandTool(){
         ]
     }
 
+
     this.draw = function(){
         updatePixels();
-        let line_size = select("#strokeSize").value();
+        global_stroke_weight = select("#strokeSize").value();
         push();
-        strokeWeight(line_size);
+        strokeWeight(global_stroke_weight);
         // if the mouse is pressed
         if (self.mode === "normal") {
             if(mouseIsPressed){
@@ -103,6 +104,7 @@ function FreehandTool(){
                     previousMouseX = -1;
                     previousMouseY = -1;
             }
+
         } else if (self.mode === "graph") {
             if(mouseIsPressed){
                 if (previousMouseX == -1){
@@ -152,7 +154,7 @@ function FreehandTool(){
             `Stroke weight: 
             <input type='range'
             min='3' max='15' 
-            value='3' class='slider'
+            value='${global_stroke_weight}' class='slider'
             id='strokeSize'>
 
             <button 

@@ -12,7 +12,7 @@ button {
     height: 25px;
     text-align: center;
     font-size: 18px;
-    background: #DDD;
+    background-color: #DDD;
     border: none;
     color: #000;
     outline: none;
@@ -34,6 +34,16 @@ button:hover {
 
 #content {
 	grid-area: content;
+}
+
+#dropDown {
+    background-color: #444;
+    margin: 0px 5px;
+    width: 60px;
+    height: 30px;
+    margin-right: 30px;
+    border-radius: 8px;
+    color: #444
 }
 
 .header {
@@ -78,8 +88,6 @@ button:hover {
 	margin: 5px;
 }
 
-#pageBook{
-}
 
 .wrapper {
     display: grid;
@@ -93,6 +101,7 @@ button:hover {
     background-color: #fff;
     color: #444;
 }
+
 .box {
     background-color: #444;
     color: #fff;
@@ -100,7 +109,6 @@ button:hover {
 }
 
 .header {
-    padding-left:50px;
     background-color: #999;
     color: #000;
 }

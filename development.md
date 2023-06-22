@@ -3,6 +3,12 @@
 + Added window resizing capability
 + Added fill bucket tool
 + Added a graph mode where lines will snap to the nearest corner
++ Added a full screen mode 
++ Added a drop down/hide menu
++ Added a global stroke size so you don't have to keep selecting one when you 
+switch off the freehand tool
++ Added a fill/nofill button for the ellipse shape
++ Added a text input feature
 
     # Bugs Fixed:
 + Made resizable line not add multiple dots unless clicked multiple times
@@ -11,6 +17,7 @@
 + Fixed the canvas being misaligned. It didn't not match what is shown on screen 
 + Fixed moveable line tool where it would finish showing the red moveable dot. 
 
+
 ===============================================================================
 
 # MAJOR BUGS TO FIX
@@ -18,27 +25,35 @@
     changes i intentionally made it so the mouse must be on canvas to prevent
     painting when on an icon painting and updating should maybe be seperate to
     avoid the issues below:
-    * Moveable line when changing color whist editing only updates when mouse on canvas
+    * Add a way to detect if mouse is actually on the canvas (AND HAVE THIS
+      ONLY STOP FROM DRAWING, this.draw on every tool should still work, but
+      the act of actually drawing must be ignored)
+    * Moveable line when changing color whist editing only updates when mouse
+      on canvas
     * Implament tests where possible
-    * When initially clicking the mirror tool, the line is not shown unless hovering the screen.
+    * When initially clicking the mirror tool, the line is not shown unless
+      hovering the screen.
+    * Text insert feature exteremely buggy
 
-# Currently working on:
-* There is so much free space at the bottom, re make the whole bottom section
-  to allow for more drawing area.
-* Add ways to hide the menus to allow for more drawing space.
-* Add more room for more tools
+# Currently working on: 
+* Adding a text feature which allows you to type whatever you want
 
  
 # Current Bugs:
-* Scissors tool sometimes doesn't paste? <-- FIXED I THINK?!?!?! TEST MORE
+* for some reason on resizing, we now cause painting even though we dont want
+  to underneath the bottom option menu
+* Scissor tool sometimes does not paste!
 * Fix weird outlining from the fillbucket tool
 * Stuff breaks on resizing... currently i know that the graph breaks but maybe
 more does as well
+* button for ellipse tool needs to be clicked twice at the beginning for some
+  reason
 
 
 
 # Features to add:
-    * Add a full screen mode that basically hides all of the tools
+    * vim mode to text tool 
+    * Add more room for more tools
     * Add infinite scrolling
     * In full screen mode add a way to have more than a screen size worth of 
     drawing area. 

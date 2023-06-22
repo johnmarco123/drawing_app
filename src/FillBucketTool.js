@@ -1,3 +1,6 @@
+// *******************************************************************************
+// ALL CODE IN THE FILL BUCKET TOOL HERE WAS WRITTEN BY MYSELF WITH NO HELP
+// *******************************************************************************
 function FillBucketTool(){
     this.name = "fillBucketTool"
     this.icon = "assets/fillBucket.jpg"
@@ -10,7 +13,6 @@ function FillBucketTool(){
         return (coords[1] * width + coords[0]) * 4;
     }
 
-    // TODO THIS COLOR SHOULD MATCH CLICKED VVVV COLOR
     function changePixColor(coords, color) {
         let pix = getPix(coords);
         pixels[pix] = color[0];
@@ -31,16 +33,16 @@ function FillBucketTool(){
         return true;
     }
 
-    function getBucketColor(pixCoords) {
-        let [x, y] = pixCoords;
+    function getBucketColor() {
+        let [x, y] = [5, 5];
         push();
         noStroke();
         ellipse(x, y, 3);
         loadPixels();
-        const pixUnderCursor = getPix(pixCoords);
+        const pixUnderCursor = getPix([x, y]);
         const currentColor = [pixels[pixUnderCursor],
-            pixels[pixUnderCursor + 1],
-            pixels[pixUnderCursor + 2]]
+                              pixels[pixUnderCursor + 1],
+                              pixels[pixUnderCursor + 2]]
         fill(self.changeColor);
         ellipse(x, y, 6); 
         loadPixels();
@@ -77,7 +79,7 @@ function FillBucketTool(){
             ];
 
             self.changeColor = rgba;
-            self.bucketColor = getBucketColor(pixCoords);
+            self.bucketColor = getBucketColor();
             if (self.bucketColor[0] !== self.changeColor[0] ||
                 self.bucketColor[1] !== self.changeColor[1] ||
                 self.bucketColor[2] !== self.changeColor[2] ||
