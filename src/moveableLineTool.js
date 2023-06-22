@@ -12,7 +12,7 @@ function MoveableLineTool(){
     this.draw = function(){
         updatePixels();
 
-        if(mousePressOnCanvas() && mouseIsPressed ){
+        if(mouseOnCanvas() && mouseIsPressed ){
 
             if(!self.editMode && !self.mouseLocked){
                 self.mouseLocked = true;
@@ -64,12 +64,12 @@ function MoveableLineTool(){
         self.editMode = false;
         draw();
         self.currentShape = [];
-        //clear options
-        select(".options").html("");
+        //clear.tempOptions
+        clearOptions();
     };
 
     this.populateOptions = function() {
-        select(".options").html(
+        select(".tempOptions").html(
             "<button id='changingVerticies'>Edit shape</button> <button id='finishShape'>Finish shape</button>");
         // 	//click handler
         select("#changingVerticies").mouseClicked(function() {

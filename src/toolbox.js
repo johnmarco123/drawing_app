@@ -68,13 +68,11 @@ function Toolbox() {
 				this.selectedTool = this.tools[i];
 				select("#" + toolName + "sideBarItem").style("border", "2px solid blue");
 
-				//if the tool has an options area. Populate it now.
+				//if the tool has an .tempOptions area. Populate it now.
 				if (this.selectedTool.hasOwnProperty("populateOptions")) {
 					this.selectedTool.populateOptions();
 				}
 			}
 		}
 	};
-
-
 }

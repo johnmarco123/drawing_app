@@ -44,4 +44,8 @@ function HelperFunctions() {
 	});
 }
 
-const mousePressOnCanvas = () => mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height
+const mouseOnCanvas = () => mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height
+
+function clearOptions() {
+    select(".tempOptions").html("")
+}

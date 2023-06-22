@@ -11,48 +11,50 @@ function ScissorsTool(){
     // 4. back to cutmode again with fully reset setgings after click
         let w; let h;
     this.draw = function(){
-        push();
-        strokeWeight(2);
-        rectMode(CORNER);
-        updatePixels();
-        if(self.mode == 'cut' && mouseIsPressed){
-            self.startPos = self.endPos = createVector(mouseX, mouseY);
-            self.mode = 'drag';
+        if (mouseOnCanvas()) {
+            push();
+            strokeWeight(2);
+            rectMode(CORNER);
+            updatePixels();
+            if(self.mode == 'cut' && mouseIsPressed){
+                self.startPos = self.endPos = createVector(mouseX, mouseY);
+                self.mode = 'drag';
 
-        } else if (self.mode == 'drag' && mouseIsPressed) {
-            self.endPos = createVector(mouseX, mouseY);
-            stroke(255);
-            fill(255, 0, 0, 80);
-            w = self.endPos.x - self.startPos.x;
-            h = self.endPos.y - self.startPos.y;
-            rect(self.startPos.x, self.startPos.y, w, h);
+            } else if (self.mode == 'drag' && mouseIsPressed) {
+                self.endPos = createVector(mouseX, mouseY);
+                stroke(255);
+                fill(255, 0, 0, 80);
+                w = self.endPos.x - self.startPos.x;
+                h = self.endPos.y - self.startPos.y;
+                rect(self.startPos.x, self.startPos.y, w, h);
 
-        } else if (self.mode == 'drag' && !mouseIsPressed){
-            self.mode = 'cut';
-            self.cutSection = get(self.startPos.x, self.startPos.y, w, h);
-            noStroke();
-            fill(0);
-            rect(self.startPos.x, self.startPos.y, w, h);
-            loadPixels();
+            } else if (self.mode == 'drag' && !mouseIsPressed){
+                self.mode = 'cut';
+                self.cutSection = get(self.startPos.x, self.startPos.y, w, h);
+                noStroke();
+                fill(0);
+                rect(self.startPos.x, self.startPos.y, w, h);
+                loadPixels();
 
-        } else if (self.mode == 'paste' && mouseIsPressed){
-            image(self.cutSection, mouseX, mouseY) 
-            loadPixels();
-         }
-        pop();
+            } else if (self.mode == 'paste' && mouseIsPressed){
+                image(self.cutSection, mouseX, mouseY) 
+                loadPixels();
+            }
+            pop();
+        }
     }
 
     this.unselectTool = function() {
         updatePixels();
-        //clear options
-        select(".options").html("");
+        //clear.tempOptions
+        clearOptions();
         self.mode = 'cut';
     };
 
     this.populateOptions = function() {
-        select(".options").html(
+        select(".tempOptions").html(
             "<button id='mode'>paste</button>");
-         	//click handler
+        //click handler
         select("#mode").mouseClicked(function() {
             if (self.cutSection !== null) {
                 var button = select("#" + this.elt.id);

@@ -1,6 +1,3 @@
-// *******************************************************************************
-// ALL CODE IN THE FILL BUCKET TOOL HERE WAS WRITTEN BY MYSELF WITH NO HELP
-// *******************************************************************************
 function FillBucketTool(){
     this.name = "fillBucketTool"
     this.icon = "assets/fillBucket.jpg"
@@ -9,9 +6,30 @@ function FillBucketTool(){
 
     const self = this;
 
-    function getPix (coords) {
-        return (coords[1] * width + coords[0]) * 4;
+    this.draw = function() {
+        if (mouseIsPressed && mouseOnCanvas()) {
+            const pixCoords = [mouseX, mouseY];
+            const currPixel = getPix(pixCoords); 
+            const rgba = [
+                pixels[currPixel],
+                pixels[currPixel + 1],
+                pixels[currPixel + 2],
+            ];
+
+            self.changeColor = rgba;
+            self.bucketColor = getBucketColor();
+            if (self.bucketColor[0] !== self.changeColor[0] ||
+                self.bucketColor[1] !== self.changeColor[1] ||
+                self.bucketColor[2] !== self.changeColor[2] ||
+                self.mouseLocked) {
+                loadPixels();
+                fillColor(pixCoords);
+                updatePixels();
+            }
+        }
     }
+
+    const getPix = coords => (coords[1] * width + coords[0]) * 4;
 
     function changePixColor(coords, color) {
         let pix = getPix(coords);
@@ -41,8 +59,8 @@ function FillBucketTool(){
         loadPixels();
         const pixUnderCursor = getPix([x, y]);
         const currentColor = [pixels[pixUnderCursor],
-                              pixels[pixUnderCursor + 1],
-                              pixels[pixUnderCursor + 2]]
+            pixels[pixUnderCursor + 1],
+            pixels[pixUnderCursor + 2]]
         fill(self.changeColor);
         ellipse(x, y, 6); 
         loadPixels();
@@ -67,28 +85,4 @@ function FillBucketTool(){
         }
         self.mouseLocked = false;
     }
-
-    this.draw = function() {
-        if (mouseIsPressed && mousePressOnCanvas()) {
-            const pixCoords = [mouseX, mouseY];
-            const currPixel = getPix(pixCoords); 
-            const rgba = [
-                pixels[currPixel],
-                pixels[currPixel + 1],
-                pixels[currPixel + 2],
-            ];
-
-            self.changeColor = rgba;
-            self.bucketColor = getBucketColor();
-            if (self.bucketColor[0] !== self.changeColor[0] ||
-                self.bucketColor[1] !== self.changeColor[1] ||
-                self.bucketColor[2] !== self.changeColor[2] ||
-                self.mouseLocked) {
-                loadPixels();
-                fillColor(pixCoords);
-                updatePixels();
-            }
-        }
-    }
-
 }

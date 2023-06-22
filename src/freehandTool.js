@@ -3,7 +3,7 @@ function FreehandTool(){
     this.icon = "assets/freehand.jpg";
     this.name = "freehand";
     this.mode = "normal";
-    
+
     let graphPoints = [];
     const BOXDIMS = width / 60;
     for(let x = 0; x < width; x += BOXDIMS) {
@@ -17,7 +17,7 @@ function FreehandTool(){
     // to smoothly draw we'll draw a line from the previous mouse location
     // to the current mouse location. The following values store
     // the locations from the last frame. They are -1 to start with because
-    // we haven't started drawing yet.
+    // we haven't started drawing yet
 
     let tempLinePoints = [];
     let previousMouseX = -1;
@@ -46,8 +46,6 @@ function FreehandTool(){
         let outPointB = [];
         let [aX, aY] = pointA;
         let [bX, bY] = pointB;
-
-        // let d = Math.floor(dist(aX, aY, graphX, graphY))
 
         for(let i = 0; i < graphPoints.length; i++) {
             let graphX = graphPoints[i][0];
@@ -78,86 +76,79 @@ function FreehandTool(){
 
 
     this.draw = function(){
-        updatePixels();
-        global_stroke_weight = select("#strokeSize").value();
-        push();
-        strokeWeight(global_stroke_weight);
-        // if the mouse is pressed
-        if (self.mode === "normal") {
-            if(mouseIsPressed){
-                // check if they previousX and Y are -1. set them to the current
-                // mouse X and Y if they are.
+        if (mouseOnCanvas()) {
+            updatePixels();
+            push();
+            // if the mouse is pressed
+            if (self.mode === "normal") {
+                if(mouseIsPressed){
+                    // check if they previousX and Y are -1. set them to the current
+                    // mouse X and Y if they are.
+                        if (previousMouseX == -1){
+                            previousMouseX = mouseX;
+                            previousMouseY = mouseY;
+                        } else {
+                            // if we already have values for previousX and Y we can draw a line from 
+                            // there to the current mouse location
+                            line(previousMouseX, previousMouseY, mouseX, mouseY);
+                            previousMouseX = mouseX;
+                            previousMouseY = mouseY;
+                            loadPixels();
+                        }
+                } else {
+                    // if the user has released the mouse we want to set the previousMouse values 
+                    // back to -1.
+                        previousMouseX = -1;
+                    previousMouseY = -1;
+                }
+
+            } else if (self.mode === "graph") {
+                if(mouseIsPressed){
                     if (previousMouseX == -1){
                         previousMouseX = mouseX;
                         previousMouseY = mouseY;
                     } else {
-                        // if we already have values for previousX and Y we can draw a line from 
-                        // there to the current mouse location
-                        line(previousMouseX, previousMouseY, mouseX, mouseY);
-                        previousMouseX = mouseX;
-                        previousMouseY = mouseY;
-                        loadPixels();
+                        tempLinePoints.push([mouseX, mouseY]);
+                        self.drawTempPoints();
                     }
-            } else {
-                // if the user has released the mouse we want to set the previousMouse values 
-                // back to -1.
-                    previousMouseX = -1;
-                    previousMouseY = -1;
+                } else {
+                    if (previousMouseX !== -1) {
+                        tempLinePoints = [];
+                        const previousCoords = [previousMouseX, previousMouseY]
+                        const currCoords = [mouseX, mouseY]
+
+                        let lineCoords = snapLineToPoint(previousCoords, currCoords);
+                        line(lineCoords[0],
+                            lineCoords[1],
+                            lineCoords[2],
+                            lineCoords[3]
+                        );
+                        loadPixels();
+                        previousMouseX = -1;
+                        previousMouseY = -1;
+                    }
+                } 
+
+                push();
+                strokeWeight(1);
+                stroke(60, 60, 60);
+                drawGraph();
+                pop();
             }
 
-        } else if (self.mode === "graph") {
-            if(mouseIsPressed){
-                if (previousMouseX == -1){
-                    previousMouseX = mouseX;
-                    previousMouseY = mouseY;
-                } else {
-                    tempLinePoints.push([mouseX, mouseY]);
-                    self.drawTempPoints();
-                }
-            } else {
-                if (previousMouseX !== -1) {
-                    tempLinePoints = [];
-                    const previousCoords = [previousMouseX, previousMouseY]
-                    const currCoords = [mouseX, mouseY]
-
-                    let lineCoords = snapLineToPoint(previousCoords, currCoords);
-                    line(lineCoords[0],
-                        lineCoords[1],
-                        lineCoords[2],
-                        lineCoords[3]
-                    );
-                    loadPixels();
-                    previousMouseX = -1;
-                    previousMouseY = -1;
-                }
-            } 
-
-            push();
-            strokeWeight(1);
-            stroke(60, 60, 60);
-            drawGraph();
             pop();
         }
-
-        pop();
     };
 
     this.unselectTool = function() {
-        // clear options
         updatePixels();
         self.mode = "normal";
-        select(".options").html("");
+        clearOptions();
     };
 
     this.populateOptions = function() {
-        select(".options").html(
-            `Stroke weight: 
-            <input type='range'
-            min='3' max='15' 
-            value='${global_stroke_weight}' class='slider'
-            id='strokeSize'>
-
-            <button 
+        select(".tempOptions").html(
+            `<button 
             id='gridMode'>
             Graph Mode</button>`);
         // click handler

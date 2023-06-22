@@ -54,9 +54,9 @@ function draw() {
     // if an object contains a particular method or property
     // if there isn't a draw method the app will alert the user
     if (toolbox.selectedTool.hasOwnProperty("draw")) { 
-        if (mousePressOnCanvas(c)) {
-            toolbox.selectedTool.draw();
-            }
+        //TODO MAKE A GLOBAL STROKE KEEPER OR SMTH BETTER THEN THIS
+        strokeWeight(select('#strokeSize').value());
+        toolbox.selectedTool.draw();
 
     } else {
         alert("it doesn't look like your tool has a draw method!");

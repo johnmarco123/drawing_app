@@ -13,27 +13,21 @@ switch off the freehand tool
     # Bugs Fixed:
 + Made resizable line not add multiple dots unless clicked multiple times
 + Fixed scissors bug where it leaves a border around where it cut after cutting
-+ Fix bug where the circles for the movable line tool would be misplaced
++ Fixed bug where the circles for the movable line tool would be misplaced
 + Fixed the canvas being misaligned. It didn't not match what is shown on screen 
 + Fixed moveable line tool where it would finish showing the red moveable dot. 
++ Fixed bug where the button for ellipse tool needs to be clicked twice at the
+beginning for some reason
+
+    # Major bugs fixed:
+- Add a way to detect if mouse is actually on the canvas (AND HAVE THIS
+      ONLY STOP FROM DRAWING, this.draw on every tool should still work, but
+      the act of actually drawing must be ignored)
 
 
 ===============================================================================
 
 # MAJOR BUGS TO FIX
-    Lots of issues are stemming from having to have mouse on canvas to activate
-    changes i intentionally made it so the mouse must be on canvas to prevent
-    painting when on an icon painting and updating should maybe be seperate to
-    avoid the issues below:
-    * Add a way to detect if mouse is actually on the canvas (AND HAVE THIS
-      ONLY STOP FROM DRAWING, this.draw on every tool should still work, but
-      the act of actually drawing must be ignored)
-    * Moveable line when changing color whist editing only updates when mouse
-      on canvas
-    * Implament tests where possible
-    * When initially clicking the mirror tool, the line is not shown unless
-      hovering the screen.
-    * Text insert feature exteremely buggy
 
 # Currently working on: 
 * Adding a text feature which allows you to type whatever you want
@@ -46,8 +40,6 @@ switch off the freehand tool
 * Fix weird outlining from the fillbucket tool
 * Stuff breaks on resizing... currently i know that the graph breaks but maybe
 more does as well
-* button for ellipse tool needs to be clicked twice at the beginning for some
-  reason
 
 
 
