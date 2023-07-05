@@ -43,10 +43,28 @@ function TextTool() {
         }
     }
 
+    function delete_last_word() {
+        let found_char, token;
+        let word_start_idx = -1;
+        for (let i = self.txt.length - 1; i >= 0; i--) {
+            token = self.txt[i]
+            if (found_char && token === " ") {
+                word_start_idx = i;
+                break;
+            } else if (!found_char && token !== " ") {
+                found_char = true; 
+            }
+        }
+        let delete_length = self.txt.length - word_start_idx;
+        for(let i = 0; i < delete_length; i++) {
+            self.txt.pop();
+        }
+    }
+
     this.delete_text = function() {
         reset_blink() 
         if (keyIsDown(17)) {
-            self.delete_last_word();
+            delete_last_word();
         } else if (self.txt[self.txt.length - 1] === "n" &&
             self.txt[self.txt.length - 2] === "\\") {
             self.txt.pop();
@@ -84,14 +102,16 @@ function TextTool() {
     };
 
     function saveTyping() {
-        shut_off_blink();
-        self.draw();
-        loadPixels();
-        updatePixels();
-        self.txt = [];
-        previousMouseX = previousMouseY = -1;
-        self.typing = false;
-        cursor(TEXT);
+        if (self.typing) {
+            shut_off_blink();
+            self.draw();
+            loadPixels();
+            updatePixels();
+            self.txt = [];
+            previousMouseX = previousMouseY = -1;
+            self.typing = false;
+            cursor(TEXT);
+        }
     }
 
     this.unselectTool = function() {
@@ -109,9 +129,7 @@ function TextTool() {
             `
         );
         select("#typing").mouseClicked(function() {
-            if (self.typing) {
-                saveTyping();
-            } 
+            saveTyping();
         });
     };
 }
