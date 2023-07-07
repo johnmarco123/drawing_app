@@ -72,6 +72,10 @@ function windowResized(){
 
 // TODO FIND A WAY TO DO THIS WITHOUT ACCESSING TOOLBOX DIRECTLY
 function keyPressed() {
+    if (keyCode === 13) {
+		background(0);
+		loadPixels();
+    }
     if (toolbox.selectedTool.name == "text") {
         let txt = toolbox.selectedTool;
         if(txt.typing === true) {
