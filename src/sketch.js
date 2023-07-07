@@ -72,7 +72,7 @@ function windowResized(){
 
 // TODO FIND A WAY TO DO THIS WITHOUT ACCESSING TOOLBOX DIRECTLY
 function keyPressed() {
-    if (keyCode === 13) {
+    if (keyCode === 27) {
 		background(0);
 		loadPixels();
     }

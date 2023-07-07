@@ -9,6 +9,7 @@
 switch off the freehand tool
 + Added a fill/nofill button for the ellipse shape
 + Added a text input feature
++ Added a clear screen shortcut keypress by pressing ESC
 
     # Bugs Fixed:
 + Made resizable line not add multiple dots unless clicked multiple times
