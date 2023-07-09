@@ -86,6 +86,7 @@ function TextTool() {
         push()
         updatePixels();
         strokeWeight(1);
+
         let sizeOfText = select("#textSize").value();
         global_text_size = constrain(sizeOfText, MINTEXTSIZE, MAXTEXTSIZE);
         textSize(global_text_size);
@@ -101,7 +102,6 @@ function TextTool() {
         if (frameCount % 30 === 0 && !self.blink_locked && self.typing) {
             blinkCursor()
         }
-
         pop();
     };
 
@@ -132,10 +132,13 @@ function TextTool() {
             min="${MINTEXTSIZE}" max="${MAXTEXTSIZE}" 
             value=${global_text_size}>
             <button id='typing'>Save Typing</button>
+            <button id='typingMode'>Vim mode</button>
             `
         );
         select("#typing").mouseClicked(function() {
             saveTyping();
+        });
+        select("#typingMode").mouseClicked(function() {
         });
     };
 }
