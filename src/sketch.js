@@ -70,29 +70,29 @@ function windowResized(){
     updatePixels();
 }
 
-// TODO FIND A WAY TO DO THIS WITHOUT ACCESSING TOOLBOX DIRECTLY
-function keyPressed() {
-    if (toolbox.selectedTool.name == "text") {
-        let txt = toolbox.selectedTool;
-        if(txt.typing === true) {
-            // Enter
-            if (keyCode === 13) {
-                txt.add_letter("\n");
-            }
-            // Backspace
-            if (keyCode === 8) {
-                // Delete char from string
-                txt.delete_text();
-            }
-        }
-    }
-}
-
-function keyTyped() {
-    if (toolbox.selectedTool.name == "text" && key !== "\r") {
-        let txt = toolbox.selectedTool;
-        if(txt.typing === true) {
-            toolbox.selectedTool.add_letter(key);
-        }
-    }
-}
+// GOOD COPY
+// function keyPressed() {
+//     if (toolbox.selectedTool.name == "text") {
+//         let txt = toolbox.selectedTool;
+//         if(txt.typing === true) {
+//             // Enter
+//             if (keyCode === 13) {
+//                 txt.add_letter("\n");
+//             }
+//             // Backspace
+//             if (keyCode === 8) {
+//                 // Delete char from string
+//                 txt.delete_text();
+//             }
+//         }
+//     }
+// }
+//
+// function keyTyped() {
+//     if (toolbox.selectedTool.name == "text" && key !== "\r") {
+//         let txt = toolbox.selectedTool;
+//         if(txt.typing === true) {
+//             toolbox.selectedTool.add_letter(key);
+//         }
+//     }
+// }

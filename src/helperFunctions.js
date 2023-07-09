@@ -24,7 +24,9 @@ function HelperFunctions() {
         fullscreen(!fs);
         windowResized();
     })
-    // CURRENTLY DISABLED FOR BUG FIXING
+    // ================================================================= 
+    // =================CURRENTLY DISABLED FOR BUG FIXING===============
+    // ================================================================= 
     select("#dropDown").mouseClicked(function() {
         alert("CURRENTLY DISABLED FOR BUG FIXING!");
         // if (hidden) {

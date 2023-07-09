@@ -13,6 +13,7 @@ switch off the freehand tool
 ++ Fill bucket works 5 fold faster, at the cost of reduced accuracy
 ++ Made the fill bucket have a fast mode and an accurate mode
 ++ Constrained text size so it will not 
+++ Added two modes for the typing tool
 
     # Bugs Fixed:
 ++ Made resizable line not add multiple dots unless clicked multiple times
