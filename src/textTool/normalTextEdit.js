@@ -6,16 +6,13 @@ class NormalEdit {
         this.blink_locked = this.blinking =  false;
     }
 
-    handleKeystrokes(key) {
-        console.log(this.state.txt);
-        console.log(key);
+    handle_keystrokes(key) {
         if (typeof key == "number") { // control keys
 
             if (key == 8) this.delete_text(); // Backspace
             if (key == 13) this.add_letter("\n"); // Enter
 
         } else { // non control keys
-            console.log(key)
             this.add_letter(key);
         }
     }

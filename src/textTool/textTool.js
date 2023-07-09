@@ -23,9 +23,9 @@ function TextTool() {
 
     this.recieveKeystrokes = function(key) {
         if (self.typingMode == "vim") {
-            vimEdit(key);
+            vimEdit.handle_keystrokes(key);
         } else {
-            normalEdit.handleKeystrokes(key);
+            normalEdit.handle_keystrokes(key);
         }
     }
 
@@ -54,7 +54,7 @@ function TextTool() {
         self.renderText();
         self.handleTextState();
         if (self.data.typing) {
-            typingMode == "vim" ? vimEdit.draw() : normalEdit.draw();
+            self.typingMode == "vim" ? vimEdit.draw() : normalEdit.draw();
         }
     }
 
@@ -98,6 +98,7 @@ function TextTool() {
         select("#typingMode").mouseClicked(function() {
             var button = select("#" + this.elt.id);
             if (self.typingMode == "normal") {
+                normalEdit.shut_off_blink();
                 button.html('Normal mode');
                 self.typingMode = "vim"
             } else {
@@ -120,7 +121,7 @@ function keyTyped () {
         // We also want to disable the enter key, as we will handle 
     // this seperately
     if (toolbox.selectedTool.name == "text") { 
-        if (key !== "\r" && key !== "\x7F") {
+        if (key !== "\r" && key !== "\x7F" &&  key !== "|") {
             toolbox.selectedTool.recieveKeystrokes(key);
         }
     }
