@@ -3,23 +3,20 @@ function TextTool() {
     this.icon = "images/text.jpg";
     // We store this as an object so we can pass a reference of it to our
     // different text editors
-    this.data = {
+    this.state = {
         typing: false,
         txt: [],
+        txt_pos: {x: -1, y: -1},
     }
-    this.typingMode = "normal"
+    this.typingMode = "vim"
     let self = this;
-
     // Both of these need the text array, and the state of typing
     // We pass a REFERENCE to this classes data
-    let normalEdit = new NormalEdit(this.data); 
-    let vimEdit = new VimEdit(this.data); 
+    let normalEdit = new NormalEdit(this.state); 
+    let vimEdit = new VimEdit(this.state); 
 
     const MAXTEXTSIZE = 40;
     const MINTEXTSIZE = 20;
-
-    let previousMouseX = -1;
-    let previousMouseY = -1;
 
     this.recieveKeystrokes = function(key) {
         if (self.typingMode == "vim") {
@@ -30,47 +27,43 @@ function TextTool() {
     }
 
     this.renderText = function() {
-        push();
+        push()
+        stroke(1);
         updatePixels();
-        strokeWeight(1);
-
         let sizeOfText = select("#textSize").value();
         global_text_size = constrain(sizeOfText, MINTEXTSIZE, MAXTEXTSIZE);
-        textSize(global_text_size);
-        text(self.data.txt.join(""), previousMouseX, previousMouseY);
+        textFont("monospace", global_text_size);
+        text(self.state.txt.join(""), self.state.txt_pos.x, self.state.txt_pos.y);
         pop();
     }
 
     this.handleTextState = function() {
-        if (mouseIsPressed && previousMouseX == -1) {
+        if (mouseOnCanvas() && mouseIsPressed && self.state.txt_pos.x == -1) {
             cursor(ARROW);
-            self.data.typing = true;
-            previousMouseX = mouseX;
-            previousMouseY = mouseY;
+            self.state.typing = true;
+            self.state.txt_pos.x = mouseX
+            self.state.txt_pos.y = mouseY
         }
     }
 
     this.draw = function() {
         self.renderText();
         self.handleTextState();
-        if (self.data.typing) {
+        if (self.state.typing) {
             self.typingMode == "vim" ? vimEdit.draw() : normalEdit.draw();
         }
     }
 
     function saveTyping() {
-        if (self.data.typing) {
-            if (self.typingMode == "normal") {
-                normalEdit.save_text();
-            } else {
-                vimEdit.save_text();
-            }
+        if (self.state.typing) {
+            if (self.typingMode == "normal") normalEdit.save_text();
+            else vimEdit.save_text();
             self.draw();
             loadPixels();
             updatePixels();
-            self.data.txt = [];
-            previousMouseX = previousMouseY = -1;
-            self.data.typing = false;
+            self.state.txt = [];
+            self.state.txt_pos.x = self.state.txt_pos.y = -1;
+            self.state.typing = false;
             cursor(TEXT);
         }
     }
@@ -90,21 +83,20 @@ function TextTool() {
             min="${MINTEXTSIZE}" max="${MAXTEXTSIZE}" 
             value=${global_text_size}>
             <button id='typing'>Save Typing</button>
-            <button id='typingMode'>Vim mode</button>
+            <button id='typingMode'>${this.typingMode} mode</button>
             `);
-        select("#typing").mouseClicked(function() {
-            saveTyping();
-        });
+
+        select("#typing").mouseClicked(() => saveTyping());
+
         select("#typingMode").mouseClicked(function() {
             var button = select("#" + this.elt.id);
             if (self.typingMode == "normal") {
                 normalEdit.shut_off_blink();
-                button.html('Normal mode');
-                self.typingMode = "vim"
+                self.typingMode = "vim";
             } else {
-                button.html('Vim mode');
-                self.typingMode = "normal"
+                self.typingMode = "normal";
             }
+                button.html(`${self.typingMode} mode`);
         });
     };
 }

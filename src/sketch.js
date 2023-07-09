@@ -10,12 +10,11 @@ let monospace;
 
 function preload() {
     star = loadImage('images/star.png');
-    monospace = loadFont("fonts/monospace.ttf");
+    //monospace = loadFont("fonts/monospace.ttf");
 }
 
 function setup() {
 
-    loadFont(monospace);
     // is the side bar and bottom menu hidden
     hidden = false;
 
@@ -37,23 +36,23 @@ function setup() {
 
     // add the tools to the toolbox.
         toolbox.addTools([
-            FreehandTool,
-            LineToTool,
-            MoveableLineTool,
-            MirrorDrawTool,
-            RectTool,
-            EllipseTool,
-            StarTool,
-            SprayCanTool,
-            ScissorsTool,
-            FillBucketTool,
+            // FreehandTool,
+            // LineToTool,
+            // MoveableLineTool,
+            // MirrorDrawTool,
+            // RectTool,
+            // EllipseTool,
+            // StarTool,
+            // SprayCanTool,
+            // ScissorsTool,
+            // FillBucketTool,
             TextTool,
         ]);
 }
 
 function draw() {
     // call the draw function from the selected tool.
-        // hasOwnProperty is a javascript function that tests
+    // hasOwnProperty is a javascript function that tests
     // if an object contains a particular method or property
     // if there isn't a draw method the app will alert the user
     if (toolbox.selectedTool.hasOwnProperty("draw")) { 

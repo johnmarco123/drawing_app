@@ -34,8 +34,8 @@ function EllipseTool(){
             }
             // if the user WAS drawing, but has now lifted their mouseclick, then they are finished that drawing 
             else if(drawing){
-                // We set drawing to false, and reset the startMouse positions to -1 to prepare for the next time the user clicks to draw again.
-                    drawing = false;
+                // We set drawing to false, and reset the startMouse positions to -1 to prepare for the next time the user clicks to draw again
+                drawing = false;
                 startMouseX = -1;
                 startMouseY = -1;
             }

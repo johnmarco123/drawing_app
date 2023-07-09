@@ -4,7 +4,6 @@ function FillBucketTool(){
     this.changeColor = this.bucketColor = null;
     this.bucketMode = "speed";
     this.mouseLocked = false;
-
     const self = this;
 
     this.draw = function() {
@@ -133,29 +132,6 @@ function FillBucketTool(){
         }
         self.mouseLocked = false;
     }
-
-    //  
-        //  TODO REMOVE THIS, THIS IS FOR PERFORMANCE TESTING ONLY
-    // 
-        // let out = [];
-    // this.performance = function() {
-        //     self.bucketColor = [255, 0, 0];
-        //     let start = performance.now();
-        //     fillColor([200, 200]);
-        //     background(0);
-        //     loadPixels();
-        //     let time = performance.now() - start;
-        //     out.push(time);
-        //     if (out.length % 5 === 0) {
-            //         let median = out.
-                //             sort((a, b) => a - b).
-                //             reduce((a, b) => a + b) / out.length;
-            //         console.log (`Median of ${out.length} paints is ${median}`);
-            //     }
-        // }
-
-
-
 
     this.unselectTool = function() {
         self.bucketMode = "speed";
