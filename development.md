@@ -32,20 +32,17 @@ beginning for some reason
 ===============================================================================
 
 # MAJOR BUGS TO FIX
+ * CURRENTLY DISABLED THIS FEATURE TILL I FIGURE OUT WHAT I AM GONNA DO
  * After resizing, the bottom menu no longer blocks drawing...
+* When the user hides the side and bottom bar, it causes the mouseoncanvas
+  function to fail to detect where the bottom bar is
 
 # Currently working on: 
 
  
 # Current Bugs:
-* for some reason on resizing, we now cause painting even though we dont want
-  to underneath the bottom option menu
 * Scissor tool sometimes does not paste!
 * Fix weird outlining from the fillbucket tool
-* Stuff breaks on resizing... currently i know that the graph breaks but maybe
-more does as well
-* When the user hides the side and bottom bar, it causes the mouseoncanvas
-  function to fail to detect where the bottom bar is
 
 
 
@@ -53,10 +50,6 @@ more does as well
     * vim mode to text tool 
     * Add more room for more tools
     * Add infinite scrolling
-    * In full screen mode add a way to have more than a screen size worth of 
-    drawing area. 
-    * Add a global stroke weight that is shared amongst any drawing tools
-    * Allow all shapes to be moveable once they are created? 
     * Add a way to grab a a box of "elements" and move them
     * Add a transition between css buttons so it isn't instant.
     * Add an eraser (for object mode & normal eraser)

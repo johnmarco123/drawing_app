@@ -158,8 +158,8 @@ function FillBucketTool(){
 
 
     this.unselectTool = function() {
+        self.bucketMode = "speed";
         updatePixels();
-        self.mode = "speed";
         clearOptions();
     };
 
