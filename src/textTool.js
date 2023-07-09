@@ -7,6 +7,9 @@ function TextTool() {
     this.blink_locked = false;
     let self = this;
 
+    const MAXTEXTSIZE = 40;
+    const MINTEXTSIZE = 20;
+
     let previousMouseX = -1;
     let previousMouseY = -1;
 
@@ -83,7 +86,8 @@ function TextTool() {
         push()
         updatePixels();
         strokeWeight(1);
-        global_text_size = select("#textSize").value();
+        let sizeOfText = select("#textSize").value();
+        global_text_size = constrain(sizeOfText, MINTEXTSIZE, MAXTEXTSIZE);
         textSize(global_text_size);
         text(self.txt.join(""), previousMouseX, previousMouseY);
 
@@ -123,8 +127,10 @@ function TextTool() {
     this.populateOptions = function() {
         cursor(TEXT);
         select(".tempOptions").html(
-            // TODO CAP THIS PROPERLY SO YOU CANT HAVE A BAJILLION TEXT SIZE
-            `Text size: <input type="number" name="textSize" id="textSize" min="25" max="40" value=${global_text_size}>
+            `Text size: <input type="number"
+            name="textSize" id="textSize" 
+            min="${MINTEXTSIZE}" max="${MAXTEXTSIZE}" 
+            value=${global_text_size}>
             <button id='typing'>Save Typing</button>
             `
         );

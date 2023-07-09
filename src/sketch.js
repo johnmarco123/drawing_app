@@ -72,21 +72,24 @@ function windowResized(){
 
 // TODO FIND A WAY TO DO THIS WITHOUT ACCESSING TOOLBOX DIRECTLY
 function keyPressed() {
-    if (keyCode === 27) {
+    // letter t to test performance of fill bucket
+    let tool = toolbox.selectedTool;
+    if (keyCode == 84 && toolbox.selectedTool.name == "fillBucketTool") { 
+       tool.performance(); 
+    } else if (keyCode == 27) { // ESC to clear canvas
 		background(0);
 		loadPixels();
     }
     if (toolbox.selectedTool.name == "text") {
-        let txt = toolbox.selectedTool;
-        if(txt.typing === true) {
+        if(tool.typing === true) {
             // Enter
-            if (keyCode === 13) {
-                txt.add_letter("\n");
+            if (keyCode == 13) {
+                tool.add_letter("\n");
             }
             // Backspace
-            if (keyCode === 8) {
+            if (keyCode == 8) {
                 // Delete char from string
-                txt.delete_text();
+                tool.delete_text();
             }
         }
     }
