@@ -39,6 +39,8 @@ class VimEdit {
             }
 
             fill([...this.cursor.color, this.cursor.opacity]);
+            this.cursor.row = Math.max(1, this.cursor.row)
+            this.cursor.col = Math.max(1, this.cursor.col)
 
             this.cursor.height = global_text_size * 1.15;
             this.cursor.x = (
@@ -109,29 +111,29 @@ class VimEdit {
         // Walking backward CURRENTLY IS BROKEN! TODO
         // Walking backward CURRENTLY IS BROKEN! TODO
         // Walking backward CURRENTLY IS BROKEN! TODO
-        else if (dir === "left") { 
-            if (col == 1 && row != 1) {
-                this.find_location_and("move", row - 1, col + 1E7); 
-                return;
-            }
-
-            let found_char;
-            while (idx > 0) {
-                idx = this.find_location_and("index", row, --col);
-                token = this.state.txt[idx];
-                if (token == undefined) return;
-                if (token != " ") {
-                    found_char = true;
-                } else if (found_char && token === " ") {
-                    break;
-                } else if (token == "\n") {
-                    row--;
-                    col = 1E7;
-                    break;
-                } 
-            }
-            this.find_location_and("move", row, col + 1); 
-        }
+    //     else if (dir === "left") { 
+    //         if (col == 1 && row != 1) {
+    //             this.find_location_and("move", row - 1, col + 1E7); 
+    //             return;
+    //         }
+    //
+    //         let found_char;
+    //         while (idx > 0) {
+    //             idx = this.find_location_and("index", row, --col);
+    //             token = this.state.txt[idx];
+    //             if (token == undefined) return;
+    //             if (token != " ") {
+    //                 found_char = true;
+    //             } else if (found_char && token === " ") {
+    //                 break;
+    //             } else if (token == "\n") {
+    //                 row--;
+    //                 col = 1E7;
+    //                 break;
+    //             } 
+    //         }
+    //         this.find_location_and("move", row, col + 1); 
+    //     }
     }
 
     // All strings are non control characters
@@ -181,12 +183,6 @@ class VimEdit {
     }
 
     find_location_and(action, row, col) {
-        console.log(`row: ${row}, col: ${col}`)
-        row = Math.max(1, row)
-        col = Math.max(1, col)
-        if (row < 1 || col < 1) {
-            return;
-        }
         let token;
         let curr_col = 0; // We start on col 1, but we initiate it in the loop
         let curr_row = 1; 
@@ -229,7 +225,7 @@ class VimEdit {
         let amt = 1;
         // Avoid undefined pointers
         if (start >= 0 && start <= this.state.txt.length) {
-            if (this.state.txt[start] == "\n") {
+            if (this.state.txt[start - 1] == "\n") {
                 this.move_cursor_to(this.cursor.row - 1, 1E7);  
             } else if (start < this.cursor.idx) {
                 this.cursor.idx--;
@@ -243,7 +239,7 @@ class VimEdit {
         if (typeof key == "number") { // Command keys
             if (key == 27) this.mode = "NORMAL"; // ESC
             else if (key == 13) this.add_text("\n"); // Enter
-            else if (key == 8) this.delete(this.cursor.row - 1, this.cursor.col); //Backspace
+            else if (key == 8) this.delete(this.cursor.row, this.cursor.col - 1); //Backspace
             // else alert("Unregistered control key: " + key);
         } else { // Non command keys
             this.add_text(key);
