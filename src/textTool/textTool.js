@@ -82,11 +82,11 @@ function TextTool() {
             name="textSize" id="textSize" 
             min="${MINTEXTSIZE}" max="${MAXTEXTSIZE}" 
             value=${global_text_size}>
-            <button id='typing'>Save Typing</button>
+            <button id='save'>Save Typing</button>
             <button id='typingMode'>${this.typingMode} mode</button>
             `);
 
-        select("#typing").mouseClicked(() => saveTyping());
+        select("#save").mouseClicked(() => saveTyping());
 
         select("#typingMode").mouseClicked(function() {
             var button = select("#" + this.elt.id);

@@ -14,6 +14,7 @@ switch off the freehand tool
 ++ Made the fill bucket have a fast mode and an accurate mode
 ++ Constrained text size so it will not 
 ++ Added two modes for the typing tool
+++ made vim mode pretty functional but still has massive bugs
 
     # Bugs Fixed:
 ++ Made resizable line not add multiple dots unless clicked multiple times
