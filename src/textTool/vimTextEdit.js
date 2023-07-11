@@ -20,12 +20,14 @@ class VimEdit {
     }
 
     draw() {
-        push();
-        this.render_cursor();
-        stroke(1);
-        textSize(35);
-        text(this.mode, 50, 50);
-        pop();
+        if (this.state.typing) {
+                push();
+                this.render_cursor();
+                stroke(1);
+                textSize(35);
+                text(this.mode, 50, 50);
+                pop();
+            }
     }
 
     // Controls the positioning of the cursor
@@ -52,7 +54,7 @@ class VimEdit {
                 this.cursor.col - 15);
 
             this.cursor.y = (this.state.txt_pos.y -
-                global_text_size * 0.9 + ((this.cursor.row - 1) * 32));
+                global_text_size * 0.9 + ((this.cursor.row - 1) * 31.3));
 
             rect(this.cursor.x,
                 this.cursor.y,
@@ -68,7 +70,7 @@ class VimEdit {
                 this.mode = "NORMAL"; 
                 this.move_one_char("left");
             }
-            else if (key == 13) this.add_text("\n"); // Enter
+            else if (key == 13) this.add_text("\n"); // enter
             else if (key == 8) this.delete(this.cursor.idx - 1, 1); //Backspace
             // else alert("Unregistered control key: " + key);
         } else { // Non command keys
@@ -103,6 +105,17 @@ class VimEdit {
 
                 // Deleting
                 else if (key == "x") this.delete(this.cursor.idx, 1);
+
+                // Inserting lines
+                else if (key == "o") {
+                    this.insert_line("below")
+                    this.mode = "INSERT"
+                }
+                else if (key == "O") {
+                    this.insert_line("above")
+                    this.mode = "INSERT"
+                }
+
             }
             this.num_multiplier = "";
         }
@@ -110,6 +123,33 @@ class VimEdit {
 
     visual_mode(key) {
         if (key === 27) this.mode = "NORMAL";
+    }
+
+    insert_line(option) {
+        let txt = this.state.txt;
+        if (option == "below") {
+            if (this.on_last_row()) {
+                txt.push("\n")
+                this.move_one_char("down");
+            } else {
+                for (let i = this.cursor.idx; i < txt.length; i++) {
+                    let c = txt[i];
+                    if (c == "\n") {
+                        this.move_cursor_to(...this.get_row_col(i));
+                        break;
+                    }
+                }
+                this.add_text("\n");
+            }
+        } else if (option == "above") {
+            if (this.on_top_row()) {
+                this.state.txt.unshift("\n");
+                this.move_one_char("left");
+            } else {
+                this.move_one_char("up");
+                this.insert_line("below");
+            }
+        }
     }
 
     move_one_char(dir) {
@@ -127,7 +167,7 @@ class VimEdit {
         } else if (dir == "up" && row > 1) {
             this.move_cursor_to(row - 1, col);
 
-        } else if (dir == "down" && !this.on_last_row(row)) {
+        } else if (dir == "down" && !this.on_last_row()) {
             this.move_cursor_to(row + 1, col);
 
         } 
@@ -239,13 +279,14 @@ class VimEdit {
         }
     }
 
-    on_last_row(row) {
-        let curr_row = 1;
+    on_top_row() {
+        return this.get_row_col(this.cursor.idx)[0] == 1;
+    }
+
+    on_last_row() {
         let txt = this.state.txt;
-        for (let i = 0; i < txt.length; i++) {
-            let c = txt[i];
-            if (curr_row == row && c == "\n") return false;
-            if (c == "\n") curr_row++;
+        for (let i = this.cursor.idx; i < txt.length; i++) {
+            if (txt[i] == "\n") return false;
         }
         return true;
     }
@@ -290,7 +331,19 @@ class VimEdit {
     }
 
     save_text() {
-        // Hide cursor when saving, and then remake it 
-        // also reset everything else
+        this.mode = "NORMAL"
+        this.num_multiplier = "1"
+        this.cursor = 
+            {
+                idx: -1, 
+                width: 4,
+                x: null,
+                y: null,
+                row: 1,
+                col: 1,
+                height: global_text_size * 1.15,
+                color: [57, 255, 20],
+                opacity: 255,
+            }
     }
 }

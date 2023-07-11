@@ -1,7 +1,7 @@
 // global variables that will store the toolbox color palette
 // and the helper functions
 let helpers = colorP = toolbox = null;
-let star, c;
+let star, canv;
 let scrollAmount = 0;
 let hidden;
 let global_stroke_weight = 3;
@@ -21,8 +21,8 @@ function setup() {
     // create a canvas to fill the content div from index.html
     canvasContainer = select('#content');
 
-    c = createCanvas(canvasContainer.size().width, canvasContainer.size().height);
-    c.parent("content");
+    canv = createCanvas(canvasContainer.size().width, canvasContainer.size().height);
+    canv.parent("content");
 
     // create helper functions and the color palette
     helpers = new HelperFunctions();

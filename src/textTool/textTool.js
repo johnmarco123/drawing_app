@@ -50,6 +50,11 @@ function TextTool() {
                     text(`Your code returned:\n ${self.state.result}`,
                         self.state.result_pos.x,
                         self.state.result_pos.y);
+                } else {
+                    text(`Write more code to see it evaluated!:\n
+                        ${self.state.result}`,
+                        self.state.result_pos.x,
+                        self.state.result_pos.y);
                 }
             };
         }
@@ -60,22 +65,24 @@ function TextTool() {
         push()
         noStroke();
         fill(255, 0, 0);
-        ellipse(self.state.txt_pos.x, self.state.txt_pos.y - 30, 20);
-        if (self.eval_on) {
-            fill(0, 255, 0);
-            ellipse(self.state.result_pos.x, self.state.result_pos.y - 30, 20);
+        if (self.state.typing) {
+            ellipse(self.state.txt_pos.x - 15, self.state.txt_pos.y - 30, 20);
+            if (self.eval_on) {
+                fill(0, 255, 0);
+                ellipse(self.state.result_pos.x - 15, self.state.result_pos.y - 30, 20);
+            }
         }
 
         if (mouseIsPressed && mouseOnCanvas()) {
             let x1 = mouseX; let y1 = mouseY;
-            let x2 = self.state.txt_pos.x; let y2 = self.state.txt_pos.y - 30;
-            let x3 = self.state.result_pos.x; let y3 = self.state.result_pos.y - 30;
+            let x2 = self.state.txt_pos.x - 15; let y2 = self.state.txt_pos.y - 30;
+            let x3 = self.state.result_pos.x - 15; let y3 = self.state.result_pos.y - 30;
 
             if (dist(x1, y1, x2, y2) < 30) {
-                self.state.txt_pos.x = mouseX;
+                self.state.txt_pos.x = mouseX + 15;
                 self.state.txt_pos.y = mouseY + 30;
             } else if (dist(x1, y1, x3, y3) < 30) {
-                self.state.result_pos.x = mouseX;
+                self.state.result_pos.x = mouseX + 15;
                 self.state.result_pos.y = mouseY + 30;
             } 
         }
@@ -103,12 +110,12 @@ function TextTool() {
         if (self.state.typing) {
             if (self.typing_mode == "normal") normalEdit.save_text();
             else vimEdit.save_text();
+            self.state.typing = false;
             self.draw();
             loadPixels();
             updatePixels();
             self.state.txt = [];
             self.state.txt_pos.x = self.state.txt_pos.y = -1;
-            self.state.typing = false;
             cursor(TEXT);
         }
     }
