@@ -19,8 +19,13 @@ class VimEdit {
             }
     }
 
-    debug() {
-        console.log(`cursor pos: col: ${this.cursor.col}, row: ${this.cursor.row}`);
+    draw() {
+        push();
+        this.render_cursor();
+        stroke(1);
+        textSize(35);
+        text(this.mode, 50, 50);
+        pop();
     }
 
     // Controls the positioning of the cursor
@@ -39,8 +44,6 @@ class VimEdit {
             }
 
             fill([...this.cursor.color, this.cursor.opacity]);
-            this.cursor.row = Math.max(1, this.cursor.row)
-            this.cursor.col = Math.max(1, this.cursor.col)
 
             this.cursor.height = global_text_size * 1.15;
             this.cursor.x = (
@@ -55,89 +58,24 @@ class VimEdit {
                 this.cursor.y,
                 this.cursor.width,
                 this.cursor.height);
-
             pop();
         }
     }
 
-    draw() {
-        push();
-        this.render_cursor();
-        stroke(1);
-        textSize(35);
-        text(this.mode, 50, 50);
-        pop();
-    }
-
-    move_one_char(dir) {
-        if (dir == "left" && this.cursor.idx > 0) {
-            this.move_cursor_to(this.cursor.row, this.cursor.col - 1);
-        } else if (dir == "right" && this.cursor.idx < this.state.txt.length - 1) {
-            this.move_cursor_to(this.cursor.row, this.cursor.col + 1);
-        } else if (dir == "up") {
-            this.move_cursor_to(this.cursor.row - 1, this.cursor.col);
-        } else { // moving down!
-                this.move_cursor_to(this.cursor.row + 1, this.cursor.col);
-        } 
-    }
-
-    move_one_word(dir) {
-        let found_space = false;
-        let [row, col] = [this.cursor.row, this.cursor.col];
-        let idx = this.find_location_and("index", row, col);
-        let token;
-
-        // Walking forward
-        if (dir === "right") {  
-            while (idx < this.state.txt.length) {
-                idx = this.find_location_and("index", row, col++);
-                token = this.state.txt[idx];
-                if (token == " ") found_space = true;
-                if (found_space && token !== " ") {
-                    break;
-                } else if (token == "\n") {
-                    row++;
-                    col = 1;
-                    break;
-                }            }
-            this.find_location_and("move", row, col);
+    insert_mode(key) {
+        if (typeof key == "number") { // Command keys
+            if (key == 27) { // ESC
+                this.mode = "NORMAL"; 
+                this.move_one_char("left");
+            }
+            else if (key == 13) this.add_text("\n"); // Enter
+            else if (key == 8) this.delete(this.cursor.idx - 1, 1); //Backspace
+            // else alert("Unregistered control key: " + key);
+        } else { // Non command keys
+            this.add_text(key);
         }
-
-
-
-        // Walking backward CURRENTLY IS BROKEN! TODO
-        // Walking backward CURRENTLY IS BROKEN! TODO
-        // Walking backward CURRENTLY IS BROKEN! TODO
-        // Walking backward CURRENTLY IS BROKEN! TODO
-        // Walking backward CURRENTLY IS BROKEN! TODO
-        // Walking backward CURRENTLY IS BROKEN! TODO
-    //     else if (dir === "left") { 
-    //         if (col == 1 && row != 1) {
-    //             this.find_location_and("move", row - 1, col + 1E7); 
-    //             return;
-    //         }
-    //
-    //         let found_char;
-    //         while (idx > 0) {
-    //             idx = this.find_location_and("index", row, --col);
-    //             token = this.state.txt[idx];
-    //             if (token == undefined) return;
-    //             if (token != " ") {
-    //                 found_char = true;
-    //             } else if (found_char && token === " ") {
-    //                 break;
-    //             } else if (token == "\n") {
-    //                 row--;
-    //                 col = 1E7;
-    //                 break;
-    //             } 
-    //         }
-    //         this.find_location_and("move", row, col + 1); 
-    //     }
     }
 
-    // All strings are non control characters
-    // All numbers are control characters
     normal_mode(key) {
         if (typeof key == "string" && key >= 0) {
             this.num_multiplier += String(key);
@@ -146,6 +84,10 @@ class VimEdit {
             let amt = this.num_multiplier || 1;
             for (let i = 0; i < Number(amt); i++) { 
                 if (key === "i") this.mode = "INSERT";
+                else if (key === "a") {
+                    this.mode = "INSERT";
+                    this.move_one_char("right");
+                }
                 else if (key === "v") this.mode = "VISUAL";
 
                 // Moving one char at a time
@@ -155,11 +97,12 @@ class VimEdit {
                 else if (key === "l") this.move_one_char("right");
 
                 // Moving one word at a time
-                else if (key === "w") this.move_one_word("right");
-                else if (key === "b") this.move_one_word("left");
+                else if (key === "w") this.move_one_word("right", "start");
+                else if (key === "e") this.move_one_word("right", "end");
+                else if (key === "b") this.move_one_word("left", "start");
 
-                // deleting chars
-                else if (key === "x") this.delete(this.cursor.row, this.cursor.col);
+                // Deleting
+                else if (key == "x") this.delete(this.cursor.idx, 1);
             }
             this.num_multiplier = "";
         }
@@ -167,6 +110,89 @@ class VimEdit {
 
     visual_mode(key) {
         if (key === 27) this.mode = "NORMAL";
+    }
+
+    move_one_char(dir) {
+        let [idx, row, col] = [this.cursor.idx, this.cursor.row, this.cursor.col];
+        if (dir == "left" && col > 1) {
+            this.move_cursor_to(row, col - 1);
+
+        } else if (dir == "right") {
+            if (this.mode == "NORMAL" && idx < this.state.txt.length - 1) {
+                this.move_cursor_to(row, col + 1);
+            } else if (this.mode == "INSERT" && idx < this.state.txt.length) {
+                this.move_cursor_to(row, col + 1);
+            }
+
+        } else if (dir == "up" && row > 1) {
+            this.move_cursor_to(row - 1, col);
+
+        } else if (dir == "down" && !this.on_last_row(row)) {
+            this.move_cursor_to(row + 1, col);
+
+        } 
+    }
+
+    get_row_col(idx) {
+        let txt = this.state.txt;
+        let row = 1; let col = 1;
+        for (let i = 0; i < txt.length; i++) {
+            if (i == idx) return [row, col];
+            if (txt[i] == "\n") {row++; col = 1}
+            else col++;
+        }
+        throw new Error("Not a valid index!");
+    }
+
+    move_one_word(dir, loc = "start") {
+        let space_found = false;
+        let txt = this.state.txt;
+        let i = this.cursor.idx;
+        let char_found;
+        if (dir === "right") { 
+            if (loc == "start") {
+                while (i < txt.length) {
+                    let c =  txt[i];
+                    if (space_found && c != "\n" && c != " ") {
+                        let [row, col] = this.get_row_col(i);
+                        this.find_location_and("move", row, col);
+                        return;
+                    }
+                    if (c == " ") space_found = true;
+                    i++;
+                }
+
+            } else if (loc == "end") {
+                while (i < txt.length) {
+                    let c =  txt[i];
+                    if (char_found && (txt[i+1] == "\n" ||
+                        txt[i+1] == " " ||
+                        !txt[i+1])) {
+                        let [row, col] = this.get_row_col(i);
+                        this.find_location_and("move", row, col);
+                        return;
+                    }
+                    if (c != " " && c != "\n") char_found = true;
+                    i++;
+                }
+
+            }
+        }
+        else if (dir === "left") {
+            let char_found
+            while (i >= 0) {
+                let c =  txt[i];
+                if (char_found && (txt[i-1] == "\n" ||
+                    txt[i - 1] == " " ||
+                    !txt[i-1])) {
+                    let [row, col] = this.get_row_col(i);
+                    this.find_location_and("move", row, col);
+                    return;
+                }
+                if (c != " " && c != "\n") char_found = true;
+                i--;
+            }
+        } 
     }
 
     // Array data structure may slowly suck in walls of text
@@ -184,65 +210,75 @@ class VimEdit {
 
     find_location_and(action, row, col) {
         let token;
-        let curr_col = 0; // We start on col 1, but we initiate it in the loop
+        let curr_col = 1; // We start on col 1, but we initiate it in the loop
         let curr_row = 1; 
         let i = 0;
         for (; i < this.state.txt.length; i++) {
-            curr_col++;
             token = this.state.txt[i]; // the current char at the given idx
             if (curr_row == row) {
-                if (token == "\n" || curr_col === col) { 
+                if (token == "\n" && this.mode == "NORMAL") {
                     break;
-                }
+                } else if (curr_col === col) { 
+                    break;
+                } 
             } else {
                 if (token == "\n") {
                     curr_row++; // found new line, so we are on a new row
                     curr_col = 0; // reset column every time we go to new line
                 }
             }
+            curr_col++;
         }
-        if (action == "char") {
-            return token;
+
+        if (action == "index") {
+            return match ? token : null;
         } else if (action == "move") {
             this.cursor.row = curr_row;
             this.cursor.col = curr_col;
             this.cursor.idx = i;
-        } else if (action == "index") {
-            return i;
         }
     }
 
+    on_last_row(row) {
+        let curr_row = 1;
+        let txt = this.state.txt;
+        for (let i = 0; i < txt.length; i++) {
+            let c = txt[i];
+            if (curr_row == row && c == "\n") return false;
+            if (c == "\n") curr_row++;
+        }
+        return true;
+    }
+
     get_char_at(row, col) {
-        return this.find_location_and("char", row, col);
+        return this.find_location_and("index", row, col);
     }
 
     move_cursor_to(row, col) {
         this.find_location_and("move", row, col);
     }
 
-    delete(row, col) {
-        let start = this.find_location_and("index", row, col);
-        let amt = 1;
+    delete(start, amt) {
         // Avoid undefined pointers
         if (start >= 0 && start <= this.state.txt.length) {
-            if (this.state.txt[start - 1] == "\n") {
-                this.move_cursor_to(this.cursor.row - 1, 1E7);  
-            } else if (start < this.cursor.idx) {
-                this.cursor.idx--;
-                this.cursor.col--;
-            }
-            this.state.txt.splice(start, amt);
-        }
-    }
+            if (this.mode == "NORMAL") {
+                if (this.state.txt[start] != "\n") {
+                    this.state.txt.splice(start, amt);
+                }
+            } else if (this.mode == "INSERT") {
 
-    insert_mode(key) {
-        if (typeof key == "number") { // Command keys
-            if (key == 27) this.mode = "NORMAL"; // ESC
-            else if (key == 13) this.add_text("\n"); // Enter
-            else if (key == 8) this.delete(this.cursor.row, this.cursor.col - 1); //Backspace
-            // else alert("Unregistered control key: " + key);
-        } else { // Non command keys
-            this.add_text(key);
+                if (this.state.txt[start] == "\n") {
+                    this.move_cursor_to(this.cursor.row - 1, 1E7);  
+
+                } else if (start < this.cursor.idx) {
+                    this.cursor.idx--; this.cursor.col--;
+                }
+
+                this.state.txt.splice(start, amt);
+            } else {
+                alert("TODO IN DELETE")
+            }
+
         }
     }
 
