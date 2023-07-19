@@ -12,7 +12,7 @@ function TextTool() {
         txt_size: 25,
     }
     this.eval_on = false;
-    this.typing_mode = "normal"
+    this.typing_mode = "Normal"
     let self = this;
     // Both of these need the text array, and the state of typing
     // We pass a REFERENCE to this classes data
@@ -20,7 +20,7 @@ function TextTool() {
     let vimEdit = new VimEdit(this.state); 
 
     this.recieve_keystrokes = function(key) {
-        if (self.typing_mode == "vim") {
+        if (self.typing_mode == "Vim") {
             vimEdit.handle_keystrokes(key);
         } else {
             normalEdit.handle_keystrokes(key);
@@ -30,7 +30,7 @@ function TextTool() {
     this.render_text = function() {
         push()
         stroke(1);
-        strokeWeight(1);
+        strokeWeight(1)
         updatePixels();
         textFont("monospace", self.state.txt_size);
         text(self.state.txt.join(""), self.state.txt_pos.x, self.state.txt_pos.y);
@@ -104,13 +104,13 @@ function TextTool() {
         self.render_text();
         self.handle_text_state();
         if (self.state.typing) {
-            self.typing_mode == "vim" ? vimEdit.draw() : normalEdit.draw();
+            self.typing_mode == "Vim" ? vimEdit.draw() : normalEdit.draw();
         }
     }
 
     function save_typing() {
         if (self.state.typing) {
-            if (self.typing_mode == "normal") normalEdit.save_text();
+            if (self.typing_mode == "Normal") normalEdit.save_text();
             else vimEdit.save_text();
             self.state.typing = false;
             self.draw();
@@ -124,7 +124,6 @@ function TextTool() {
 
     this.unselectTool = function() {
         save_typing();
-        self.typing_mode = "normal"
         clearOptions();
         cursor(ARROW);
     };
@@ -133,7 +132,8 @@ function TextTool() {
         cursor(TEXT);
         select(".tempOptions").html(
             `<button id='save'>Save Typing</button>
-            <button id='typing_mode'>Vim mode</button>
+            <button id='typing_mode'>
+            ${self.typing_mode == "Normal" ? "Vim" : "Normal"} mode</button>
             <button id='eval'>Evaluate JS</button>
             `);
 
@@ -149,12 +149,12 @@ function TextTool() {
         });
         select("#typing_mode").mouseClicked(function() {
             var button = select("#" + this.elt.id);
-            if (self.typing_mode == "normal") {
+            if (self.typing_mode == "Normal") {
                 normalEdit.shut_off_blink();
-                self.typing_mode = "vim";
+                self.typing_mode = "Vim";
                 button.html("Normal mode")
             } else {
-                self.typing_mode = "normal";
+                self.typing_mode = "Normal";
                 button.html("Vim mode")
             }
         });

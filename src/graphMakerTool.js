@@ -1,13 +1,15 @@
 function GraphMakerTool() {
     this.icon = "images/graphMaker.jpg";
     this.name = "graphMaker";
-    this.mode = "node";
+    this.node_mode = "node";
+    this.count_on = true;
     let self = this;
 
     // The following values store the locations from the last frame, they start 
     // at -1 since no drawing has happened yet
     let startMouseX = -1;
     let startMouseY = -1;
+    let count = -1;
     let drawing = false;
 
     this.draw = function() {
@@ -21,6 +23,9 @@ function GraphMakerTool() {
                     // location and we set drawing to true
                     startMouseX = mouseX;
                     startMouseY = mouseY;
+                    if (self.count_on) {
+                        count++;
+                    }
                     drawing = true;
                     // save the current pixel array
                     loadPixels();
@@ -36,16 +41,28 @@ function GraphMakerTool() {
                     let circle_size = select("#nodeSize").value();
                     push();
                     translate(start.x, start.y);
-                    if (self.mode == "node") {
-                    push()
-                    noStroke();
-                    ellipse(0, 0, circle_size);
-                    pop();
+                    if (self.node_mode == "node") {
+                        push()
+                        noStroke();
+                        ellipse(0, 0, circle_size);
+                        pop();
                     }
                     line(0, 0, curr.x, curr.y);
+                    push()
                     rotate(curr.heading());
                     translate(curr.mag() - arrow_size, 0);
                     triangle(0, arrow_size / 2, 0, -arrow_size / 2, arrow_size, 0);
+                    pop()
+                    if (self.count_on) {
+                        push()
+                        textSize(30);
+                        strokeWeight(1);
+                        stroke(0);
+                        fill(0);
+                        textAlign(CENTER);
+                        text(count, -6, -12, 20, 50)
+                        pop();
+                    }
                     pop();
                 }
 
@@ -74,19 +91,34 @@ function GraphMakerTool() {
             id='nodeSize'>
 
             <button id='node-mode'>
-            ${self.mode == "node" ? "No node" : "Node"} mode
+            ${self.node_mode == "node" ? "No node" : "Node"} mode
+            </button>
+            <button id='count-mode'>
+            Numbers ${self.count_on ? "off" : "on"}
             </button>
             `);
 
         select("#node-mode").mouseClicked(function() {
-              var button = select("#" + this.elt.id);
-              if (self.mode == "node") {
-                  self.mode = "No node";
-                  button.html("node mode");
-              } else {
-                  self.mode = "node";
-                  button.html("No node mode");
-              }
+            var button = select("#" + this.elt.id);
+            if (self.node_mode == "node") {
+                self.node_mode = "No node";
+                button.html("node mode");
+            } else {
+                self.node_mode = "node";
+                button.html("No node mode");
+            }
+        });
+
+        select("#count-mode").mouseClicked(function() {
+            var button = select("#" + this.elt.id);
+            if (self.count_on) {
+                self.count_on = false;
+                count = -1;
+                button.html("Numbers on");
+            } else {
+                self.count_on = true;
+                button.html("Numbers off");
+            }
         });
     };
 }
