@@ -9,8 +9,8 @@ class VimEdit {
         this.cursor = 
             {
                 idx: -1, // The idx in the txt array
-                width: 4,
-                x: null,
+                width: 4, 
+                x: null, 
                 y: null,
                 row: 1,
                 col: 1,
@@ -131,6 +131,18 @@ class VimEdit {
                 else if (key == "j") this.move_one_char("down");
                 else if (key == "k") this.move_one_char("up");
                 else if (key == "l") this.move_one_char("right");
+
+                // Moving to start or end of line
+
+                else if (key == "^") {
+                    let idx = this.start_of_line_idx(this.cursor.idx);
+                    let [row, col] = this.get_row_col(idx);
+                    this.find_location_and("move", row, col);
+                } else if (key == "$") {
+                    let idx = this.end_of_line_idx(this.cursor.idx);
+                    let [row, col] = this.get_row_col(idx);
+                    this.find_location_and("move", row, col);
+                }
 
                 // TODO REMOVE REPEATED CODE!
                 else if (key == "w") {
@@ -320,7 +332,7 @@ class VimEdit {
                 } 
             } else {
                 if (token == "\n") {
-                    curr_row++; // found new line, so we are on a new row
+                    curr_row++;   // found new line, therefore,  we are on a new row
                     curr_col = 0; // reset column every time we go to new line
                 }
             }
