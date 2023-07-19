@@ -1,6 +1,7 @@
 function LineToTool() {
     this.icon = "images/lineTo.jpg";
     this.name = "LineTo";
+    let self = this;
 
     // The following values store the locations from the last frame, they start 
     // at -1 since no drawing has happened yet
@@ -9,6 +10,7 @@ function LineToTool() {
     let drawing = false;
 
     this.draw = function() {
+        // draw an arrow for a vector at a given base position
         // When the mouse is pressed
         if (mouseOnCanvas()) {
             if (mouseIsPressed) {
@@ -34,12 +36,12 @@ function LineToTool() {
                 // they are finished that drawing 
             } else if (drawing) {
                 // We set drawing to false, and reset the startMouse positions to 
-                // -1 to prepare for the next time the user clicks to draw again.
-                    drawing = false;
+                // -1 to prepare for the next time the user clicks to draw again
+                drawing = false;
                 startMouseX = -1;
                 startMouseY = -1;
             }
         }
     };
-
 }
+

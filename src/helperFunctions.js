@@ -4,7 +4,6 @@ function HelperFunctions() {
     //start we don't need to do that here because the event will
     //be added to the button and doesn't 'belong' to the object
 
-    //event handler for the clear button event. Clears the screen
     select("#clearButton").mouseClicked(function() {
         background(0);
 

@@ -1,7 +1,7 @@
 function EllipseTool(){
     this.icon = "images/ellipse.jpg";
     this.name = "Circle";
-    this.fillingShape = true;
+    this.mode = "fill";
     let self = this;
 
     // The following values store the locations from the last frame, they start at -1 since no drawing has happened yet.
@@ -25,7 +25,7 @@ function EllipseTool(){
                     //update the screen with the saved pixels to hide any previous line between mouse pressed and released
                     updatePixels();
                     push();
-                    if (!self.fillingShape) noFill();
+                    if (self.mode != "fill") noFill();
                     ellipseMode(CORNERS);	
                     ellipse(startMouseX, startMouseY,mouseX, mouseY);
                     pop();
@@ -43,18 +43,16 @@ function EllipseTool(){
 
     }
     this.unselectTool = function() {
-        self.mode = "fill";
         clearOptions();
     };
 
     this.populateOptions = function() {
         select(".tempOptions").html(
-            "<button id='fill'>No fill</button>");
-        //click handler
+            `<button id='fill'>${self.mode == "fill" ? "No fill" : "fill"}</button>`);
         select("#fill").mouseClicked(function() {
             var button = select("#" + this.elt.id);
-            button.html(self.fillingShape ? "fill" : "No fill");
-            self.fillingShape = !self.fillingShape;
+            button.html(self.mode);
+            self.mode = self.mode == "fill" ? "No fill" : "fill";
         });
     };
 

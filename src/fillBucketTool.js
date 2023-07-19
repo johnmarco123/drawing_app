@@ -111,6 +111,9 @@ function FillBucketTool(){
     // There are two modes, speedy mode and accuracy mode.
         // Speedy mode fills 3x3 grids at a time whilst accuracy mode fills
     // 1 pixel at a time
+
+    // Remake fillcolor and optimize its speed
+
     function fillColor(currCoords) {
         let stack = [currCoords]; 
         let top, bot, left, right;
@@ -134,9 +137,9 @@ function FillBucketTool(){
     }
 
     this.unselectTool = function() {
+        clearOptions();
         self.bucketMode = "speed";
         updatePixels();
-        clearOptions();
     };
 
     this.populateOptions = function() {

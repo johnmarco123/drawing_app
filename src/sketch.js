@@ -2,51 +2,41 @@
 // and the helper functions
 let helpers = colorP = toolbox = null;
 let star, canv;
-let scrollAmount = 0;
-let hidden;
 let global_stroke_weight = 3;
-let global_text_size = 25;
-let monospace;
 
 function preload() {
     star = loadImage('images/star.png');
-    //monospace = loadFont("fonts/monospace.ttf");
 }
 
 function setup() {
 
     // is the side bar and bottom menu hidden
-    hidden = false;
-
-    // create a canvas to fill the content div from index.html
-    canvasContainer = select('#content');
+    canvasContainer = select('#content'); // create canvas to fill content  div from index.html
 
     canv = createCanvas(canvasContainer.size().width, canvasContainer.size().height);
     canv.parent("content");
 
-    // create helper functions and the color palette
-    helpers = new HelperFunctions();
-    colorP = new ColorPalette();
-
-    // create a toolbox for storing the tools
-    toolbox = new Toolbox();
+    helpers = new HelperFunctions(); // create helper functions
+    colorP = new ColorPalette(); // create color palette
+    toolbox = new Toolbox(); // create a toolbox for storing the tools
 
     background(0);
     loadPixels();
 
     // add the tools to the toolbox.
         toolbox.addTools([
-            // FreehandTool,
-            // LineToTool,
-            // MoveableLineTool,
-            // MirrorDrawTool,
-            // RectTool,
-            // EllipseTool,
-            // StarTool,
-            // SprayCanTool,
-            // ScissorsTool,
-            // FillBucketTool,
+            FreehandTool,
+            LineToTool,
+            MoveableLineTool,
+            MirrorDrawTool,
+            RectTool,
+            EllipseTool,
+            StarTool,
+            SprayCanTool,
+            ScissorsTool,
+            FillBucketTool,
             TextTool,
+            GraphMakerTool
         ]);
 }
 
@@ -56,7 +46,6 @@ function draw() {
     // if an object contains a particular method or property
     // if there isn't a draw method the app will alert the user
     if (toolbox.selectedTool.hasOwnProperty("draw")) { 
-        //TODO MAKE A GLOBAL STROKE KEEPER OR SMTH BETTER THEN THIS
         strokeWeight(select('#strokeSize').value());
         toolbox.selectedTool.draw();
 

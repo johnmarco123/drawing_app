@@ -1,6 +1,8 @@
 function RectTool(){
     this.icon = "images/rect.jpg";
     this.name = "Square";
+    this.mode = "fill";
+    let self = this;
 
     // The following values store the locations from the last frame, they start at -1 since no drawing has happened yet.
     var startMouseX = -1;
@@ -22,8 +24,11 @@ function RectTool(){
                 } else {
                     //update the screen with the saved pixels to hide any previous line between mouse pressed and released
                     updatePixels();
+                    push();
+                    if (self.mode != "fill") noFill();
                     rectMode(CORNERS);
                     rect(startMouseX, startMouseY, mouseX, mouseY)	
+                    pop();
                 }
 
             }
@@ -37,5 +42,14 @@ function RectTool(){
         }
     };
 
+    this.populateOptions = function() {
+        select(".tempOptions").html(
+            `<button id='fill'>${self.mode == "fill" ? "No fill" : "fill"}</button>`);
+        select("#fill").mouseClicked(function() {
+            var button = select("#" + this.elt.id);
+            button.html(self.mode);
+            self.mode = self.mode == "fill" ? "No fill" : "fill";
+        });
+    };
 
 }

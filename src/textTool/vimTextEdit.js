@@ -2,9 +2,10 @@
 class VimEdit {
     constructor(data) {
         // modes are normal, visual, insert, command mode is ambitious
-        this.mode = "NORMAL"
+        this.mode = "NORMAL";
         this.state = data;
-        this.num_multiplier = "1"
+        this.num_multiplier = "1";
+        this.prefix = ""; // such as d for delete, y for yank, etc;
         this.cursor = 
             {
                 idx: -1, // The idx in the txt array
@@ -13,7 +14,7 @@ class VimEdit {
                 y: null,
                 row: 1,
                 col: 1,
-                height: global_text_size * 1.15,
+                height: this.state.txt_size * 1.15,
                 color: [57, 255, 20],
                 opacity: 255,
             }
@@ -47,14 +48,14 @@ class VimEdit {
 
             fill([...this.cursor.color, this.cursor.opacity]);
 
-            this.cursor.height = global_text_size * 1.15;
+            this.cursor.height = this.state.txt_size * 1.15;
             this.cursor.x = (
                 this.state.txt_pos.x + 
-                (global_text_size * 0.55) * 
+                (this.state.txt_size * 0.55) * 
                 this.cursor.col - 15);
 
             this.cursor.y = (this.state.txt_pos.y -
-                global_text_size * 0.9 + ((this.cursor.row - 1) * 31.3));
+                this.state.txt_size * 0.9 + ((this.cursor.row - 1) * 31.3));
 
             rect(this.cursor.x,
                 this.cursor.y,
@@ -78,6 +79,26 @@ class VimEdit {
         }
     }
 
+    start_of_line_idx(idx) {
+        let txt = this.state.txt;
+        let i = idx;
+        while (i >= 0) {
+            if (txt[i - 1] == "\n") break; 
+            i--;
+        }
+        return i + 1;
+    }
+
+    end_of_line_idx(idx) {
+        let txt = this.state.txt;
+        let i = idx;
+        while (i < txt.length) { 
+            if (txt[i + 1] == "\n") break;
+            i++
+        }
+        return i - 1;
+    }
+
     normal_mode(key) {
         if (typeof key == "string" && key >= 0) {
             this.num_multiplier += String(key);
@@ -85,26 +106,67 @@ class VimEdit {
             this.num_multiplier = Math.min(this.num_multiplier, 100);
             let amt = this.num_multiplier || 1;
             for (let i = 0; i < Number(amt); i++) { 
-                if (key === "i") this.mode = "INSERT";
-                else if (key === "a") {
+                // Entering insert mode
+                if (key == "i") this.mode = "INSERT";
+                else if (key == "I") {
+                    let idx = this.start_of_line_idx(this.cursor.idx);
+                    let [row, col] = this.get_row_col(idx);
+                    this.find_location_and("move", row, col);
+                    this.mode = "INSERT";
+                }
+                else if (key == "a") {
                     this.mode = "INSERT";
                     this.move_one_char("right");
+                } else if (key == "A") {
+                    let idx = this.end_of_line_idx(this.cursor.idx);
+                    let [row, col] = this.get_row_col(idx);
+                    this.find_location_and("move", row, col + 1);
+                    this.mode = "INSERT"; 
                 }
-                else if (key === "v") this.mode = "VISUAL";
+
+                else if (key == "v") this.mode = "VISUAL";
 
                 // Moving one char at a time
-                else if (key === "h") this.move_one_char("left");
-                else if (key === "j") this.move_one_char("down");
-                else if (key === "k") this.move_one_char("up");
-                else if (key === "l") this.move_one_char("right");
+                else if (key == "h") this.move_one_char("left");
+                else if (key == "j") this.move_one_char("down");
+                else if (key == "k") this.move_one_char("up");
+                else if (key == "l") this.move_one_char("right");
 
-                // Moving one word at a time
-                else if (key === "w") this.move_one_word("right", "start");
-                else if (key === "e") this.move_one_word("right", "end");
-                else if (key === "b") this.move_one_word("left", "start");
+                // TODO REMOVE REPEATED CODE!
+                else if (key == "w") {
+                    let idx = this.idx_of_next_word_at("right", "start");
+                    if (this.prefix == "d") {
+                        this.delete(this.cursor.idx, idx - this.cursor.idx);
+                        this.prefix = "";
+                    } else if (this.prefix == "") {
+                        this.find_location_and("move", ...this.get_row_col(idx));
+                    }
 
+                } else if (key == "e") {
+                    let idx = this.idx_of_next_word_at("right", "end");
+                    if (this.prefix == "d") {
+                        this.delete(this.cursor.idx, idx - this.cursor.idx);
+                        this.prefix = "";
+                    } else if (this.prefix == "") {
+                        this.find_location_and("move", ...this.get_row_col(idx));
+                    }
+
+                } else if (key == "b") {
+                    let idx = this.idx_of_next_word_at("left", "start");
+                    if (this.prefix == "d") {
+                        this.delete(idx, this.cursor.idx - idx);
+                        this.prefix = "";
+                        this.find_location_and("move", ...this.get_row_col(idx));
+                    } else if (this.prefix == "") {
+                        this.find_location_and("move", ...this.get_row_col(idx));
+                    }
+                }
+                
                 // Deleting
                 else if (key == "x") this.delete(this.cursor.idx, 1);
+                else if (key == "d") {
+                    this.prefix = "d";
+                }
 
                 // Inserting lines
                 else if (key == "o") {
@@ -184,7 +246,7 @@ class VimEdit {
         throw new Error("Not a valid index!");
     }
 
-    move_one_word(dir, loc = "start") {
+    idx_of_next_word_at(dir, loc = "start") {
         let space_found = false;
         let txt = this.state.txt;
         let i = this.cursor.idx;
@@ -193,10 +255,9 @@ class VimEdit {
             if (loc == "start") {
                 while (i < txt.length) {
                     let c =  txt[i];
-                    if (space_found && c != "\n" && c != " ") {
-                        let [row, col] = this.get_row_col(i);
-                        this.find_location_and("move", row, col);
-                        return;
+                    if ((space_found && c != "\n" && c != " ") ||
+                        (txt[i + 1] == undefined)) {
+                        return i;
                     }
                     if (c == " ") space_found = true;
                     i++;
@@ -208,9 +269,7 @@ class VimEdit {
                     if (char_found && (txt[i+1] == "\n" ||
                         txt[i+1] == " " ||
                         !txt[i+1])) {
-                        let [row, col] = this.get_row_col(i);
-                        this.find_location_and("move", row, col);
-                        return;
+                        return i ;
                     }
                     if (c != " " && c != "\n") char_found = true;
                     i++;
@@ -225,9 +284,7 @@ class VimEdit {
                 if (char_found && (txt[i-1] == "\n" ||
                     txt[i - 1] == " " ||
                     !txt[i-1])) {
-                    let [row, col] = this.get_row_col(i);
-                    this.find_location_and("move", row, col);
-                    return;
+                    return i;
                 }
                 if (c != " " && c != "\n") char_found = true;
                 i--;
@@ -341,7 +398,7 @@ class VimEdit {
                 y: null,
                 row: 1,
                 col: 1,
-                height: global_text_size * 1.15,
+                height: this.state.txt_size * 1.15,
                 color: [57, 255, 20],
                 opacity: 255,
             }

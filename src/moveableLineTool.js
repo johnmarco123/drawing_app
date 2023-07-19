@@ -64,7 +64,6 @@ function MoveableLineTool(){
         self.editMode = false;
         draw();
         self.currentShape = [];
-        //clear.tempOptions
         clearOptions();
     };
 

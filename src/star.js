@@ -18,8 +18,6 @@ function StarTool(){
         }
     };
     this.unselectTool = function() {
-        //clear.tempOptions
-        // updatePixels()
         clearOptions();
     };
     this.populateOptions = function() {

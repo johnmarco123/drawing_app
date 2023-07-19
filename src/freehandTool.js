@@ -76,74 +76,72 @@ function FreehandTool(){
 
 
     this.draw = function(){
-        if (mouseOnCanvas()) {
-            updatePixels();
-            push();
-            // if the mouse is pressed
-            if (self.mode === "normal") {
-                if(mouseIsPressed){
-                    // check if they previousX and Y are -1. set them to the current
-                    // mouse X and Y if they are.
-                        if (previousMouseX == -1){
-                            previousMouseX = mouseX;
-                            previousMouseY = mouseY;
-                        } else {
-                            // if we already have values for previousX and Y we can draw a line from 
-                            // there to the current mouse location
-                            line(previousMouseX, previousMouseY, mouseX, mouseY);
-                            previousMouseX = mouseX;
-                            previousMouseY = mouseY;
-                            loadPixels();
-                        }
-                } else {
-                    // if the user has released the mouse we want to set the previousMouse values 
-                    // back to -1.
-                        previousMouseX = -1;
-                    previousMouseY = -1;
-                }
-
-            } else if (self.mode === "graph") {
-                if(mouseIsPressed){
+        updatePixels();
+        push();
+        // if the mouse is pressed
+        if (self.mode === "normal") {
+            if(mouseIsPressed){
+                // check if they previousX and Y are -1. set them to the current
+                // mouse X and Y if they are.
                     if (previousMouseX == -1){
                         previousMouseX = mouseX;
                         previousMouseY = mouseY;
                     } else {
-                        tempLinePoints.push([mouseX, mouseY]);
-                        self.drawTempPoints();
-                    }
-                } else {
-                    if (previousMouseX !== -1) {
-                        tempLinePoints = [];
-                        const previousCoords = [previousMouseX, previousMouseY]
-                        const currCoords = [mouseX, mouseY]
-
-                        let lineCoords = snapLineToPoint(previousCoords, currCoords);
-                        line(lineCoords[0],
-                            lineCoords[1],
-                            lineCoords[2],
-                            lineCoords[3]
-                        );
+                        // if we already have values for previousX and Y we can draw a line from 
+                        // there to the current mouse location
+                        line(previousMouseX, previousMouseY, mouseX, mouseY);
+                        previousMouseX = mouseX;
+                        previousMouseY = mouseY;
                         loadPixels();
-                        previousMouseX = -1;
-                        previousMouseY = -1;
                     }
-                } 
-
-                push();
-                strokeWeight(1);
-                stroke(60, 60, 60);
-                drawGraph();
-                pop();
+            } else {
+                // if the user has released the mouse we want to set the previousMouse values 
+                // back to -1.
+                    previousMouseX = -1;
+                previousMouseY = -1;
             }
 
+        } else if (self.mode === "graph") {
+            if(mouseIsPressed){
+                if (previousMouseX == -1){
+                    previousMouseX = mouseX;
+                    previousMouseY = mouseY;
+                } else {
+                    tempLinePoints.push([mouseX, mouseY]);
+                    self.drawTempPoints();
+                }
+            } else {
+                if (previousMouseX !== -1) {
+                    tempLinePoints = [];
+                    const previousCoords = [previousMouseX, previousMouseY]
+                    const currCoords = [mouseX, mouseY]
+
+                    let lineCoords = snapLineToPoint(previousCoords, currCoords);
+                    line(lineCoords[0],
+                        lineCoords[1],
+                        lineCoords[2],
+                        lineCoords[3]
+                    );
+                    loadPixels();
+                    previousMouseX = -1;
+                    previousMouseY = -1;
+                }
+            } 
+
+            push();
+            strokeWeight(1);
+            stroke(60, 60, 60);
+            drawGraph();
             pop();
         }
+
+        pop();
     };
 
     this.unselectTool = function() {
+        clearOptions();
         updatePixels();
         self.mode = "normal";
-        clearOptions();
     };
 
     this.populateOptions = function() {

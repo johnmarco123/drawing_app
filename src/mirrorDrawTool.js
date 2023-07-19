@@ -110,11 +110,9 @@ function MirrorDrawTool() {
 
 
     //when the tool is deselected update the pixels to just show the drawing and
-    //hide the line of symmetry. Also clear.tempOptions
     this.unselectTool = function() {
-        updatePixels();
-        //clear.tempOptions
         clearOptions();
+        updatePixels();
     };
 
     //adds a button and click handler to the.tempOptions area. When clicked

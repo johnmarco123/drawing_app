@@ -9,7 +9,13 @@ class NormalEdit {
     handle_keystrokes(key) {
         if (typeof key == "number") { // control keys
 
-            if (key == 8) this.delete_text(); // Backspace
+            if (key == 8) { // Backspace
+                if (keyIsPressed == CONTROL) {
+                    this.delete_last_word();
+                } else {
+                    this.delete_text();
+                }
+            } 
             if (key == 13) this.add_letter("\n"); // Enter
 
         } else { // non control keys

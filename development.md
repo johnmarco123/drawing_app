@@ -50,11 +50,14 @@ beginning for some reason
 
 # Features to add:
     * vim mode to text tool 
+    * Make all current vim features work as intended
+    * Add a way to CTRL Z (save each state when the user releases their mouse?
     * Add more room for more tools
-    * Add infinite scrolling
+    * Add infinite scrolling (or a math mode maybe?)
     * Add a way to grab a a box of "elements" and move them
     * Add a transition between css buttons so it isn't instant.
     * Add an eraser (for object mode & normal eraser)
+    * Add a way to quickly create binary trees or any tree
  
 # Brain storming
     What do i want? do i want to have a zoom/pan, or a simple scrolling?

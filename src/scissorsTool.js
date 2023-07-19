@@ -46,7 +46,6 @@ function ScissorsTool(){
 
     this.unselectTool = function() {
         updatePixels();
-        //clear.tempOptions
         clearOptions();
         self.mode = 'cut';
     };
