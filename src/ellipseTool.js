@@ -4,8 +4,8 @@ function EllipseTool(){
     this.mode = "fill";
     let self = this;
 
-    // The following values store the locations from the last frame, they start at -1 since no drawing has happened yet.
-        var startMouseX = -1;
+    // The following values store the locations from the last frame, they start at -1 since no drawing has happened yet
+    var startMouseX = -1;
     var startMouseY = -1;
     var drawing = false;
 
@@ -25,7 +25,7 @@ function EllipseTool(){
                     //update the screen with the saved pixels to hide any previous line between mouse pressed and released
                     updatePixels();
                     push();
-                    if (self.mode != "fill") noFill();
+                    if (self.mode != "fill") noFill(); 
                     ellipseMode(CORNERS);	
                     ellipse(startMouseX, startMouseY,mouseX, mouseY);
                     pop();

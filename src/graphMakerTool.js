@@ -23,7 +23,7 @@ function GraphMakerTool() {
                     // location and we set drawing to true
                     startMouseX = mouseX;
                     startMouseY = mouseY;
-                    if (self.count_on) {
+                    if (self.count_on && self.node_mode == "node") {
                         count++;
                     }
                     drawing = true;
@@ -53,7 +53,7 @@ function GraphMakerTool() {
                     translate(curr.mag() - arrow_size, 0);
                     triangle(0, arrow_size / 2, 0, -arrow_size / 2, arrow_size, 0);
                     pop()
-                    if (self.count_on) {
+                    if (self.count_on && self.node_mode == "node") {
                         push()
                         textSize(30);
                         strokeWeight(1);

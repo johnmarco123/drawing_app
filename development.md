@@ -29,22 +29,24 @@ beginning for some reason
 +++ Added a way to detect if mouse is actually on the canvas (AND HAVE THIS
       ONLY STOP FROM DRAWING, this.draw on every tool should still work, but
       the act of actually drawing must be ignored)
++++ Fixed paint tool so it no longer needs to use a sketchy workaround to work
 
 
 ===============================================================================
 
 # MAJOR BUGS TO FIX
- * CURRENTLY DISABLED THIS FEATURE TILL I FIGURE OUT WHAT I AM GONNA DO
- * After resizing, the bottom menu no longer blocks drawing...
-* When the user hides the side and bottom bar, it causes the mouseoncanvas
-  function to fail to detect where the bottom bar is
+     * After resizing, the bottom menu no longer blocks drawing...
+     * fill bucket tool doesn't work with microsoft edge
+       CURRENTLY DISABLED THIS FEATURE TILL I FIGURE OUT WHAT I AM GONNA DO
+     * When the user hides the side and bottom bar, it causes the mouseoncanvas
+       function to fail to detect where the bottom bar is
 
 # Currently working on: 
 
  
 # Current Bugs:
-* Scissor tool sometimes does not paste!
-* Fix weird outlining from the fillbucket tool
+    * Scissor tool sometimes does not paste!
+    * Fix weird outlining from the fillbucket tool
 
 
 

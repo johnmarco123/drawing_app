@@ -22,13 +22,13 @@ class VimEdit {
 
     draw() {
         if (this.state.typing) {
-                push();
-                this.render_cursor();
-                stroke(1);
-                textSize(35);
-                text(this.mode, 50, 50);
-                pop();
-            }
+            push();
+            this.render_cursor();
+            stroke(1);
+            textSize(35);
+            text(this.mode, 50, 50);
+            pop();
+        }
     }
 
     // Controls the positioning of the cursor
@@ -66,13 +66,13 @@ class VimEdit {
     }
 
     insert_mode(key) {
-        if (typeof key == "number") { // Command keys
+        if (typeof key == "number") { // command keys
             if (key == 27) { // ESC
                 this.mode = "NORMAL"; 
                 this.move_one_char("left");
             }
             else if (key == 13) this.add_text("\n"); // enter
-            else if (key == 8) this.delete(this.cursor.idx - 1, 1); //Backspace
+            else if (key == 8) this.delete(this.cursor.idx - 1, 1); // backspace
             // else alert("Unregistered control key: " + key);
         } else { // Non command keys
             this.add_text(key);
@@ -145,35 +145,35 @@ class VimEdit {
                 }
 
                 // TODO REMOVE REPEATED CODE!
-                else if (key == "w") {
-                    let idx = this.idx_of_next_word_at("right", "start");
-                    if (this.prefix == "d") {
-                        this.delete(this.cursor.idx, idx - this.cursor.idx);
-                        this.prefix = "";
-                    } else if (this.prefix == "") {
-                        this.find_location_and("move", ...this.get_row_col(idx));
+                    else if (key == "w") {
+                        let idx = this.idx_of_next_word_at("right", "start");
+                        if (this.prefix == "d") {
+                            this.delete(this.cursor.idx, idx - this.cursor.idx);
+                            this.prefix = "";
+                        } else if (this.prefix == "") {
+                            this.find_location_and("move", ...this.get_row_col(idx));
+                        }
+
+                    } else if (key == "e") {
+                        let idx = this.idx_of_next_word_at("right", "end");
+                        if (this.prefix == "d") {
+                            this.delete(this.cursor.idx, idx - this.cursor.idx);
+                            this.prefix = "";
+                        } else if (this.prefix == "") {
+                            this.find_location_and("move", ...this.get_row_col(idx));
+                        }
+
+                    } else if (key == "b") {
+                        let idx = this.idx_of_next_word_at("left", "start");
+                        if (this.prefix == "d") {
+                            this.delete(idx, this.cursor.idx - idx);
+                            this.prefix = "";
+                            this.find_location_and("move", ...this.get_row_col(idx));
+                        } else if (this.prefix == "") {
+                            this.find_location_and("move", ...this.get_row_col(idx));
+                        }
                     }
 
-                } else if (key == "e") {
-                    let idx = this.idx_of_next_word_at("right", "end");
-                    if (this.prefix == "d") {
-                        this.delete(this.cursor.idx, idx - this.cursor.idx);
-                        this.prefix = "";
-                    } else if (this.prefix == "") {
-                        this.find_location_and("move", ...this.get_row_col(idx));
-                    }
-
-                } else if (key == "b") {
-                    let idx = this.idx_of_next_word_at("left", "start");
-                    if (this.prefix == "d") {
-                        this.delete(idx, this.cursor.idx - idx);
-                        this.prefix = "";
-                        this.find_location_and("move", ...this.get_row_col(idx));
-                    } else if (this.prefix == "") {
-                        this.find_location_and("move", ...this.get_row_col(idx));
-                    }
-                }
-                
                 // Deleting
                 else if (key == "x") this.delete(this.cursor.idx, 1);
                 else if (key == "d") {
@@ -258,6 +258,7 @@ class VimEdit {
         throw new Error("Not a valid index!");
     }
 
+    // get the idx of the start, or end of the word before or after the cursor
     idx_of_next_word_at(dir, loc = "start") {
         let space_found = false;
         let txt = this.state.txt;

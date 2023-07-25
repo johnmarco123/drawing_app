@@ -12,12 +12,15 @@ function TextTool() {
         txt_size: 25,
     }
     this.eval_on = false;
-    this.typing_mode = "Normal"
+    this.typing_mode = "Normal";
+
     let self = this;
     // Both of these need the text array, and the state of typing
     // We pass a REFERENCE to this classes data
     let normalEdit = new NormalEdit(this.state); 
     let vimEdit = new VimEdit(this.state); 
+    let text1_selected = false;
+    let text2_selected = false;
 
     this.recieve_keystrokes = function(key) {
         if (self.typing_mode == "Vim") {
@@ -49,6 +52,7 @@ function TextTool() {
                 self.state.result = `You got an error!\n ${err}`;
             } finally {
                 if (self.state.result) {
+
                     text(`Your code returned:\n ${self.state.result}`,
                         self.state.result_pos.x,
                         self.state.result_pos.y);
@@ -81,12 +85,21 @@ function TextTool() {
             let x3 = self.state.result_pos.x - 15; let y3 = self.state.result_pos.y - 30;
 
             if (dist(x1, y1, x2, y2) < 30) {
+                text1_selected = true;
+            } else if (dist(x1, y1, x3, y3) < 30) {
+                text2_selected = true;
+            }
+
+            if (text1_selected) {
                 self.state.txt_pos.x = mouseX + 15;
                 self.state.txt_pos.y = mouseY + 30;
-            } else if (dist(x1, y1, x3, y3) < 30) {
+            } else if (text2_selected) {
                 self.state.result_pos.x = mouseX + 15;
                 self.state.result_pos.y = mouseY + 30;
-            } 
+            }
+        } else {
+            text1_selected = false;
+            text2_selected = false;
         }
         pop();
     }
@@ -159,27 +172,4 @@ function TextTool() {
             }
         });
     };
-}
-
-function keyPressed() {
-    // We only want control characters for keypressed
-    if (keyCode < 32 && toolbox.selectedTool.name == "text") {
-        toolbox.selectedTool.recieve_keystrokes(keyCode);
-    } else {
-        if (keyCode == 27) { // clear the screen with ESC when not in text mode
-            background(0);
-            loadPixels();
-        }
-    }
-}
-
-function keyTyped () {
-    // All ascii chracters we want from key typed.
-    // We also want to disable the enter key, as we will handle 
-    // this seperately
-    if (toolbox.selectedTool.name == "text") { 
-        if (key !== "\r" && key !== "\x7F" &&  key !== "|") {
-            toolbox.selectedTool.recieve_keystrokes(key);
-        }
-    }
 }

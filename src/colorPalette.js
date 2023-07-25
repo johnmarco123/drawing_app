@@ -2,60 +2,62 @@ function ColorPalette() {
     this.pos = createVector(80, innerHeight - 70);
     this.color_picker = createColorPicker('#ffffff');
     this.color_picker.position(this.pos.x, this.pos.y);
-    // We use a LRU cache to handle the least recently used colors and discard
-    // them
+    // We use a least recently used cache (LRU) to handle the least recently
+    // used colors and discard them
     this.colors = 
     [
-        color(255, 255, 255),
-        color(255, 0, 0),
-        color(255, 255, 0),
-        color(0, 255, 0),
-        color(0, 0, 255),
+        color(255, 255, 255), // white
+        color(255, 0, 0),     // red
+        color(255, 255, 0),   // yellow
+        color(0, 255, 0),     // green
+        color(0, 0, 255),     // blue
     ];
-    this.capacity = 5;
-    this.current_color = this.color_picker.color();
+    this.capacity = 5; // the max allowed colors in our LRU cache this.colors
+    CURRENT_COLOR = this.colors[0];
+    fill(CURRENT_COLOR);
+    stroke(CURRENT_COLOR);
     let self = this;
 
-    let color_picker_color_changed = detect_maker();
-    let swatch_changed = false;
+    let color_picker_changed_color = detect_maker();
+    let swatch_changed = true; // by default we want to use the most recent swatch color
 
-    // if you switch colors with the color switcher thing tool
-    // and then click on the canvas right after, it should use this value
-    // but if you click on a swatch it should use the swatch value instead
+    this.draw = function() {
+        handle_color_picker();
+    }
 
-    // but do we determine when the user changed the color with the color picker
-    this.update = function() {
-        if (mouseOnCanvas() && mouseIsPressed) {
-            if (swatch_changed) {
-                swatch_changed = false;
-            } else if (color_picker_color_changed()) {
-                self.current_color = self.color_picker.color();
-            }
-            if (String(self.current_color) != String(self.LRU_get_most_recent())) {
-                fill(self.current_color);
-                stroke(self.current_color);
-                self.LRU_update(self.current_color);
-            }
+    // every mousepress we check to see if the color pickers color
+    // changed, if so we update the color being used
+    function handle_color_picker() {
+        if (mouseIsPressed && color_picker_changed_color()) {
+            self.change_color();
         }
-        self.draw_swatches();
     }
 
     function detect_maker() {
-        let old = null; // cache the color the user just picked recently
+        let old = self.color_picker.value(); 
         return () => {
             let curr = self.color_picker.value();
             let changed = curr != old;
-            if (changed) old = curr;
-            return changed ? curr : false;
+            if (changed) {
+                old = curr;
+                CURRENT_COLOR = curr;
+            }
+            return changed;
         }
     }
 
     this.draw_swatches = function() {
         for (let i = 0; i < self.colors.length; i++) {
             let colorID = `color-${i}`;
-            select("#" + colorID).style("background-color", self.colors[i]);
+            let curr = select("#" + colorID);
+            curr.style("background-color", self.colors[i]);
+            if (i == 0) {
+                curr.style("border", "2px solid blue"); 
+            }
         }
     }
+
+    this.LRU_get_most_recent = () => this.colors[0]; 
 
     this.LRU_update = function(color) {
         // If color is already in the cache, move it to the front
@@ -70,38 +72,39 @@ function ColorPalette() {
             } 
             self.colors.unshift(color);
         }
+        self.draw_swatches();
     }
 
-    this.LRU_get_most_recent = function() {
-        return this.colors[0];
+
+    this.change_color = function() {
+        if (String(CURRENT_COLOR) != String(self.LRU_get_most_recent())) {
+            fill(CURRENT_COLOR);
+            stroke(CURRENT_COLOR);
+            self.LRU_update(CURRENT_COLOR);
+        }
     }
 
     function colorClick() {
         let idx = this.id().split("color-")[1];
-        self.current_color = self.colors[idx];
+        CURRENT_COLOR = self.colors[idx];
         swatch_changed = true;
+        self.change_color();
     }
 
     function initialize_swatches() {
         //for each color create a new div in the html for the colorSwatches
         for (let i = self.capacity - 1; i >= 0; i--) {
             let colorID = `color-${i}`; // rightmost color should be most recent
-
-            // set default fill color
-            fill(self.current_color);
-            stroke(self.current_color);
             //using p5.dom add the swatch to the palette and set its background color
             //to be the color value
             let color_swatch = createDiv()
             color_swatch.class('colorSwatches');
             color_swatch.id(colorID);
-
             select(".colorPalette").child(color_swatch);
-            select("#" + colorID).style("background-color", "white");
-            color_swatch.mouseClicked(colorClick)
+            color_swatch.mouseClicked(colorClick);
         }
+        self.draw_swatches();
 
-        select(".colorSwatches").style("border", "2px solid blue");
     };
     initialize_swatches();
 }
