@@ -1,7 +1,5 @@
 function ColorPalette() {
-    this.pos = createVector(80, innerHeight - 70);
-    this.color_picker = createColorPicker('#ffffff');
-    this.color_picker.position(this.pos.x, this.pos.y);
+    this.color_picker = select("#color-picker");
     // We use a least recently used cache (LRU) to handle the least recently
     // used colors and discard them
     this.colors = 

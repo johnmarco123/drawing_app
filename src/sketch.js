@@ -1,5 +1,6 @@
 // the currently used color (mainly used by color palette);
 let CURRENT_COLOR = null; 
+let MOUSE_ON_CANVAS = false;
 let global_stroke_weight = 3;
 
 // global variables that will store the toolbox color palette
@@ -17,6 +18,7 @@ function setup() {
     canvasContainer = select('#content'); // create canvas to fill content  div from index.html
 
     canv = createCanvas(canvasContainer.size().width, canvasContainer.size().height);
+    canv.id("p5Canvas");
     canv.parent("content");
 
 
@@ -64,12 +66,12 @@ function draw() {
     }
 }
 
-function windowResized(){
-    loadPixels();
-    resizeCanvas(windowWidth, windowHeight);
-    background(0)
-    updatePixels();
-}
+//function windowResized(){
+//    loadPixels();
+//    resizeCanvas(windowWidth, windowHeight);
+//    background(0)
+//    updatePixels();
+//}
 
 function keyPressed() {
     // We only want control characters for keypressed

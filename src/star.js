@@ -2,7 +2,7 @@ function StarTool(){
 	this.icon = "images/star.png";
 	this.name = "star";
 	this.draw = function(){
-        if (mouseOnCanvas()) {
+        if (MOUSE_ON_CANVAS) {
             let starSize = select("#starSize").value()
             let numStars = select("#numStars").value()
             if(mouseIsPressed){

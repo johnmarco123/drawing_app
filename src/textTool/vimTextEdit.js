@@ -6,6 +6,7 @@ class VimEdit {
         this.state = data;
         this.num_multiplier = "1";
         this.prefix = ""; // such as d for delete, y for yank, etc;
+        this.last_searched = null;
         this.cursor = 
             {
                 idx: -1, // The idx in the txt array
@@ -99,10 +100,55 @@ class VimEdit {
         return i - 1;
     }
 
+    search_for(char, direction) {
+        let txt = this.state.txt;
+        let i = this.cursor.idx;
+        if (direction == "forward") {
+            i += 1;
+            while (i < txt.length) {
+                if (txt[i] == "\n") return -1;
+                if (txt[i] == char) break;
+                i++;
+            }
+        } else if (direction == "backward") {
+            i -= 1;
+            while (i >= 0) {
+                if (txt[i] == "\n") return -1;
+                if (txt[i] == char) break;
+                i--;
+            }
+        }
+        return i;
+    }
+
     normal_mode(key) {
         if (typeof key == "string" && key >= 0) {
             this.num_multiplier += String(key);
         } else {
+            this.last_searched = key;
+            if (this.prefix == "f" || this.prefix == "t") {
+                let idx = this.search_for(key, "forward");
+                if (idx != -1) {
+                    if (this.prefix == "f") {
+                        this.find_location_and("move", ...this.get_row_col(idx));
+                    } else if (this.prefix == "t") {
+                        this.find_location_and("move", ...this.get_row_col(idx - 1));
+                    }
+                }
+                this.prefix = "";
+                return;
+            }  else if (this.prefix == "F" || this.prefix == "T") {
+                let idx = this.search_for(key, "backward");
+                if (idx != -1) {
+                    if (this.prefix == "F") {
+                        this.find_location_and("move", ...this.get_row_col(idx));
+                    } else if (this.prefix == "T") {
+                        this.find_location_and("move", ...this.get_row_col(idx + 1));
+                    }
+                }
+                this.prefix = "";
+                return;
+            }
             this.num_multiplier = Math.min(this.num_multiplier, 100);
             let amt = this.num_multiplier || 1;
             for (let i = 0; i < Number(amt); i++) { 
@@ -114,6 +160,7 @@ class VimEdit {
                     this.find_location_and("move", row, col);
                     this.mode = "INSERT";
                 }
+
                 else if (key == "a") {
                     this.mode = "INSERT";
                     this.move_one_char("right");
@@ -126,6 +173,23 @@ class VimEdit {
 
                 else if (key == "v") this.mode = "VISUAL";
 
+                else if (key == "f") {
+                    this.prefix = "f";
+                } else if (key == "F") {
+                    this.prefix = "F";
+                } else if (key == "t") {
+                    this.prefix = "t";
+                } else if (key == "T") {
+                    this.prefix = "T";
+                }
+                else if (key == ";" && this.last_searched) {
+                    let idx = this.search_for(this.last_searched, "forward");
+                    this.find_location_and("move", ...this.get_row_col(idx));
+                } else if (key == "," && this.last_searched) {
+                    let idx = this.search_for(this.last_searched, "backward");
+                    this.find_location_and("move", ...this.get_row_col(idx));
+                }
+               
                 // Moving one char at a time
                 else if (key == "h") this.move_one_char("left");
                 else if (key == "j") this.move_one_char("down");
@@ -178,7 +242,10 @@ class VimEdit {
                 else if (key == "x") this.delete(this.cursor.idx, 1);
                 else if (key == "d") {
                     this.prefix = "d";
-                }
+                } else if (key == "D") {
+                    let idx = this.end_of_line_idx(this.cursor.idx);
+                    this.delete(this.cursor.idx, idx - this.cursor.idx);
+                } 
 
                 // Inserting lines
                 else if (key == "o") {

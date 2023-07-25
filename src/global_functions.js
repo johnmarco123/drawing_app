@@ -1,5 +1,3 @@
-const mouseOnCanvas = () => mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height
-
 const clearOptions = () => select(".tempOptions").html("");
 
 const update_canvas = canvas => {
@@ -7,3 +5,7 @@ const update_canvas = canvas => {
     loadPixels();
     updatePixels();
 }
+
+document.addEventListener("mousemove", e => {
+    MOUSE_ON_CANVAS = e.target.id == "p5Canvas"
+});

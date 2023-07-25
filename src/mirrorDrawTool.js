@@ -21,7 +21,7 @@ function MirrorDrawTool() {
     var previousOppositeMouseY = -1;
 
     this.draw = function() {
-        if (mouseOnCanvas()) {
+        if (MOUSE_ON_CANVAS) {
             //display the last save state of pixels
             updatePixels();
 

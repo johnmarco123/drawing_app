@@ -12,7 +12,7 @@ function MoveableLineTool(){
     this.draw = function(){
         updatePixels();
 
-        if(mouseOnCanvas() && mouseIsPressed ){
+        if(MOUSE_ON_CANVAS && mouseIsPressed ){
 
             if(!self.editMode && !self.mouseLocked){
                 self.mouseLocked = true;

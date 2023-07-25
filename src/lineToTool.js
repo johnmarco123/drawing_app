@@ -12,7 +12,7 @@ function LineToTool() {
     this.draw = function() {
         // draw an arrow for a vector at a given base position
         // When the mouse is pressed
-        if (mouseOnCanvas()) {
+        if (MOUSE_ON_CANVAS) {
             if (mouseIsPressed) {
                 // If this is the first initial click from the user
                 if (startMouseX == -1) {

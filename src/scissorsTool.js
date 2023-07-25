@@ -11,7 +11,7 @@ function ScissorsTool(){
     // 4. back to cutmode again with fully reset setgings after click
         let w; let h;
     this.draw = function(){
-        if (mouseOnCanvas()) {
+        if (MOUSE_ON_CANVAS) {
             push();
             strokeWeight(2);
             rectMode(CORNER);

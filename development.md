@@ -1,4 +1,5 @@
     # New features:
+++ Added a way to CTRL Z and CTRL R to undo and redo
 ++ Added a stroke weight bar
 ++ Added window resizing capability
 ++ Added fill bucket tool
@@ -24,6 +25,7 @@ switch off the freehand tool
 ++ Fixed moveable line tool where it would finish showing the red moveable dot. 
 ++ Fixed bug where the button for ellipse tool needs to be clicked twice at the
 beginning for some reason
+++ Fill bucket tool now works with all browsers
 
     # Major bugs fixed:
 +++ Added a way to detect if mouse is actually on the canvas (AND HAVE THIS
@@ -36,8 +38,6 @@ beginning for some reason
 
 # MAJOR BUGS TO FIX
      * After resizing, the bottom menu no longer blocks drawing...
-     * fill bucket tool doesn't work with microsoft edge
-       CURRENTLY DISABLED THIS FEATURE TILL I FIGURE OUT WHAT I AM GONNA DO
      * When the user hides the side and bottom bar, it causes the mouseoncanvas
        function to fail to detect where the bottom bar is
 
@@ -51,28 +51,12 @@ beginning for some reason
 
 
 # Features to add:
-    * vim mode to text tool 
     * Make all current vim features work as intended
-    * Add a way to CTRL Z (save each state when the user releases their mouse?
-    * Add more room for more tools
     * Add infinite scrolling (or a math mode maybe?)
     * Add a way to grab a a box of "elements" and move them
     * Add a transition between css buttons so it isn't instant.
     * Add an eraser (for object mode & normal eraser)
-    * Add a way to quickly create binary trees or any tree
  
 # Brain storming
     What do i want? do i want to have a zoom/pan, or a simple scrolling?
     * Add a color wheel...? This is where we left off on implamenting that...
-    ```
-     
-     <input type="color" id="color-picker">
-     let colorPicker = document.getElementById('color-picker');
-     let hex = colorPicker.value.replace('#', '');
-     hex = parseInt(hex, 16);
-     # let col = [hex >> 16 & 255, hex >> 8 & 255, hex & 255];
-     select(".colorPalette").child(colorPicker);
-     self.selectedcolor = col;
-     
-    ```
-

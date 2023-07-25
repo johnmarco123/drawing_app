@@ -79,7 +79,7 @@ function TextTool() {
             }
         }
 
-        if (mouseIsPressed && mouseOnCanvas()) {
+        if (mouseIsPressed && MOUSE_ON_CANVAS) {
             let x1 = mouseX; let y1 = mouseY;
             let x2 = self.state.txt_pos.x - 15; let y2 = self.state.txt_pos.y - 30;
             let x3 = self.state.result_pos.x - 15; let y3 = self.state.result_pos.y - 30;
@@ -105,7 +105,7 @@ function TextTool() {
     }
 
     this.handle_text_state = function() {
-        if (mouseOnCanvas() && mouseIsPressed && self.state.txt_pos.x == -1) {
+        if (MOUSE_ON_CANVAS && mouseIsPressed && self.state.txt_pos.x == -1) {
             cursor(ARROW);
             self.state.typing = true;
             self.state.txt_pos.x = mouseX

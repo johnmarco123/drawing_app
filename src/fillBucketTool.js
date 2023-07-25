@@ -7,7 +7,7 @@ function FillBucketTool(){
     const self = this;
 
     this.draw = function() {
-        if (mouseIsPressed && mouseOnCanvas()) {
+        if (mouseIsPressed && MOUSE_ON_CANVAS) {
             const pixCoords = [mouseX, mouseY];
             const currPixel = getPix(pixCoords); 
             const rgba = [
