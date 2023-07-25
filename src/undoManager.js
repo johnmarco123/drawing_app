@@ -9,13 +9,12 @@ class UndoManager {
     // difference between the current pixel array and the one before
     // out pointer, we save the state
     draw() {
+        let ctrl_z = keyIsDown(CONTROL) && keyIsDown(90);
+        let ctrl_r = keyIsDown(CONTROL) && keyIsDown(82);
         // add the blank screen at the start of the program
         if (this.undo_stack.length == 0) {
             this.add_state();
         }
-
-        let ctrl_z = keyIsDown(CONTROL) && keyIsDown(90);
-        let ctrl_r = keyIsDown(CONTROL) && keyIsDown(82);
         if (ctrl_z && !this.ctrl_z_locked) { 
             this.go_back();
         } else if (ctrl_r && !this.ctrl_r_locked) {
@@ -33,7 +32,6 @@ class UndoManager {
         this.undo_stack.push(state);
         this.idx++;
     }
-
     go_back() {
         this.ctrl_z_locked = true;
         this.idx = Math.max(this.idx - 1, 0);

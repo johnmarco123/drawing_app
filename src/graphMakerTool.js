@@ -29,9 +29,7 @@ function GraphMakerTool() {
                     drawing = true;
                     // save the current pixel array
                     loadPixels();
-                }
-
-                else {
+                } else {
                     //update the screen with the saved pixels to hide any previous 
                     //line between mouse pressed and released
                     updatePixels();
@@ -40,6 +38,8 @@ function GraphMakerTool() {
                     let arrow_size = 15;
                     let circle_size = select("#nodeSize").value();
                     push();
+                    fill(255);
+                    stroke(255);
                     translate(start.x, start.y);
                     if (self.node_mode == "node") {
                         push()
@@ -57,10 +57,9 @@ function GraphMakerTool() {
                         push()
                         textSize(30);
                         strokeWeight(1);
-                        stroke(0);
                         fill(0);
                         textAlign(CENTER);
-                        text(count, -6, -12, 20, 50)
+                        text(count, -3, -12, 5, 50)
                         pop();
                     }
                     pop();

@@ -24,32 +24,27 @@ function HelperFunctions() {
         windowResized();
     })
     // ================================================================= 
-    // =================CURRENTLY DISABLED FOR BUG FIXING===============
+    // ==========CURRENTLY DISABLED FOR BUG FIXING OR REMOVAL===========
     // ================================================================= 
-    select("#dropDown").mouseClicked(function() {
-        alert("CURRENTLY DISABLED FOR BUG FIXING!");
-        // if (hidden) {
-        //     select('#sidebar').show();
-        //     select('.colorPalette').show();
-        //     select('.options').show();
-        //     select('.colorPalette').style("display", "flex");
-        //     select('.wrapper').style( "grid-template-areas",
-        //         '"header header header" "sidebar content content" "colorP colorP options"');
-        // } else {
-        //     // select('#sidebar').hide();
-        //     select('.colorPalette').hide();
-        //     select('.options').hide();
-        //     select('.wrapper').style('grid-template-areas',
-        //         '"header header header" "content content content" "content content content"')
-        // }
-        // windowResized()
-        // hidden = !hidden;
-    });
-}
 
-const mouseOnCanvas = () => mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height
-const clearOptions = () => select(".tempOptions").html("");
-const update_canvas = canvas => {
-    image(canvas, 0, 0);
-    loadPixels();
+    //let hidden = false;
+    //select("#dropDown").mouseClicked(function() {
+    //    //alert("CURRENTLY DISABLED FOR BUG FIXING!");
+    //     if (hidden) {
+    //         select('#sidebar').show();
+    //         select('.colorPalette').show();
+    //         select('.options').show();
+    //         select('.colorPalette').style("display", "flex");
+    //         select('.wrapper').style( "grid-template-areas",
+    //             '"header header header" "sidebar content content" "colorP colorP options"');
+    //     } else {
+    //         // select('#sidebar').hide();
+    //         select('.colorPalette').hide();
+    //         select('.options').hide();
+    //         select('.wrapper').style('grid-template-areas',
+    //             '"header header header" "content content content" "content content content"')
+    //     }
+    //     windowResized()
+    //     hidden = !hidden;
+    //});
 }

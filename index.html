@@ -13,6 +13,7 @@
         <script src="src/colorPalette.js"></script>
         <script src="src/helperFunctions.js"></script>
         <script src="src/undoManager.js"></script>
+        <script src="src/global_functions.js"></script>
 
          <!-- the text tool -->
         <script src="src/textTool/textTool.js"></script>
@@ -45,7 +46,9 @@
             </div>
             <div id="content"></div>
             <div class="box" id="sidebar"></div>
-            <div class="box colorPalette"></div>
+            <div class="box colorPalette">
+                   <input type="color" id="colorpicker" value="#0000ff">
+            </div>
             <div class="box options">
                 Stroke weight:
                 <input type='range'

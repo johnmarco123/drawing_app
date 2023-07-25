@@ -100,7 +100,6 @@ function mouseReleased() {
 }
 
 // prevent the user from refreshing the page using ctrl r
-// while still allowing us to use the keys
 window.addEventListener("keydown", function(e) {
     if (e.key == "r" && e.ctrlKey) {
         e.preventDefault();
