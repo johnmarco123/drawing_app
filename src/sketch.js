@@ -6,10 +6,9 @@ let global_stroke_weight = 3;
 // global variables that will store the toolbox color palette
 // and the helper functions
 let helpers, colorP, toolbox, undo;
-let star, canv;
+let canv;
 
 function preload() {
-    star = loadImage('images/star.png');
 }
 
 function setup() {

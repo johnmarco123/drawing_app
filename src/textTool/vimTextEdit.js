@@ -157,19 +157,22 @@ class VimEdit {
 
     repeat_last_search(str) {
         if (str == "reversed") {
-            // if prefix was:
-            // t becomes f
-            // f it becomes t
-            // F becomes T
-            // T becomes F
-            console.log(`REVERSED!!!!!`);
-            let new_prefix = String.fromCharCode(this.last_searched_prefix.charCodeAt() ^ 18);
+            let new_prefix = this.invert_capitalization(this.last_search_prefix);
             this.handle_searching(this.last_searched_char, new_prefix);
         } else {
             this.handle_searching(this.last_searched_char, this.last_search_prefix);
         }
     }
 
+    // simply just switches from uppercase to lowercase or lowercase to uppercase
+    invert_capitalization(char) {
+        return String.fromCharCode(char.charCodeAt() ^ 32);
+    }
+
+    capitalize_char(idx) {
+        let char = this.state.txt[idx] 
+        return this.invert_capitalization(char);
+    }
 
     normal_mode(key) {
         // TODO, currently this does not allow for searching of numbers
@@ -222,7 +225,7 @@ class VimEdit {
                 else if (key == ";" && this.last_searched_char) {
                     this.repeat_last_search();
                 } else if (key == "," && this.last_searched_char) {
-                    //this.repeat_last_search("reversed");
+                    this.repeat_last_search("reversed");
                 }
                 // REPLACING
                 else if (key == "r") {
@@ -234,6 +237,13 @@ class VimEdit {
                 else if (key == "j") this.move_one_char("down");
                 else if (key == "k") this.move_one_char("up");
                 else if (key == "l") this.move_one_char("right");
+
+
+                // CAPITALIZATION
+                else if (key == "~") {
+                    this.capitalize_char(this.cursor.idx);
+                    this.move_one_char("right");
+                }
 
                 // MOVING TO START OR END OF LINE
                 else if (key == "^") {
@@ -277,7 +287,14 @@ class VimEdit {
                     }
 
                 // Deleting
-                else if (key == "x") this.delete(this.cursor.idx, 1);
+                else if (key == "x") {
+                    let end_of_line_idx = this.last_char_on_line_idx(this.cursor.idx);
+                    this.delete(this.cursor.idx, 1);
+                    if (end_of_line_idx == this.cursor.idx) {
+                        this.move_one_char("left");
+                    }
+
+                }
                 else if (key == "d") {
                     this.prefix = "d";
                 } else if (key == "D") {

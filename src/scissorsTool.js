@@ -116,7 +116,7 @@ function ScissorsTool(){
             fill(0);
             rect(x, y, w, h); 
             loadPixels();
-        } else if (self.mode == 'paste' && !mouseIsPressed){
+        } else if (self.mode == 'paste' && mouseIsPressed){
             let image_size_is_valid = w != 0 && h != 0;
             if (image_size_is_valid) { 
                 image(self.cutSection, mouseX, mouseY) 

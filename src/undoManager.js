@@ -32,17 +32,28 @@ class UndoManager {
         this.undo_stack.push(state);
         this.idx++;
     }
+
+    // updates the canvas with the canvas provided
+    update_canvas(canvas) {
+        image(canvas, 0, 0);
+        loadPixels();
+        updatePixels();
+    }
+
     go_back() {
         this.ctrl_z_locked = true;
         this.idx = Math.max(this.idx - 1, 0);
-        update_canvas(this.undo_stack[this.idx]);
+        this.update_canvas(this.undo_stack[this.idx]);
+        // delay between ctrl-u's (undos)
         setTimeout(() => this.ctrl_z_locked = false, 200);
     }
+
 
     go_forward() {
         this.ctrl_r_locked = true;
         this.idx = Math.min(this.idx + 1, this.undo_stack.length - 1);
-        update_canvas(this.undo_stack[this.idx]);
+        this.update_canvas(this.undo_stack[this.idx]);
+        // delay between ctrl-r's (redos)
         setTimeout(() => this.ctrl_r_locked = false, 200);
     }
 }
