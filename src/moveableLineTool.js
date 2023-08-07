@@ -11,15 +11,10 @@ function MoveableLineTool(){
 
     this.draw = function(){
         updatePixels();
-
-        if(MOUSE_ON_CANVAS && mouseIsPressed ){
-
+        if(MOUSE_ON_CANVAS && mouseIsPressed){
             if(!self.editMode && !self.mouseLocked){
                 self.mouseLocked = true;
-                self.currentShape.push({
-                    x:mouseX, 
-                    y:mouseY
-                })
+                self.currentShape.push({ x:mouseX, y:mouseY })
             } else {
                 if (self.currentPoint !== null) {
                         self.currentShape[self.currentPoint].x = mouseX;
@@ -52,7 +47,8 @@ function MoveableLineTool(){
         if(self.editMode){
         for(var i = 0; i < self.currentShape.length; i++){
                 push();
-                fill(255, 0, 0);
+                noStroke()
+                fill(255, 0, 0, 180);
                 ellipse(self.currentShape[i].x, self.currentShape[i].y, 20);
                 pop();
             }

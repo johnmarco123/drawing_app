@@ -36,7 +36,7 @@ function GraphMakerTool() {
                     let start = createVector(startMouseX, startMouseY);
                     let curr = createVector(mouseX - startMouseX, mouseY - startMouseY);
                     let arrow_size = 15;
-                    let circle_size = select("#nodeSize").value();
+                    const node_diameter = 60;
                     push();
                     fill(255);
                     stroke(255);
@@ -44,7 +44,7 @@ function GraphMakerTool() {
                     if (self.node_mode == "node") {
                         push()
                         noStroke();
-                        ellipse(0, 0, circle_size);
+                        ellipse(0, 0, node_diameter);
                         pop();
                     }
                     line(0, 0, curr.x, curr.y);
@@ -83,13 +83,7 @@ function GraphMakerTool() {
 
     this.populateOptions = function() {
         select(".tempOptions").html(
-            `Node size: 
-            <input type='range'
-            min='60' max='120' 
-            value='60' class='slider'
-            id='nodeSize'>
-
-            <button id='node-mode'>
+            `<button id='node-mode'>
             ${self.node_mode == "node" ? "No node" : "Node"} mode
             </button>
             <button id='count-mode'>

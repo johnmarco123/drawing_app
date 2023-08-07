@@ -6,7 +6,8 @@ class VimEdit {
         this.state = data;
         this.num_multiplier = "1";
         this.prefix = ""; // such as d for delete, y for yank, etc;
-        this.last_searched = null;
+        this.last_searched_char = null;
+        this.last_search_prefix = "";
         this.cursor = 
             {
                 idx: -1, // The idx in the txt array
@@ -25,7 +26,7 @@ class VimEdit {
         if (this.state.typing) {
             push();
             this.render_cursor();
-            stroke(1);
+            noStroke();
             textSize(35);
             text(this.mode, 50, 50);
             pop();
@@ -80,73 +81,113 @@ class VimEdit {
         }
     }
 
-    start_of_line_idx(idx) {
+    first_char_on_line_idx(idx) {
         let txt = this.state.txt;
         let i = idx;
-        while (i >= 0) {
-            if (txt[i - 1] == "\n") break; 
+        while (i > 0) {
+            if (txt[i - 1] == "\n") {
+                break; 
+            }
             i--;
         }
-        return i + 1;
+        return i;
     }
 
-    end_of_line_idx(idx) {
+    last_char_on_line_idx(idx) {
         let txt = this.state.txt;
         let i = idx;
-        while (i < txt.length) { 
+        while (i < txt.length - 1) { 
             if (txt[i + 1] == "\n") break;
             i++
         }
-        return i - 1;
+        return i;
     }
 
-    search_for(char, direction) {
+    find_char(char, direction) {
         let txt = this.state.txt;
         let i = this.cursor.idx;
         if (direction == "forward") {
-            i += 1;
+            i++; // skip current occurance incase if on the same char
             while (i < txt.length) {
-                if (txt[i] == "\n") return -1;
-                if (txt[i] == char) break;
+                let curr = txt[i];
+                if (curr == "\n") return -1;
+                if (curr == char) break;
                 i++;
             }
         } else if (direction == "backward") {
-            i -= 1;
+            i--; 
             while (i >= 0) {
-                if (txt[i] == "\n") return -1;
-                if (txt[i] == char) break;
+                let curr = txt[i];
+                if (curr == char) break;
+                if (curr == "\n" || i == 0) return -1;
                 i--;
             }
         }
         return i;
     }
 
+    adj_char_is(char) {
+        return this.state.txt[this.cursor.idx + 1] == char || 
+               this.state.txt[this.cursor.idx - 1] == char;
+    }
+
+    handle_searching(char, prefix) {
+        let add = 0;
+        let direction = "forward"
+        if (prefix == "F") {
+            direction = "backward";
+        } else if (prefix == "T") {
+            if (this.adj_char_is(char)) {
+                this.move_one_char("left");
+            }
+            direction = "backward";
+            add = 1;
+        } else if (prefix == "t") {
+            if (this.adj_char_is(char)) {
+                this.move_one_char("right");
+            }
+            add = -1;
+        } 
+        let idx = this.find_char(char, direction);
+        if (idx != -1) {
+            this.find_location_and("move", ...this.get_row_col(idx + add));
+        } else {
+        }
+    }
+
+    repeat_last_search(str) {
+        if (str == "reversed") {
+            // if prefix was:
+            // t becomes f
+            // f it becomes t
+            // F becomes T
+            // T becomes F
+            console.log(`REVERSED!!!!!`);
+            let new_prefix = String.fromCharCode(this.last_searched_prefix.charCodeAt() ^ 18);
+            this.handle_searching(this.last_searched_char, new_prefix);
+        } else {
+            this.handle_searching(this.last_searched_char, this.last_search_prefix);
+        }
+    }
+
+
     normal_mode(key) {
-        if (typeof key == "string" && key >= 0) {
+        // TODO, currently this does not allow for searching of numbers
+        if (typeof key == "string" && key >= 0) { 
             this.num_multiplier += String(key);
         } else {
-            this.last_searched = key;
-            if (this.prefix == "f" || this.prefix == "t") {
-                let idx = this.search_for(key, "forward");
-                if (idx != -1) {
-                    if (this.prefix == "f") {
-                        this.find_location_and("move", ...this.get_row_col(idx));
-                    } else if (this.prefix == "t") {
-                        this.find_location_and("move", ...this.get_row_col(idx - 1));
-                    }
-                }
+            if (this.prefix == "r") {
+                this.state.txt[this.cursor.idx] = key;
                 this.prefix = "";
                 return;
-            }  else if (this.prefix == "F" || this.prefix == "T") {
-                let idx = this.search_for(key, "backward");
-                if (idx != -1) {
-                    if (this.prefix == "F") {
-                        this.find_location_and("move", ...this.get_row_col(idx));
-                    } else if (this.prefix == "T") {
-                        this.find_location_and("move", ...this.get_row_col(idx + 1));
-                    }
-                }
-                this.prefix = "";
+            }
+            if (this.prefix == "f" || this.prefix == "t" || this.prefix == "F" || this.prefix == "T") {
+                let prefix = this.prefix; // save prefix before deleting it
+                console.log(prefix);
+                this.last_search_prefix = prefix; // we set the last search prefix
+                this.prefix = ""; // now that we have searched the prefix has been consumed
+                this.last_searched_char = key; // we remember the last searched for char
+                this.handle_searching(key, prefix);
                 return;
             }
             this.num_multiplier = Math.min(this.num_multiplier, 100);
@@ -155,7 +196,7 @@ class VimEdit {
                 // Entering insert mode
                 if (key == "i") this.mode = "INSERT";
                 else if (key == "I") {
-                    let idx = this.start_of_line_idx(this.cursor.idx);
+                    let idx = this.first_char_on_line_idx(this.cursor.idx);
                     let [row, col] = this.get_row_col(idx);
                     this.find_location_and("move", row, col);
                     this.mode = "INSERT";
@@ -165,7 +206,7 @@ class VimEdit {
                     this.mode = "INSERT";
                     this.move_one_char("right");
                 } else if (key == "A") {
-                    let idx = this.end_of_line_idx(this.cursor.idx);
+                    let idx = this.last_char_on_line_idx(this.cursor.idx);
                     let [row, col] = this.get_row_col(idx);
                     this.find_location_and("move", row, col + 1);
                     this.mode = "INSERT"; 
@@ -173,37 +214,34 @@ class VimEdit {
 
                 else if (key == "v") this.mode = "VISUAL";
 
-                else if (key == "f") {
-                    this.prefix = "f";
-                } else if (key == "F") {
-                    this.prefix = "F";
-                } else if (key == "t") {
-                    this.prefix = "t";
-                } else if (key == "T") {
-                    this.prefix = "T";
+                // SEARCHING
+                else if (key == "f") this.prefix = "f";
+                else if (key == "F") this.prefix = "F";
+                else if (key == "t") this.prefix = "t";
+                else if (key == "T") this.prefix = "T";
+                else if (key == ";" && this.last_searched_char) {
+                    this.repeat_last_search();
+                } else if (key == "," && this.last_searched_char) {
+                    //this.repeat_last_search("reversed");
                 }
-                else if (key == ";" && this.last_searched) {
-                    let idx = this.search_for(this.last_searched, "forward");
-                    this.find_location_and("move", ...this.get_row_col(idx));
-                } else if (key == "," && this.last_searched) {
-                    let idx = this.search_for(this.last_searched, "backward");
-                    this.find_location_and("move", ...this.get_row_col(idx));
+                // REPLACING
+                else if (key == "r") {
+                    this.prefix = "r";
                 }
-               
-                // Moving one char at a time
+
+                // MOVING ONE CHAR AT A TIME
                 else if (key == "h") this.move_one_char("left");
                 else if (key == "j") this.move_one_char("down");
                 else if (key == "k") this.move_one_char("up");
                 else if (key == "l") this.move_one_char("right");
 
-                // Moving to start or end of line
-
+                // MOVING TO START OR END OF LINE
                 else if (key == "^") {
-                    let idx = this.start_of_line_idx(this.cursor.idx);
+                    let idx = this.first_char_on_line_idx(this.cursor.idx);
                     let [row, col] = this.get_row_col(idx);
                     this.find_location_and("move", row, col);
                 } else if (key == "$") {
-                    let idx = this.end_of_line_idx(this.cursor.idx);
+                    let idx = this.last_char_on_line_idx(this.cursor.idx);
                     let [row, col] = this.get_row_col(idx);
                     this.find_location_and("move", row, col);
                 }
@@ -243,7 +281,7 @@ class VimEdit {
                 else if (key == "d") {
                     this.prefix = "d";
                 } else if (key == "D") {
-                    let idx = this.end_of_line_idx(this.cursor.idx);
+                    let idx = this.last_char_on_line_idx(this.cursor.idx);
                     this.delete(this.cursor.idx, idx - this.cursor.idx);
                 } 
 
@@ -322,7 +360,7 @@ class VimEdit {
             if (txt[i] == "\n") {row++; col = 1}
             else col++;
         }
-        throw new Error("Not a valid index!");
+        throw new Error(`${idx} is not in the range 0 - ${this.state.txt.length - 1}`);
     }
 
     // get the idx of the start, or end of the word before or after the cursor

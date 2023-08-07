@@ -66,12 +66,9 @@ function draw() {
     }
 }
 
-//function windowResized(){
-//    loadPixels();
-//    resizeCanvas(windowWidth, windowHeight);
-//    background(0)
-//    updatePixels();
-//}
+function windowResized(){
+    resizeCanvas(windowWidth, windowHeight);
+}
 
 function keyPressed() {
     // We only want control characters for keypressed

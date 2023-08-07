@@ -38,7 +38,7 @@ function ColorPalette() {
             let changed = curr != old;
             if (changed) {
                 old = curr;
-                CURRENT_COLOR = curr;
+                CURRENT_COLOR = color(curr);
             }
             return changed;
         }
