@@ -114,6 +114,7 @@ button:hover {
 }
 
 .header {
+    padding-left: 50px;
     background-color: #999;
     color: #000;
 }

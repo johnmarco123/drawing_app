@@ -3,11 +3,9 @@ function ScissorsTool(){
     this.icon= "images/scissors.jpg";
     this.mode = 'cut';
     this.cutSection = this.endPos = this.startPos = null; 
-    this.free_hand_cut_section = [];
-    this.freehand = false;
-    this.free_hand_points = [];
+    this.first_cut = true;
     let self = this;
-   
+
     const get_coords_for_cut = (start, end) => {
         let [x, y] = [Math.min(start.x, end.x), Math.min(start.y, end.y)];
         let [x2, y2] = [Math.max(start.x, end.x), Math.max(start.y, end.y)];
@@ -16,150 +14,428 @@ function ScissorsTool(){
         return [x, y, w, h]; 
     }
 
-    // 1. cutmode pre click
-    // 2. dragmode after click
-    // 3. allow pasting from here
-    // 4. back to cutmode again with fully reset setgings after click
-    this.draw = function(){
-        if (MOUSE_ON_CANVAS) {
+
+    function in_move_area(x, y, w, h) {
+        return mouseX >= x && mouseX <= (x + w) && mouseY >= y && mouseY <= (y + h);
+    }
+
+    class Line {
+        constructor (x, y, vel_x, vel_y, w, h) {
+            this.location = createVector(x, y);
+            this.velocity = createVector(vel_x,vel_y);
+            this.width = w;
+            this.height = h;
+            this.color = color(255, 0, 0);
+        }
+
+        draw() {
             push();
-            strokeWeight(2);
-            updatePixels();
-            if (self.freehand) {
-                self.handle_free_hand();
-            } else {
-                self.handle_box_cut();
-            }
+            this.update();
+            noStroke();
+            fill(this.color); 
+            rect(this.location.x, this.location.y, this.width, this.height);
             pop();
         }
-    }
 
-    // pixels array is a 1d array of color values, 
-    function get_cut_section() {
-        // capture the leftmost x and topmost y and save that as our top left
-        // vertex
-        let points = self.free_hand_points;
-        let n = points.length;
-        let x1, y1, x2, y2;
-        x1 = y1 = Infinity; // top left corner
-        x2 = y2 = -Infinity // bottom right corner
-        for (let i = 0; i < n; i++) {
-            let [x, y] = points[i];
-            x1 = Math.min(x, x1);
-            y1 = Math.min(y, y1);
-            x2 = Math.max(x, x2);
-            y2 = Math.max(y, y2);
+        update() {
+            this.location.add(this.velocity.x, this.velocity.y);
         }
-        let w = x2 - x1;
-        let h = y2 - y1;
-        return [x1, y1, w, h];
     }
 
-    function remove_cut_section() {
-        noStroke();
-        fill(0);
-        beginShape();
-        for (let i = 0; i < self.free_hand_points.length; i++) {
-            let [x, y] = self.free_hand_points[i]
-            vertex(x, y);
+    class BoxOfLines {
+        constructor(x, y, w, h) {
+            this.location = createVector(x, y);
+            this.width = w;
+            this.height = h;
+            this.top = [];
+            this.bot = [];
+            this.left = [];
+            this.right = [];
+            this.dist_between_lines = 10;
+            this.line_size = createVector(10, 4);
+            this.speed = 1;
         }
-        endShape(CLOSE);
-        loadPixels();
-    }
 
-    this.handle_free_hand = function() {
-        if(self.mode == 'cut' && mouseIsPressed){
-            self.mode = "drag";
-        } else if (self.mode == 'drag') {
-            if (mouseIsPressed) {
-                stroke(255);
-                fill(255, 0, 0, 80);
-                beginShape();
-                for (let i = 0; i < self.free_hand_points.length; i++) {
-                    let [x, y] = self.free_hand_points[i]
-                    vertex(x, y);
+        temp_disable() {
+            this.top = [];
+            this.bot = [];
+            this.left = [];
+            this.right = [];
+        }
+
+        update_size(x, y, w, h) {
+            this.location.x = x;
+            this.location.y = y;
+            this.width = w;
+            this.height = h;
+        }
+
+        add_line(direction, side) {
+
+            if (side == "front" ) {
+                if (direction == "top") {
+                    this.top.unshift(
+                        new Line(
+                            this.location.x,
+                            this.location.y,
+                            this.speed,
+                            0,
+                            this.line_size.x,
+                            this.line_size.y)
+                    ) 
+                } else if (direction == "right") {
+                    this.right.unshift(
+                        new Line(
+                            this.location.x + this.width - this.line_size.y,
+                            this.location.y,
+                            0,
+                            this.speed,
+                            this.line_size.y,
+                            this.line_size.x)
+                    ) 
+                } else if (direction == "bot" ) {
+                    this.bot.unshift(
+                        new Line(
+                            this.location.x + this.width - this.line_size.x,
+                            this.location.y + this.height - this.line_size.y,
+                            -this.speed,
+                            0,
+                            this.line_size.x,
+                            this.line_size.y)
+                    ) 
+                } else if (direction == "left") {
+                    this.left.unshift(
+                        new Line(
+                            this.location.x,
+                            this.location.y + this.height - this.line_size.y,
+                            0,
+                            -this.speed,
+                            this.line_size.y,
+                            this.line_size.x)
+                    ) 
                 }
-                endShape(CLOSE);
-                self.free_hand_points.push([mouseX, mouseY])
+            } else if (side == "back" ) {
+                if (direction == "top") {
+                    this.top.push(
+                        new Line(
+                            this.top.at(-1).location.x + this.top.at(-1).width + this.dist_between_lines,
+                            this.top.at(-1).location.y,
+                            this.speed,
+                            0,
+                            this.line_size.x,
+                            this.line_size.y,
+                        )
+                    );
+
+                } else if (direction == "right") {
+                    this.right.push(
+                        new Line(
+                            this.right.at(-1).location.x,
+                            this.right.at(-1).location.y + this.right.at(-1).height + this.dist_between_lines,
+                            0,
+                            this.speed,
+                            this.line_size.y,
+                            this.line_size.x,
+                        )
+                    );
+
+                } else if (direction == "bot" ) {
+                    this.bot.push( 
+                        new Line(
+                            this.bot.at(-1).location.x - this.bot.at(-1).width - this.dist_between_lines,
+                            this.bot.at(-1).location.y,
+                            -this.speed,
+                            0,
+                            this.line_size.x,
+                            this.line_size.y,
+                        )
+                    )
+                } else if (direction == "left") {
+                    this.left.push(
+                        new Line(
+                            this.left.at(-1).location.x,
+                            this.left.at(-1).location.y - this.left.at(-1).height - this.dist_between_lines,
+                            0,
+                            -this.speed,
+                            this.line_size.y,
+                            this.line_size.x,
+                        )
+                    )
+
+                }
             } else {
-                [x, y, w, h] = get_cut_section();
-                self.free_hand_cut_section = get(x, y, w, h);
-                remove_cut_section() ;
-                self.free_hand_points = [];
-                self.mode = 'cut';
+                alert("ERROR, ADD LINE REQUIRES BACK OR FRONT AS ITS SIDE");
             }
-        } else if (self.mode == 'paste' && mouseIsPressed) {
-            let image_size_is_valid = w != 0 && h != 0;
-            if (image_size_is_valid) { 
-                image(self.free_hand_cut_section , mouseX, mouseY) 
-                loadPixels();
+        }
+
+        // when resizing, we will need to add lines to the front to keep up with resizing
+        add_lines_to_front() {
+            if (this.top.length == 0) {
+                if (this.width >= this.dist_between_lines) {
+                    this.add_line("top", "front");
+                }
+            } else {
+                let first_top = this.top[0];
+                // if there is room to add a new line
+                if (first_top.location.x - first_top.width >= this.dist_between_lines + this.location.x) {
+                    this.add_line("top", "front");
+                } 
+
+                if (this.width < this.dist_between_lines) {
+                    this.top = [];
+                }
             }
+
+            if (this.bot.length == 0) {
+                if (this.width >= this.dist_between_lines) {
+                    this.add_line("bot", "front");
+                }
+            } else {
+                let first_bot = this.bot[0];
+                if (first_bot.location.x + (first_bot.width * 2) <= this.location.x + this.width - this.dist_between_lines) {
+                    this.add_line("bot", "front");
+                } 
+
+                if (this.width < this.dist_between_lines) {
+                    this.bot = [];
+                }
+            }
+
+            if (this.left.length == 0) {
+                if (this.height >= this.dist_between_lines) {
+                    this.add_line("left", "front");
+                }
+            } else {
+                let first_left = this.left[0];
+                if (first_left.location.y + first_left.height <= this.location.y + this.height - this.dist_between_lines) {
+                    this.add_line("left", "front");
+                } 
+
+                if (this.height < this.dist_between_lines) {
+                    this.left = [];
+                }
+            }
+
+            if (this.right.length == 0) {
+                if (this.height >= this.dist_between_lines) {
+                    this.add_line("right", "front");
+                }
+            } else {
+                let first_right = this.right[0];
+                if (first_right.location.y - first_right.height - this.location.y >= this.dist_between_lines) {
+                    this.add_line("right", "front");
+                } 
+
+                if (this.height < this.dist_between_lines) {
+                    this.right = [];
+                }
+            }
+
+
+        }
+
+        // when there is room for another line at the front we add it
+        add_lines_to_back() {
+            if (this.top.length > 0) {
+                let last_top = this.top.at(-1);
+                if (this.location.x + this.width - last_top.location.x >= this.dist_between_lines + 15) {
+                    this.add_line("top", "back"); 
+                }
+            } 
+
+            if (this.right.length > 0) {
+                let last_right = this.right.at(-1);
+                if (this.location.y + this.height - last_right.location.y + last_right.height >= this.dist_between_lines + 25) {
+                    this.add_line("right", "back"); 
+                }
+            } 
+
+            if (this.bot.length > 0) {
+                let last_bot = this.bot.at(-1);
+                if (last_bot.location.x >= this.location.x + this.dist_between_lines + 20) {
+                    this.add_line("bot", "back");
+                }
+            } 
+
+            if (this.left.length > 0) {
+                let last_left = this.left.at(-1);
+                if (last_left.location.y - this.location.y >= this.dist_between_lines + 15) {
+                    this.add_line("left", "back");
+                }
+            }
+
+        }
+
+        draw_lines() {
+
+            for (let i = 0; i < this.top.length; i++) {
+                this.top[i].location.y = this.location.y;
+                this.top[i].draw();
+            }
+
+            for (let i = 0; i < this.bot.length; i++) {
+                this.bot[i].location.y = this.location.y + this.height;
+                this.bot[i].draw();
+            }
+
+            for (let i = 0; i < this.left.length; i++) {
+                this.left[i].location.x = this.location.x;
+                this.left[i].draw();
+            }
+
+            for (let i = 0; i < this.right.length; i++) {
+                this.right[i].location.x = this.location.x + this.width;
+                this.right[i].draw();
+            }
+
+        }
+
+        update_size(x, y, w, h) {
+            this.location = createVector(x, y);
+            this.width = w;
+            this.height = h;
+        }
+
+        delete_out_of_bounds_lines() {
+            if (this.top.length > 0) {
+                let last = this.top.at(-1);
+                if (last.location.x + last.width > this.location.x + this.width) {
+                    this.top.pop();
+                }
+
+                let first = this.top[0];
+                if (first?.location.x < this.location.x) {
+                    this.top.shift();
+                }
+            }
+
+            if (this.bot.length > 0) {
+                let last = this.bot.at(-1);
+                if (last.location.x <= this.location.x) {
+                    this.bot.pop();
+                }
+
+                let first = this.bot[0];
+                if (first?.location.x >= this.location.x + this.width) {
+                    this.bot.shift();
+                }
+            }
+
+            if (this.left.length > 0) {
+                let last = this.left.at(-1);
+                if (last.location.y <= this.location.y) {
+                    this.left.pop();
+                }
+
+                let first = this.left[0];
+                if (first?.location.y >= this.location.y + this.height) {
+                    this.left.shift();
+                }
+            }
+
+            if (this.right.length > 0) {
+                let last = this.right.at(-1);
+                if (last.location.y + last.height >= this.location.y + this.height) {
+                    this.right.pop();
+                }
+
+                let first = this.right[0];
+                if (first?.location.y < this.location.y) {
+                    this.right.shift();
+                }
+            }
+        }
+        draw(x, y, w, h) {
+            this.update_size(x, y, w, h);
+            this.draw_lines()
+            this.add_lines_to_front();
+            this.delete_out_of_bounds_lines();
+            this.add_lines_to_back();
         }
     }
 
     let x, y, w, h;
+    let dy = -1
+    let dx = -1;
+    let dragging = false;
+    let box = null;
     this.handle_box_cut = function() {
-        push();
-        if(self.mode == 'cut' && mouseIsPressed){
+        if(self.mode == "cut" && mouseIsPressed && MOUSE_ON_CANVAS){
             self.startPos = self.endPos = createVector(mouseX, mouseY);
-            self.mode = 'drag';
-        } else if (self.mode == 'drag' && mouseIsPressed) {
+            box = new BoxOfLines(x, y, w, h); // create the box for the box animation
+            self.mode = "drag";
+        } else if (self.mode == "drag" && mouseIsPressed && MOUSE_ON_CANVAS) {
+            self.first_cut = true;
             self.endPos = createVector(mouseX, mouseY);
-            stroke(255);
-            fill(255, 0, 0, 80);
+            noFill();
             [x, y, w, h] = get_coords_for_cut(self.startPos, self.endPos);
-            rect(x, y, w, h);
-        } else if (self.mode == 'drag' && !mouseIsPressed){
-            self.mode = 'cut';
-            self.cutSection = get(x, y, w, h);
-            noStroke();
-            fill(0);
-            rect(x, y, w, h); 
-            loadPixels();
-        } else if (self.mode == 'paste' && mouseIsPressed){
+            box.draw(x, y, w, h);
+        } else if (self.mode == "drag" && !mouseIsPressed){
             let image_size_is_valid = w != 0 && h != 0;
             if (image_size_is_valid) { 
-                image(self.cutSection, mouseX, mouseY) 
+                self.cutSection = get(x, y, w, h);
+                fill(0, 0, 0);
+                noStroke();
+                rect(x, y, w, h);
                 loadPixels();
+                self.mode = "cut";
             }
+        } else if (self.mode == "move") {
+            if (MOUSE_ON_CANVAS) {
+                if (mouseIsPressed) {
+                    if (in_move_area(x, y, w, h) || dragging) {
+                        dragging = true;
+                        if (dy == -1) {
+                            [dx, dy] = [x - mouseX, y - mouseY];
+                        }
+                        [x, y] = [dx + mouseX, dy + mouseY];
+                    } else {
+                        // save the state and reset
+                        self.mode = "cut";
+                        image(self.cutSection, x, y);
+                        this.startPos = this.cutSection = this.endPos = null;
+                        loadPixels(); // save the state where you left the object
+                        return;
+                    }
+                } else {
+                    dragging = false;
+                    dy = dx = -1;
+                }
+            }
+            image(self.cutSection, x, y);
+            box.draw(x, y, w, h);
         }
+    }
+
+    this.draw = function(){
+        push();
+        updatePixels();
+        self.handle_box_cut();
         pop();
     }
 
     this.unselectTool = function() {
         clearOptions();
+        box.temp_disable();
+        self.draw();
+        loadPixels();
+        this.startPos = this.endPos = this.cutSection = null;
         self.mode = 'cut';
     };
 
-    this.populateOptions = function() {
-        select(".tempOptions").html(
-            `<button id='mode'>paste</button>
-            <button id='freehand'>freehand</button>
-            `);
-        //click handler
-        select("#freehand").mouseClicked(function() {
-            var button = select("#" + this.elt.id);
-            self.mode = 'cut';
-            select("#mode").html('paste');
-            if (self.freehand) {
-                button.html('freehand');
-            } else {
-                button.html('box mode');
-            }
-            x = y = w = h = 0;
-            self.freehand = !self.freehand
-        });
 
+    this.populateOptions = function() {
+        select(".tempOptions").html( `<button id='mode'>paste</button> `);
         select("#mode").mouseClicked(function() {
             if (self.cutSection !== null) {
-                var button = select("#" + this.elt.id);
-                if (self.mode != 'paste') {
-                    self.mode = 'paste';
-                    button.html('edit');
-                } else {
-                    self.mode = 'cut';
-                    button.html('paste');
+                if (!self.first_cut) {
+                    box.temp_disable();
+                    self.draw();
                 }
+                self.first_cut = false;
+                self.mode = "move";
+                x = y = 0;
+                loadPixels();
             }
         });
     };

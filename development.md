@@ -1,4 +1,4 @@
-# New features: 
+# New features:
 ++ Added a way to CTRL Z and CTRL R to undo and redo
 ++ Added a stroke weight bar 
 ++ Added window resizing capability 
@@ -66,8 +66,11 @@ beginning for some reason
             * shift s should delete the entire line and go into insert mode on
               that line
 
+# Bugs found:
+    * Friday, 18, aug when fullscreening it doesn't update the canvas size
 
 # Currently working on: 
+    * FINISHING THE COPY TOOL!
 
 
 # Features to add:

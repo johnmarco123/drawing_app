@@ -37,16 +37,15 @@ function setup() {
         toolbox.addTools([
             FreehandTool,
             LineToTool,
+            CopyTool,
+            ScissorsTool,
             MoveableLineTool,
             MirrorDrawTool,
             RectTool,
             EllipseTool,
-         //   StarTool, Maybe remove this tool from final version
-         //   SprayCanTool, Maybe remove this tool from final version
-            ScissorsTool,
             FillBucketTool,
             TextTool,
-            GraphMakerTool
+            GraphMakerTool,
         ]);
 }
 

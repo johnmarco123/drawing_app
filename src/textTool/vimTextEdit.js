@@ -175,7 +175,6 @@ class VimEdit {
     }
 
     normal_mode(key) {
-        // TODO, currently this does not allow for searching of numbers
         if (typeof key == "string" && key >= 0) { 
             this.num_multiplier += String(key);
         } else {
