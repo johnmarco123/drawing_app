@@ -39,13 +39,13 @@ function setup() {
             LineToTool,
             CopyTool,
             ScissorsTool,
+            TextTool,
+            GraphMakerTool,
+            FillBucketTool,
             MoveableLineTool,
             MirrorDrawTool,
             RectTool,
             EllipseTool,
-            FillBucketTool,
-            TextTool,
-            GraphMakerTool,
         ]);
 }
 

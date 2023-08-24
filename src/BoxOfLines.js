@@ -81,7 +81,7 @@ class BoxOfLines {
                         this.line_size.x,
                         this.color,
                     )
-                        
+
                 ) 
             } else if (direction == "bot" ) {
                 this.bot.unshift(
@@ -228,8 +228,6 @@ class BoxOfLines {
                 this.right = [];
             }
         }
-
-
     }
 
 
@@ -244,7 +242,7 @@ class BoxOfLines {
                     this.top[i].location.x = this.top[i + 1].location.x - this.top[i].width - this.dist_between_lines; 
                 }
             }
-        } 
+        }
 
         if (this.right.length > 0) {
             for (let i = this.right.length - 1; i >= 0; i--) {
@@ -317,50 +315,72 @@ class BoxOfLines {
 
     delete_out_of_bounds_lines() {
         if (this.top.length > 0) {
-            let last = this.top.at(-1);
-            if (last.location.x + last.width > this.location.x + this.width) {
-                this.top.pop();
+            // delete excess at the end
+            for (let i = 0; i < this.top.length; i++) {
+                let curr = this.top[i];
+                if (curr.location.x + curr.width > this.location.x + this.width) {
+                    this.top.length = Math.max(i, 0);
+                    break;
+                }
             }
-
-            let first = this.top[0];
-            if (first?.location.x < this.location.x) {
-                this.top.shift();
+            // delete excess at the front
+            for (let i = this.top.length - 1; i >= 0; i--) {
+                let curr = this.top[i];
+                if (curr.location.x < this.location.x) {
+                    this.top.splice(0, i);
+                    break;
+                }
             }
         }
 
         if (this.bot.length > 0) {
-            let last = this.bot.at(-1);
-            if (last.location.x <= this.location.x) {
-                this.bot.pop();
+            for (let i = 0; i < this.bot.length; i++) {
+                let curr = this.bot[i];
+                if (curr.location.x <= this.location.x) {
+                    this.bot.length = Math.max(i, 0);
+                    break;
+                }
             }
-
-            let first = this.bot[0];
-            if (first?.location.x >= this.location.x + this.width) {
-                this.bot.shift();
+            for (let i = this.bot.length - 1; i >= 0; i--) {
+                let curr = this.bot[i];
+                if (curr.location.x >= this.location.x + this.width) {
+                    this.bot.splice(0, i);
+                    break;
+                }
             }
         }
 
         if (this.left.length > 0) {
-            let last = this.left.at(-1);
-            if (last.location.y <= this.location.y) {
-                this.left.pop();
+            for (let i = 0; i < this.left.length; i++) {
+                let curr = this.left[i];
+                if (curr.location.y <= this.location.y) {
+                    this.left.length = Math.max(i, 0);
+                    break;
+                }
             }
-
-            let first = this.left[0];
-            if (first?.location.y >= this.location.y + this.height) {
-                this.left.shift();
+            for (let i = this.left.length - 1; i >= 0; i--) {
+                let curr = this.left[i];
+                if (curr.location.y >= this.location.y + this.height) {
+                    this.left.splice(0, i);
+                    break;
+                }
             }
         }
 
         if (this.right.length > 0) {
-            let last = this.right.at(-1);
-            if (last.location.y + last.height >= this.location.y + this.height) {
-                this.right.pop();
+            for (let i = 0; i < this.right.length; i++) {
+                let curr = this.right[i];
+                if (curr.location.y + curr.height >= this.location.y + this.height) {
+                    this.right.length = Math.max(i, 0);
+                    break;
+                }
             }
-
-            let first = this.right[0];
-            if (first?.location.y < this.location.y) {
-                this.right.shift();
+            for (let i = this.right.length - 1; i >= 0; i--) {
+                let curr = this.right[i];
+                if (curr.location.y < this.location.y) {
+                    this.right.splice(0, i);
+                    break;
+                }
             }
         }
     }
