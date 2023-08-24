@@ -55,7 +55,7 @@ class BoxOfLines {
         this.height = h;
     }
 
-    add_line(direction, side) {
+    add_line(side, direction) {
 
         if (side == "front" ) {
             if (direction == "top") {
@@ -168,30 +168,28 @@ class BoxOfLines {
 
     // when resizing, we will need to add lines to the front to keep up with resizing
     add_lines_to_front() {
-        if (this.top.length == 0) {
-            if (this.width >= this.dist_between_lines) {
-                this.add_line("top", "front");
-            }
-        } else {
-            let first_top = this.top[0];
-            // if there is room to add a new line
-            if (first_top.location.x - first_top.width >= this.dist_between_lines + this.location.x) {
-                this.add_line("top", "front");
-            } 
-
-            if (this.width < this.dist_between_lines) {
-                this.top = [];
-            }
-        }
+         if (this.top.length == 0) {
+             if (this.width >= this.dist_between_lines) {
+                 this.add_line("front", "top");
+             }
+         } else {
+             // if there is room to add a new line
+             if (this.top[0].location.x - this.top[0].width >= this.dist_between_lines + this.location.x) {
+                 this.add_line("front", "top");
+             }
+             if (this.width < this.dist_between_lines) {
+                 this.top = [];
+             }
+         }
 
         if (this.bot.length == 0) {
             if (this.width >= this.dist_between_lines) {
-                this.add_line("bot", "front");
+                this.add_line("front", "bot");
             }
         } else {
             let first_bot = this.bot[0];
-            if (first_bot.location.x + (first_bot.width * 2) <= this.location.x + this.width - this.dist_between_lines) {
-                this.add_line("bot", "front");
+            if (first_bot.location.x + (first_bot.width * 2)  <= this.location.x + this.width - this.dist_between_lines) {
+                this.add_line("front", "bot");
             } 
 
             if (this.width < this.dist_between_lines) {
@@ -201,12 +199,12 @@ class BoxOfLines {
 
         if (this.left.length == 0) {
             if (this.height >= this.dist_between_lines) {
-                this.add_line("left", "front");
+                this.add_line("front", "left");
             }
         } else {
             let first_left = this.left[0];
             if (first_left.location.y + first_left.height <= this.location.y + this.height - this.dist_between_lines) {
-                this.add_line("left", "front");
+                this.add_line("front", "left");
             } 
 
             if (this.height < this.dist_between_lines) {
@@ -216,12 +214,12 @@ class BoxOfLines {
 
         if (this.right.length == 0) {
             if (this.height >= this.dist_between_lines) {
-                this.add_line("right", "front");
+                this.add_line("front", "right");
             }
         } else {
             let first_right = this.right[0];
             if (first_right.location.y - first_right.height - this.location.y >= this.dist_between_lines) {
-                this.add_line("right", "front");
+                this.add_line("front", "right");
             } 
 
             if (this.height < this.dist_between_lines) {
@@ -232,52 +230,50 @@ class BoxOfLines {
 
 
     add_lines_between_gaps() {
+
+        // shift back to front
+        for (let i = 1; i < this.top.length; i++) {
+            if (this.top[i].location.x - this.top[i - 1].location.x > this.dist_between_lines) {
+                this.top[i].location.x = this.top[i - 1].location.x + this.top[i - 1].width + this.dist_between_lines;
+            }
+        }
+        // add to back till full
         if (this.top.length > 0) {
-            for (let i = this.top.length - 1; i >= 0; i--) {
-                if (i == this.top.length - 1) {
-                    if (this.location.x + this.width - this.top[i].location.x - this.top[i].width > this.dist_between_lines * 2) {
-                        this.top[i].location.x = this.location.x + this.width - this.top[i].width - this.dist_between_lines;
-                    }
-                } else if (this.top[i + 1].location.x - this.top[i].location.x > this.top[i].width + this.dist_between_lines) {
-                    this.top[i].location.x = this.top[i + 1].location.x - this.top[i].width - this.dist_between_lines; 
-                }
+            while (this.location.x + this.width - this.top.at(-1).location.x - this.top.at(-1).width > this.dist_between_lines * 2) {
+                this.add_line("back", "top");
+            }
+        }
+        
+        for (let i = 1; i < this.right.length; i++) {
+            if (this.right[i].location.y - this.right[i - 1].location.y > this.dist_between_lines) {
+                this.right[i].location.y = this.right[i - 1].location.y + this.right[i - 1].height + this.dist_between_lines;
+            }
+        }
+        if (this.right.length > 0) {
+            while (this.location.y + this.height - this.right.at(-1).location.y - this.right.at(-1).height > this.dist_between_lines * 2) {
+                this.add_line("back", "right");
+            }
+        } 
+
+        for (let i = 1; i < this.bot.length; i++) {
+            if (this.bot[i - 1].location.x - this.bot[i].location.x > this.dist_between_lines) {
+                this.bot[i].location.x = this.bot[i - 1].location.x - this.bot[i - 1].width - this.dist_between_lines;
+            }
+        }
+        if (this.bot.length > 0) {
+            while (this.bot.at(-1).location.x - this.location.x > this.dist_between_lines * 2) {
+                this.add_line("back", "bot");
             }
         }
 
-        if (this.right.length > 0) {
-            for (let i = this.right.length - 1; i >= 0; i--) {
-                if (i == this.right.length - 1) {
-                    if (this.location.y + this.height - this.right[i].location.y - this.right[i].height > this.dist_between_lines * 2) {
-                        this.right[i].location.y = this.location.y + this.height - this.right[i].height - this.dist_between_lines;
-                    }
-                } else if (this.right[i + 1].location.y - this.right[i].location.y > this.right[i].height + this.dist_between_lines) {
-                    this.right[i].location.y = this.right[i + 1].location.y - this.right[i].height - this.dist_between_lines; 
-                }
+        for (let i = 1; i < this.left.length; i++) {
+            if (this.left[i - 1].location.y - this.left[i].location.y > this.dist_between_lines) {
+                this.left[i].location.y = this.left[i - 1].location.y - this.left[i - 1].height - this.dist_between_lines;
             }
-        } 
-
-        if (this.bot.length > 0) {
-            for (let i = this.bot.length - 1; i >= 0; i--) {
-                if (i == this.bot.length - 1) {
-                    if (this.bot[i].location.x - this.location.x > this.dist_between_lines * 2) {
-                        this.bot[i].location.x = this.location.x + this.bot[i].width + this.dist_between_lines;
-                    }
-                } else if (this.bot[i].location.x - this.bot[i + 1].location.x > this.bot[i].width + this.dist_between_lines) {
-                    this.bot[i].location.x = this.bot[i + 1].location.x + this.bot[i].width + this.dist_between_lines; 
-                }
-            }
-        } 
-
-
+        }
         if (this.left.length > 0) {
-            for (let i = this.left.length - 1; i >= 0; i--) {
-                if (i == this.left.length - 1) {
-                    if (this.left[i].location.y - this.location.y > this.dist_between_lines * 2) {
-                        this.left[i].location.y = this.location.y + this.dist_between_lines;
-                    }
-                } else if (this.left[i].location.y - this.left[i + 1].location.y > this.left[i].height + this.dist_between_lines) {
-                    this.left[i].location.y = this.left[i + 1].location.y + this.left[i].height + this.dist_between_lines; 
-                }
+            while (this.left.at(-1).location.y - this.location.y > this.dist_between_lines * 2) {
+                this.add_line("back", "left");
             }
         } 
 
