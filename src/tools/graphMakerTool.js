@@ -1,9 +1,19 @@
 function GraphMakerTool() {
     this.icon = "images/graphMaker.jpg";
-    this.name = "graphMaker";
+    this.name = "Graph Maker";
     this.node_mode = "node";
     this.count_on = true;
     let self = this;
+    this.manual = 
+        `
+        <ol>
+            <li>Click to place a node</li>
+            <li>If you drag after clicking, it will also draw an arrow towards your cursor</li>
+            <li>You can turn the numbers off with the toggle button in the bottom menu</li>
+            <li>You can also turn off the nodes entirely if you would like to place only arrows</li>
+        </ol>
+        `;
+
 
     // The following values store the locations from the last frame, they start 
     // at -1 since no drawing has happened yet

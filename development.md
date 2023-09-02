@@ -16,6 +16,7 @@ switch off the freehand tool
 ++ Constrained text size so it will not 
 ++ Added two modes for the typing tool 
 ++ made vim mode pretty functional but still has massive bugs
+++ Add a way to grab a a box of "elements" and move them
 
 
 
@@ -45,6 +46,8 @@ beginning for some reason
      * After resizing, the bottom menu no longer blocks drawing...
      * When the user hides the side and bottom bar, it causes the mouseoncanvas
        function to fail to detect where the bottom bar is
+     * AFTER RESIZING THE CANVAS BECOMES WHITE RATHER THEN BLACK, THIS OCCURS WHEN 
+       CLICKING F11 OR F12 ASWELL!
 
 # Last bug tested date: 2023/08/06
     * drawing tool: no bugs
@@ -70,13 +73,7 @@ beginning for some reason
     * Friday, 18, aug when fullscreening it doesn't update the canvas size
 
 # Currently working on: 
-    * FINISHING THE COPY TOOL!
-
+    * A little tutorial for each tool, or a manual on how to use each tool.
 
 # Features to add:
     * Make all current vim features work as intended
-    * Add infinite scrolling (or a math mode maybe?)
-    * Add a way to grab a a box of "elements" and move them
-    * Add an eraser (for object mode & normal eraser)
-    * Add a eraser tool that you select around an area and cut that area out
- 

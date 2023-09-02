@@ -38,12 +38,11 @@ button:hover {
 
 #dropDown {
     background-color: #444;
+    color: #fff;
     margin: 0px 5px;
     width: 60px;
     height: 30px;
-    margin-right: 30px;
     border-radius: 8px;
-    color: #444
 }
 
 .header {
@@ -114,7 +113,35 @@ button:hover {
 }
 
 .header {
-    padding-left: 50px;
     background-color: #999;
     color: #000;
 }
+
+/* MANUALS FOR TOOLS */
+
+#manual {
+    background: #402F1D;
+    color: rgba(255, 255, 255, 0.99);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -200px;
+    margin-left: -200px;
+    opacity: 0.9;
+    text-align: center;
+    font-size: 20px;
+    width: 400px;
+    height: 400px;
+    border-radius: 5%;
+}
+
+#manual ol {
+    text-align: left;
+}
+
+#manual ol li {
+    margin-bottom: 10px;
+    margin-right: 10px;
+}
+
+

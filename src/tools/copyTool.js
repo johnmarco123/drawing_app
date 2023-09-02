@@ -1,9 +1,18 @@
 function CopyTool(){
-    this.name = "copyTool";
+    this.name = "Copy";
     this.icon = "images/copyTool.jpg";
     this.mode = "select";
     this.startPos = this.endPos = null;
     this.cutSection = null;
+    this.manual = 
+        `
+        <ol>
+            <li>Click and drag to select an area to copy</li>
+            <li>Release the mouse to copy the selected area</li>
+            <li>Click within the copied area and drag to move it</li>
+            <li>Click outside of the copy area to place it<li>
+        </ol>
+        `;
     let self = this;
 
     // Given two VECTORS, will output the top left corners x and y and also

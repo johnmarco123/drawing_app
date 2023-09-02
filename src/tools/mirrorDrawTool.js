@@ -1,7 +1,13 @@
 function MirrorDrawTool() {
-    this.name = "mirrorDraw";
+    this.name = "Mirror Draw";
     this.icon = "images/mirrorDraw.jpg";
-
+    this.manual = 
+        `
+        <ol>
+            <li>Draw on one side of the line, and the other side will mirror your drawing</li>
+            <li>You can flip the axis in which the drawing is mirrored with the button in the bottom menu</li>
+        </ol>
+        `;
     //which axis is being mirrored (x or y) x is default
     this.axis = "x";
     //line of symmetry is halfway across the screen
@@ -17,7 +23,7 @@ function MirrorDrawTool() {
     var previousMouseY = -1;
 
     //mouse coordinates for the other side of the Line of symmetry.
-        var previousOppositeMouseX = -1;
+    var previousOppositeMouseX = -1;
     var previousOppositeMouseY = -1;
 
     this.draw = function() {
@@ -71,8 +77,10 @@ function MirrorDrawTool() {
         stroke("red");
         //draw the line of symmetry
         if (this.axis == "x") {
+            this.lineOfSymmetry = width / 2;
             line(width / 2, 0, width / 2, height);
         } else {
+            this.lineOfSymmetry = height / 2;
             line(0, height / 2, width, height / 2);
         }
         //return to the original stroke

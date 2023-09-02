@@ -1,9 +1,20 @@
 function ScissorsTool(){
-    this.name= "scissorsTool";
+    this.name= "Scissors";
     this.icon= "images/scissors.jpg";
     this.mode = 'cut';
     this.cutSection = this.endPos = this.startPos = null; 
     this.first_cut = true;
+    this.manual = 
+        `
+        <ol>
+            <li>Click and drag to select an area to cut</li>
+            <li>Release the mouse to cut the selected area</li>
+            <li>Click the paste button to paste the contents you copied</li>
+            <li>You can then click within the pasted contents to move it around</li>
+            <li>Click outside of the copied area to unselect it</li>
+            <li>You can continue to paste as many copies as you'd like and repeat steps 3 to 5</li>
+        </ol>
+        `;
     let self = this;
 
     const get_coords_for_cut = (start, end) => {
@@ -92,27 +103,32 @@ function ScissorsTool(){
 
     this.unselectTool = function() {
         clearOptions();
-        box.temp_disable();
+        if (box != null) {
+            box.temp_disable();
+        }
         self.draw();
         loadPixels();
         this.startPos = this.endPos = this.cutSection = null;
         self.mode = 'cut';
     };
 
+    function paste() {
+        if (self.cutSection !== null) {
+            if (!self.first_cut) {
+                box.temp_disable();
+                self.draw();
+            }
+            self.first_cut = false;
+            self.mode = "move";
+            x = y = 0;
+            loadPixels();
+        }
+    }
 
     this.populateOptions = function() {
-        select(".tempOptions").html( `<button id='mode'>paste</button> `);
+        select(".tempOptions").html(`<button id='mode'>paste</button>`);
         select("#mode").mouseClicked(function() {
-            if (self.cutSection !== null) {
-                if (!self.first_cut) {
-                    box.temp_disable();
-                    self.draw();
-                }
-                self.first_cut = false;
-                self.mode = "move";
-                x = y = 0;
-                loadPixels();
-            }
+            paste();
         });
     };
 }

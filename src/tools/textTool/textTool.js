@@ -1,5 +1,5 @@
 function TextTool() {
-    this.name = "text";
+    this.name = "Text";
     this.icon = "images/text.jpg";
     // We store this as an object so we can pass a reference of it to our
     // different text editors
@@ -13,6 +13,15 @@ function TextTool() {
     }
     this.eval_on = false;
     this.typing_mode = "Normal";
+    this.manual = 
+        `
+        <ol>
+            <li>Click where you would like to insert text</li>
+            <li>You can then begin typing normally and click the "Save Typing" button when you are finished</li>
+            <li>You can also type using some vim movements with the "Vim Mode" button</li>
+            <li>If you would like to evaluate your code as javascript, click the "Evaluate JS" button. INFINITE LOOPS WILL CRASH THE PROGRAM, USE WITH CAUTION!</li>
+        </ol>
+        `;
 
     let self = this;
     // Both of these need the text array, and the state of typing
@@ -105,6 +114,7 @@ function TextTool() {
     }
 
     this.handle_text_state = function() {
+        console.log()
         if (MOUSE_ON_CANVAS && mouseIsPressed && self.state.txt_pos.x == -1) {
             cursor(ARROW);
             self.state.typing = true;

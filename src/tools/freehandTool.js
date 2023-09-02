@@ -1,8 +1,16 @@
 function FreehandTool(){
     // set an icon and a name for the object
     this.icon = "images/freehand.jpg";
-    this.name = "freehand";
+    this.name = "Free-hand";
     this.mode = "normal";
+
+    this.manual = 
+    `
+        <ol>
+            <li>Click on the canvas.</li>
+            <li>Drag whilst holding the mouse down to draw!</li>
+        </ol>
+    `;
 
     let graphPoints = [];
     const BOXDIMS = width / 60;
@@ -80,7 +88,7 @@ function FreehandTool(){
         push();
         // if the mouse is pressed
         if (self.mode === "normal") {
-            if(mouseIsPressed){
+            if(mouseIsPressed && MOUSE_ON_CANVAS){
                 // check if they previousX and Y are -1. set them to the current
                 // mouse X and Y if they are.
                     if (previousMouseX == -1){

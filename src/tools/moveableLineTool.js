@@ -1,11 +1,20 @@
 function MoveableLineTool(){
     //set an icon and a name for the object
     this.icon = "images/moveableLine.jpg";
-    this.name = "moveableLine";
+    this.name = "Moveable Line";
     this.editMode = false;
     this.currentPoint = null;
     this.currentShape = [];
     this.mouseLocked = false;
+    this.manual = 
+        `
+        <ol>
+            <li>Click on the screen to place a vertex at the clicked location</li>
+            <li>Keep on clicking until you added the desired amount of vertices</li>
+            <li>You can swap between adding vertices, and moving vertices with the "Edit shape" button</li>
+            <li>Once you have finished adding vertices and are in Add Verticies mode click the "finishShape" button</li>
+        </ol>
+        `;
 
     var self = this
 

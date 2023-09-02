@@ -1,6 +1,13 @@
 function LineToTool() {
     this.icon = "images/lineTo.jpg";
-    this.name = "LineTo";
+    this.name = "Line-to";
+    this.manual = 
+        `
+        <ol>
+            <li>Click on the canvas to choose the starting position of the line</li>
+            <li>Drag and release to finish creating the line</li>
+        </ol>
+        `;
     let self = this;
 
     // The following values store the locations from the last frame, they start 

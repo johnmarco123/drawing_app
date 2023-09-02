@@ -1,15 +1,14 @@
 // the currently used color (mainly used by color palette);
 let CURRENT_COLOR = null; 
+
+// global variable for whether or not the mouse is on the p5.js canvas
 let MOUSE_ON_CANVAS = false;
-let global_stroke_weight = 3;
+
+let STROKE_WEIGHT = 3;
 
 // global variables that will store the toolbox color palette
 // and the helper functions
-let helpers, colorP, toolbox, undo;
-let canv;
-
-function preload() {
-}
+let helpers, colorP, toolbox, undo, canv;
 
 function setup() {
     pixelDensity(1);
@@ -21,14 +20,10 @@ function setup() {
     canv.parent("content");
 
 
-    helpers = new HelperFunctions(); // create helper functions
-
-    colorP = new ColorPalette(); // create color palette
-
-    toolbox = new Toolbox(); // create a toolbox for storing the tools
-
-    undo = new UndoManager();
-
+    helpers = new HelperFunctions();  // create helper functions
+    colorP = new ColorPalette();      // create color palette
+    toolbox = new Toolbox();          // create a toolbox for storing the tools
+    undo = new UndoManager();         // Creates a tool to allow undos and redos
 
     background(0);
     loadPixels();
@@ -60,7 +55,7 @@ function draw() {
         strokeWeight(select('#strokeSize').value());
         toolbox.selectedTool.draw();
     } else {
-        alert("it doesn't look like your tool has a draw method!");
+        alert("It doesn't look like your tool has a draw method!");
     }
 }
 
@@ -70,9 +65,9 @@ function windowResized(){
 
 function keyPressed() {
     // We only want control characters for keypressed
-    if (keyCode < 32 && toolbox.selectedTool.name == "text") {
+    if (keyCode < 32 && toolbox.selectedTool.hasOwnProperty("recieve_keystrokes")) {
         toolbox.selectedTool.recieve_keystrokes(keyCode);
-    } else {
+    } else if (toolbox.selectedTool.name != "text") {
         if (keyCode == 27) { // clear the screen with ESC when not in text mode
             background(0);
             loadPixels();
@@ -85,7 +80,7 @@ function keyTyped () {
     // We also want to disable the enter key, as we will handle 
     // this seperately
     let banned_words = ["\r", "\x7F", "|", "Enter"]
-    if (toolbox.selectedTool.name == "text") { 
+    if (toolbox.selectedTool.hasOwnProperty("recieve_keystrokes")) {
         if (!banned_words.includes(key)) {
             toolbox.selectedTool.recieve_keystrokes(key);
         }
@@ -96,9 +91,5 @@ function mouseReleased() {
     undo.add_state();
 }
 
-// prevent the user from refreshing the page using ctrl r
-window.addEventListener("keydown", function(e) {
-    if (e.key == "r" && e.ctrlKey) {
-        e.preventDefault();
-    } 
-})
+// prevent the user from refreshing the page using ctrl r as we use this for undo tool
+window.addEventListener("keydown", e => (e.key == "r" && e.ctrlKey) ? e.preventDefault : null);

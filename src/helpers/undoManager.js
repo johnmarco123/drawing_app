@@ -4,7 +4,9 @@ class UndoManager {
         this.idx = 0;
         this.ctrl_z_locked = false;
         this.ctrl_r_locked = false;
+        this.delay_between_undos = 200;
     }
+
     // every time the user lets go of left click, if there is any
     // difference between the current pixel array and the one before
     // out pointer, we save the state
@@ -45,7 +47,7 @@ class UndoManager {
         this.idx = Math.max(this.idx - 1, 0);
         this.update_canvas(this.undo_stack[this.idx]);
         // delay between ctrl-u's (undos)
-        setTimeout(() => this.ctrl_z_locked = false, 200);
+        setTimeout(() => this.ctrl_z_locked = false, this.delay_between_undos);
     }
 
 
@@ -54,6 +56,6 @@ class UndoManager {
         this.idx = Math.min(this.idx + 1, this.undo_stack.length - 1);
         this.update_canvas(this.undo_stack[this.idx]);
         // delay between ctrl-r's (redos)
-        setTimeout(() => this.ctrl_r_locked = false, 200);
+        setTimeout(() => this.ctrl_r_locked = false, this.delay_between_undos);
     }
 }

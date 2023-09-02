@@ -1,9 +1,16 @@
 function FillBucketTool(){
-    this.name = "fillBucketTool"
+    this.name = "Fill Bucket"
     this.icon = "images/fillBucket.jpg"
     this.changeColor = null;
     this.bucketMode = "speed";
     this.mouseLocked = false;
+    this.manual = 
+        `
+        <ol>
+            <li>Click in an area you would like to fill with the currently selected color</li>
+            <li>If you need more accuracy select the accuracy button</li>
+        </ol>
+        `;
     const self = this;
 
     this.draw = function() {
@@ -88,33 +95,33 @@ function FillBucketTool(){
     }
 
     // There are two modes, speedy mode and accuracy mode.
-    // Speedy mode fills 3x3 grids at a time whilst accuracy mode fills
+        // Speedy mode fills 3x3 grids at a time whilst accuracy mode fills
     // 1 pixel at a time
     function fillColor(currCoords) {
         let stack = [currCoords]; 
         let top, bot, left, right, x, y;
         let start = performance.now(); // keeping this just incase...
-        while (stack.length > 0) {
-            if (performance.now() - start > 3000) {
-                alert("INFINITE LOOP TERMINATED!!");
-                return;
-            }
-            let curr = stack.pop();
-            let n = 1; // 1 pixel at a time
-            if (self.bucketMode === "speed") {
-                color_3x3_grid(curr); // Speedy mode colors 3x3 grids
-                n = 3; // 3 pixels at a time
-            } else { 
-                color_1_pixel(curr); // Accuracy mode colors 1 pixel at a time
-            };
-            [x, y] = curr;
-            let dir = [top, bot, left, right] = [[x+n,y],[x-n,y],[x,y+n],[x,y-n]];
-            dir.forEach(x => {
-                if (sameColorAsTarget(x)) {
-                    stack.push(x);
+            while (stack.length > 0) {
+                if (performance.now() - start > 3000) {
+                    alert("INFINITE LOOP TERMINATED!!");
+                    return;
                 }
-            });
-        }
+                let curr = stack.pop();
+                let n = 1; // 1 pixel at a time
+                if (self.bucketMode === "speed") {
+                    color_3x3_grid(curr); // Speedy mode colors 3x3 grids
+                    n = 3; // 3 pixels at a time
+                } else { 
+                    color_1_pixel(curr); // Accuracy mode colors 1 pixel at a time
+                };
+                [x, y] = curr;
+                let dir = [top, bot, left, right] = [[x+n,y],[x-n,y],[x,y+n],[x,y-n]];
+                dir.forEach(x => {
+                    if (sameColorAsTarget(x)) {
+                        stack.push(x);
+                    }
+                });
+            }
         self.mouseLocked = false;
     }
 

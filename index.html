@@ -8,43 +8,44 @@
 
         <script src="src/sketch.js"></script>
 
-        <!-- add extra scripts below -->
-        <script src="src/toolbox.js"></script>
-        <script src="src/colorPalette.js"></script>
-        <script src="src/helperFunctions.js"></script>
-        <script src="src/undoManager.js"></script>
-        <script src="src/global_functions.js"></script>
-
-         <!-- the text tool -->
-        <script src="src/textTool/textTool.js"></script>
-        <script src="src/textTool/vimTextEdit.js"></script>
-        <script src="src/textTool/normalTextEdit.js"></script>
+        <!-- Helper tools -->
+        <script src="src/helpers/toolbox.js"></script>
+        <script src="src/helpers/colorPalette.js"></script>
+        <script src="src/helpers/helperFunctions.js"></script>
+        <script src="src/helpers/undoManager.js"></script>
+        <script src="src/helpers/global_functions.js"></script>
 
         <!-- Global classes -->
-        <script src="src/BoxOfLines.js"></script>
+        <script src="src/helpers/BoxOfLines.js"></script>
 
-        <script src="src/freehandTool.js"></script>
-        <script src="src/lineToTool.js"></script>
-        <script src="src/mirrorDrawTool.js"></script>
-        <script src="src/sprayCanTool.js"></script>
-        <script src="src/ellipseTool.js"></script>
-        <script src="src/rectTool.js"></script>
-        <script src="src/moveableLineTool.js"></script>
-        <script src="src/scissorsTool.js"></script>
-        <script src="src/fillBucketTool.js"></script>
-        <script src="src/graphMakerTool.js"></script>
-        <script src="src/copyTool.js"></script>
+        <!-- The text tool -->
+        <script src="src/tools/textTool/textTool.js"></script>
+        <script src="src/tools/textTool/vimTextEdit.js"></script>
+        <script src="src/tools/textTool/normalTextEdit.js"></script>
 
+        <!-- Tools -->
+        <script src="src/tools/freehandTool.js"></script>
+        <script src="src/tools/lineToTool.js"></script>
+        <script src="src/tools/mirrorDrawTool.js"></script>
+        <script src="src/tools/ellipseTool.js"></script>
+        <script src="src/tools/rectTool.js"></script>
+        <script src="src/tools/moveableLineTool.js"></script>
+        <script src="src/tools/scissorsTool.js"></script>
+        <script src="src/tools/fillBucketTool.js"></script>
+        <script src="src/tools/graphMakerTool.js"></script>
+        <script src="src/tools/copyTool.js"></script>
 
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
         <div class="wrapper">
             <div class="box header">
+                <button id="dropDown">=</button>
                 John's Drawing App
                 <button id="clearButton">Clear</button>
                 <button id="saveImageButton">Save Image</button>
                 <button id="fullscreen">Fullscreen</button>
+                <button id="tool-help">Tool Help</button>
             </div>
             <div id="content"></div>
             <div class="box" id="sidebar"></div>
