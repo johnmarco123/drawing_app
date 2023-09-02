@@ -58,4 +58,10 @@ function HelperFunctions() {
     select("#tool-help").mouseClicked(() => {
         toolbox.swap_manual()
     })
+
+    select("#Keybindings").mouseClicked(() => {
+        toolbox.show_keybindings()
+    })
+
+
 }

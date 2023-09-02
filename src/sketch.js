@@ -29,10 +29,9 @@ function setup() {
     background(0);
     loadPixels();
 
-    //recovered_canvas = getItem("saved_canvas");
 
     // add the tools to the toolbox.
-        toolbox.addTools([
+        toolbox.addTools(
             FreehandTool,
             LineToTool,
             CopyTool,
@@ -44,7 +43,7 @@ function setup() {
             MirrorDrawTool,
             RectTool,
             EllipseTool,
-        ]);
+        );
     recover_canvas(); // recovers canvas from previous sessions if possible
 }
 
@@ -63,15 +62,14 @@ function draw() {
     }
     
 
-    if (frameCount % 60 == 0) { // save the current canvas every second
-        console.log(`saved to local storage`);
+    if (frameCount % 60 == 0) { // save the current canvas to local storage every second
         save_to_local_storage();
     }
 }
 
 function recover_canvas() {
     let data = getItem("saved_canvas");
-    loadImage(data, function(img) {
+    loadImage(data, (img) => {
         image(img, 0, 0, width, height);
         loadPixels();
     })
@@ -82,7 +80,11 @@ function save_to_local_storage() {
 }
 
 function windowResized(){
+    let old_canvas = get(0, 0, canv.width, canv.height);
     resizeCanvas(windowWidth, windowHeight);
+    background(0);
+    image(old_canvas, 0, 0, width, height);
+    loadPixels();
 }
 
 function keyPressed() {
@@ -98,8 +100,8 @@ function keyPressed() {
 }
 
 function keyTyped () {
-    // All ascii chracters we want from key typed.
-        // We also want to disable the enter key, as we will handle 
+    // All ascii chracters we want from key typed
+    // We also want to disable the enter key, as we will handle 
     // this seperately
     let banned_words = ["\r", "\x7F", "|", "Enter"]
     if (toolbox.selectedTool.hasOwnProperty("recieve_keystrokes")) {

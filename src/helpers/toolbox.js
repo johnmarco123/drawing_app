@@ -10,6 +10,8 @@ function Toolbox() {
     this.fade_time = 5;
     let self = this;
 
+    const escape_button = `<button onclick="toolbox.hide_manual()">X</button>`
+
     function toolbarItemClick() {
         // remove any existing borders
         var items = selectAll(".sideBarItem");
@@ -36,7 +38,7 @@ function Toolbox() {
     };
 
     // add a tool to the tools array
-    this.addTool = tool => {
+    function add_tool (tool) {
         //check that the object tool has an icon and a name
         if (!tool.hasOwnProperty("icon") ||
             !tool.hasOwnProperty("name") ||
@@ -44,19 +46,19 @@ function Toolbox() {
 
             alert("make sure your tool has a name an icon and a manual!");
         }
-        this.tools.push(tool);
+        self.tools.push(tool);
         addToolIcon(tool.icon, tool.name);
         // if no tool is selected (ie. none have been added so far)
-        // make this tool the selected one.
-            if (!this.selectedTool) {
-                this.selectTool(tool.name);
+        // make self tool the selected one.
+            if (!self.selectedTool) {
+                self.selectTool(tool.name);
             }
     };
 
-    // add an array of tools to the toolbox
-    this.addTools = (tools) => {
+    // adds 1 - n tools to the toolbox
+    this.addTools = (...tools) => {
         for (let tool of tools) {
-            self.addTool(new tool()); 
+            add_tool(new tool()); 
         }
     }
 
@@ -88,18 +90,19 @@ function Toolbox() {
         self.manual = createDiv()
         self.manual.id("manual");
         self.manual.html(`
-        <ol>
-            <li>Welcome to my drawing program! </li>
-            <li>If you need help using a tool, click on that tool whilst you see this clipboard.</li>
-            <li>You can toggle the visibility of this clipboard by clicking the "Tool Help" button</li>
-            <li>Enjoy using the program!</li>
-        </ol>
+            ${escape_button}
+            <ol>
+                <li>Welcome to my drawing program! </li>
+                <li>If you need help using a tool, click on that tool whilst you see this clipboard.</li>
+                <li>You can toggle the visibility of this clipboard by clicking the "Tool Help" button</li>
+                <li>Enjoy using the program!</li>
+            </ol>
             `);
     }
     initialize_manual();
 
     /// updates the contents of the manual to match the selected tool
-    function update_manual_contents() {
+    function update_manual_contents(contents) {
         if (self.transitioning) return;
         self.transitioning = true;
         let fading_in = false;
@@ -113,10 +116,15 @@ function Toolbox() {
 
             if (a <= 0 && !fading_in) {
                 fading_in = true;
-                self.manual.html(`
-                    <h2>${self.selectedTool.name} tool </h2>
-                    <p>${self.selectedTool.manual}</p>
-                    `);
+                if (contents) {
+                    self.manual.html(contents);
+                } else {
+                    self.manual.html(`
+                        ${escape_button}
+                        <h2>${self.selectedTool.name} tool </h2>
+                        <p>${self.selectedTool.manual}</p>
+                        `);
+                }
                 x *= -1;
 
             } else if (fading_in && a >= 0.99) {
@@ -127,49 +135,72 @@ function Toolbox() {
                 self.manual.style("color", `rgba(${r}, ${g}, ${b}, ${+a + x})`);
             }
         }, self.fade_time);
-}
-
-// toggles between hiding and showing the manual
-this.swap_manual = () => {
-    if (!self.visible) {
-        display_manual();
-        self.visible = true;
-    } else {
-        hide_manual();
-        self.visible = false;
     }
-}
 
-// displays the manual for the selected tool
-function display_manual() {
-    self.manual.html(`
-        <h2>${self.selectedTool.name} tool </h2>
-        <p>${self.selectedTool.manual}</p>
-        `);
-    self.manual.style("display", "block");
-    let opacity_timer = setInterval(() => {
-        let curr = self.manual.style("opacity");
-       if (curr >= 0.9) {
-            clearInterval(opacity_timer);
+    // toggles between hiding and showing the manual
+    this.swap_manual = () => {
+        if (!self.visible) {
+            self.display_manual();
         } else {
-            self.manual.style("opacity", Number(curr) + 0.01);
+            self.hide_manual();
         }
+    }
 
-    }, self.fade_time);
-
-}
-
-// hides the manual for the selected tool
-function hide_manual() {
-    let opacity_timer = setInterval(() => {
-        let curr = self.manual.style("opacity");
-        if (curr <= 0) {
-            self.manual.style("display", "none");
-            clearInterval(opacity_timer);
+    // displays the manual for the selected tool
+    this.display_manual = (contents) => {
+        self.visible = true;
+        if (contents) {
+            self.manual.html(contents);
         } else {
-            self.manual.style("opacity", Number(curr) - 0.01);
+            self.manual.html(`
+                ${escape_button}
+                <h2>${self.selectedTool.name} tool </h2>
+                <p>${self.selectedTool.manual}</p>
+                `);
         }
+        self.manual.style("display", "block");
+        let opacity_timer = setInterval(() => {
+            let curr = self.manual.style("opacity");
+            if (curr >= 0.9) {
+                clearInterval(opacity_timer);
+            } else {
+                self.manual.style("opacity", Number(curr) + 0.01);
+            }
 
-    }, self.fade_time);
-}
+        }, self.fade_time);
+
+    }
+
+    // hides the manual for the selected tool
+    this.hide_manual = () => {
+        self.visible = false;
+        let opacity_timer = setInterval(() => {
+            let curr = self.manual.style("opacity");
+            if (curr <= 0) {
+                self.manual.style("display", "none");
+                clearInterval(opacity_timer);
+            } else {
+                self.manual.style("opacity", Number(curr) - 0.01);
+            }
+
+        }, self.fade_time);
+    }
+
+    this.show_keybindings = () => {
+        if (self.transitioning) return;
+        let contents = 
+            `
+        ${escape_button}
+            <h2>Keybindings</h2>
+            <ul>
+                <li>Ctrl + Z: Undo</li>   
+                <li>Ctrl + R: Redo</li>
+            </ul>
+            `;
+        if (self.visible) {
+            update_manual_contents(contents);
+        } else {
+            self.display_manual(contents);
+        }
+    }
 }

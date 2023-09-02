@@ -133,14 +133,25 @@ button:hover {
     width: 400px;
     height: 400px;
     border-radius: 5%;
+    box-shadow: 3px 3px 0 0 #503F2D;
 }
 
 
 #manual ol {
+    padding-top: 25px;
     text-align: left;
 }
 
 #manual ol li {
+    margin: 10px;
+}
+
+#manual ul {
+    padding-top: 25px;
+    text-align: left;
+}
+
+#manual ul li {
     margin: 10px;
 }
 
@@ -149,4 +160,19 @@ button:hover {
     text-align: left;
 }
 
+/* Escape button on the manual */
+#manual button {
+    top: 15px;
+    color: #F00;
+    background: #FFF;
+    position: absolute;
+    left: 0px;
+    width: 30px;
+    height: 30px;
+    transition: 0.3s;
+}
 
+#manual button:hover {
+    background: #F00;
+    color: #FFF;
+}

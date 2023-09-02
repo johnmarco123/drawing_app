@@ -10,7 +10,7 @@ function CopyTool(){
             <li>Click and drag to select an area to copy</li>
             <li>Release the mouse to copy the selected area</li>
             <li>Click within the copied area and drag to move it</li>
-            <li>Click outside of the copy area to place it<li>
+            <li>Click outside of the copy area to place it</li>
         </ol>
         `;
     let self = this;
