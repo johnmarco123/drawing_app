@@ -9,12 +9,13 @@ let STROKE_WEIGHT = 3;
 // global variables that will store the toolbox color palette
 // and the helper functions
 let helpers, colorP, toolbox, undo, canv;
+let recovered_canvas = null;
 
 function setup() {
     pixelDensity(1);
     // is the side bar and bottom menu hidden
-    canvasContainer = select('#content'); // create canvas to fill content  div from index.html
 
+    const canvasContainer = select('#content'); // create canvas to fill content  div from index.html
     canv = createCanvas(canvasContainer.size().width, canvasContainer.size().height);
     canv.id("p5Canvas");
     canv.parent("content");
@@ -27,6 +28,8 @@ function setup() {
 
     background(0);
     loadPixels();
+
+    //recovered_canvas = getItem("saved_canvas");
 
     // add the tools to the toolbox.
         toolbox.addTools([
@@ -42,6 +45,7 @@ function setup() {
             RectTool,
             EllipseTool,
         ]);
+    recover_canvas(); // recovers canvas from previous sessions if possible
 }
 
 function draw() {
@@ -57,6 +61,24 @@ function draw() {
     } else {
         alert("It doesn't look like your tool has a draw method!");
     }
+    
+
+    if (frameCount % 60 == 0) { // save the current canvas every second
+        console.log(`saved to local storage`);
+        save_to_local_storage();
+    }
+}
+
+function recover_canvas() {
+    let data = getItem("saved_canvas");
+    loadImage(data, function(img) {
+        image(img, 0, 0, width, height);
+        loadPixels();
+    })
+}
+
+function save_to_local_storage() {
+    storeItem("saved_canvas", canv.elt.toDataURL());
 }
 
 function windowResized(){
@@ -77,7 +99,7 @@ function keyPressed() {
 
 function keyTyped () {
     // All ascii chracters we want from key typed.
-    // We also want to disable the enter key, as we will handle 
+        // We also want to disable the enter key, as we will handle 
     // this seperately
     let banned_words = ["\r", "\x7F", "|", "Enter"]
     if (toolbox.selectedTool.hasOwnProperty("recieve_keystrokes")) {

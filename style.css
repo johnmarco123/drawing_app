@@ -135,13 +135,18 @@ button:hover {
     border-radius: 5%;
 }
 
+
 #manual ol {
     text-align: left;
 }
 
 #manual ol li {
-    margin-bottom: 10px;
-    margin-right: 10px;
+    margin: 10px;
+}
+
+#manual p {
+    margin: 25px;
+    text-align: left;
 }
 
 

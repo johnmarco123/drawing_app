@@ -5,7 +5,7 @@ function Toolbox() {
     this.tools = [];
     this.selectedTool = null;
     this.transitioning = false;
-    this.visible = false;
+    this.visible = true;
     this.manual = null;
     this.fade_time = 5;
     let self = this;
@@ -87,8 +87,14 @@ function Toolbox() {
     function initialize_manual() {
         self.manual = createDiv()
         self.manual.id("manual");
-        self.manual.style("opacity", "0");
-        self.manual.style("display", "none");
+        self.manual.html(`
+        <ol>
+            <li>Welcome to my drawing program! </li>
+            <li>If you need help using a tool, click on that tool whilst you see this clipboard.</li>
+            <li>You can toggle the visibility of this clipboard by clicking the "Tool Help" button</li>
+            <li>Enjoy using the program!</li>
+        </ol>
+            `);
     }
     initialize_manual();
 
