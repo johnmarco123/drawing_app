@@ -13,7 +13,6 @@
         <script src="src/helpers/colorPalette.js"></script>
         <script src="src/helpers/helperFunctions.js"></script>
         <script src="src/helpers/undoManager.js"></script>
-        <script src="src/helpers/global_functions.js"></script>
 
         <!-- Global classes -->
         <script src="src/helpers/BoxOfLines.js"></script>
@@ -24,6 +23,7 @@
         <script src="src/tools/textTool/normalTextEdit.js"></script>
 
         <!-- Tools -->
+        <script src="src/tools/star.js"></script>
         <script src="src/tools/freehandTool.js"></script>
         <script src="src/tools/lineToTool.js"></script>
         <script src="src/tools/mirrorDrawTool.js"></script>
@@ -33,25 +33,86 @@
         <script src="src/tools/scissorsTool.js"></script>
         <script src="src/tools/fillBucketTool.js"></script>
         <script src="src/tools/graphMakerTool.js"></script>
-        <script src="src/tools/copyTool.js"></script>
+        <script src="src/tools/selectTool.js"></script>
+        <script src="src/tools/sprayCanTool.js"></script>
 
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
-    <body>
+    <!--<body>
         <div class="wrapper">
             <div class="box header">
                 <button id="dropDown">=</button>
-                John's Drawing App
+                Drawing App
                 <button id="clearButton">Clear</button>
                 <button id="saveImageButton">Save Image</button>
                 <button id="fullscreen">Fullscreen</button>
                 <button id="tool-help">Tool Help</button>
                 <button id="Keybindings">Key Bindings</button>
+                <button class="undo-manager" id="undo">Undo</button>
+                <button class="undo-manager" id="redo">Redo</button>
+
+                <div class="dropdown">
+                    <button class="dropbtn">Dropdown</button>
+                    <div class="dropdown-content">
+                        <button>Redo</button>
+                        <button>Redo</button>
+                        <button>Redo</button>
+                        <button>Redo</button>
+                    </div>
+                </div>
             </div>
+
             <div id="content"></div>
             <div class="box" id="sidebar"></div>
             <div class="box colorPalette">
-                   <input type="color" id="color-picker" value="#0000ff">
+                <input type="color" id="color-picker" value="#ff0000">
+            </div>
+            <div class="box options">
+                Stroke weight:
+                <input type='range'
+                min='3'
+                max='15'
+                value='3'
+                class='slider'
+                id='strokeSize'>
+                <div class="tempOptions"></div>
+            </div>
+        </div>
+    </body> -->
+    <body>
+        <div class="wrapper">
+            <div class="box header">
+                <!--big screen dropdown-->
+                <button id="dropDown">=</button>
+                Drawing App
+                <button class="menu-items clearButton">Clear</button>
+                <button class="menu-items saveImageButton">Save Image</button>
+                <button class="menu-items fullscreen">Fullscreen</button>
+                <button class="menu-items tool-help">Tool Help</button>
+                <button class="menu-items Keybindings">Key Bindings</button>
+                <button class="menu-items undo undo-manager">Undo</button>
+                <button class="menu-items redo undo-manager">Redo</button>
+
+                <!--small screen dropdown-->
+                <div class="dropDown">
+                    <button class="dropbtn">Dropdown</button>
+                    <div class="dropdown-content">
+                        <button class="clearButton">Clear</button>
+                        <button class="saveImageButton">Save Image</button>
+                        <button class="fullscreen">Fullscreen</button>
+                        <button class="tool-help">Tool Help</button>
+                        <button class="Keybindings">Key Bindings</button>
+                        <button class="undo undo-manager">Undo</button>
+                        <button class="redo undo-manager">Redo</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="content"></div>
+            <div class="box" id="sidebar"></div>
+            <div class="box colorPalette">
+                <input type="color" id="color-picker" value="#ff0000">
             </div>
             <div class="box options">
                 Stroke weight:

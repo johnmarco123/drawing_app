@@ -1,88 +1,73 @@
-// All functions in here edit a text string based on a given keystroke
+// a mode similar to vim with most of the essential vim macros.
 class VimEdit {
-    constructor(data) {
-        // modes are normal, visual, insert, command mode is ambitious
-        this.mode = "NORMAL";
-        this.state = data;
-        this.num_multiplier = "1";
-        this.prefix = ""; // such as d for delete, y for yank, etc;
-        this.last_searched_char = null;
-        this.last_search_prefix = "";
-        this.cursor = 
-            {
-                idx: -1, // The idx in the txt array
-                width: 4, 
-                x: null, 
-                y: null,
-                row: 1,
-                col: 1,
-                height: this.state.txt_size * 1.15,
-                color: [57, 255, 20],
-                opacity: 255,
-            }
+    constructor(data, cursor) {
+        // modes are normal, insert, command mode is ambitious
+        this.mode = "NORMAL";          // the current mode (NORMAL or INSERT)
+        this.state = data;             // the state from textTool.js
+        this.numMultiplier = "1";      // the current multiplier for repeating actions
+        // prefix for actions such as w (moves a word) can be prepended by d
+        // (which which means delete) and we will therefore delete the next
+        // word
+        this.prefix = "";              
+        // the last character that was searched for using the vim "f" command
+        this.lastSearchedChar = null; 
+        // the last search prefix can be (t, T, f, F) which determine direction
+        // of the search
+        this.lastSearchPrefix = "";
+        // all the cursor data from textTool.js
+        this.cursor = cursor
     }
 
+    // the main draw function for this function that calls everything neccacary
+    // except for keys.
     draw() {
+        // only allow the draw loop if we are in the typing state
         if (this.state.typing) {
             push();
-            this.render_cursor();
-            noStroke();
-            textSize(35);
-            text(this.mode, 50, 50);
-            pop();
-        }
-    }
 
-    // Controls the positioning of the cursor
-    render_cursor() {
-        if (this.cursor.idx == -1) { // if cursor isn't yet set
-            this.cursor.idx = this.state.txt.length;
-        } else {
-            push()
-            noStroke();
-            if (this.mode === "INSERT") {
-                this.cursor.width = 4;
-                this.cursor.opacity = 255;
-            } else if (this.mode === "NORMAL") {
+            if (this.mode == "NORMAL") { 
                 this.cursor.width = 12;
                 this.cursor.opacity = 150;
+            } else if (this.mode == "INSERT") {
+                this.cursor.width = 4;
+                this.cursor.opacity = 255;
             }
 
-            fill([...this.cursor.color, this.cursor.opacity]);
-
-            this.cursor.height = this.state.txt_size * 1.15;
-            this.cursor.x = (
-                this.state.txt_pos.x + 
-                (this.state.txt_size * 0.55) * 
-                this.cursor.col - 15);
-
-            this.cursor.y = (this.state.txt_pos.y -
-                this.state.txt_size * 0.9 + ((this.cursor.row - 1) * 31.3));
-
-            rect(this.cursor.x,
-                this.cursor.y,
-                this.cursor.width,
-                this.cursor.height);
+            noStroke();
+            textSize(35);
+            text(this.mode, 50, 50); // displays the current mode we are in
             pop();
         }
     }
 
-    insert_mode(key) {
+    // allows pasting into the text box
+    paste(data) {
+        this.state.txt.splice(this.cursor.idx + 1, 0, ...data);
+    }
+
+
+    // handles all key inputs we need for insert mode
+    insertMode(key) {
         if (typeof key == "number") { // command keys
             if (key == 27) { // ESC
                 this.mode = "NORMAL"; 
-                this.move_one_char("left");
+                this.moveOneChar("left");
+
+            } else if (key == 13) { // enter
+                this.addText("\n"); 
+
+            } else if (key == 8) { // backspace
+                this.delete(this.cursor.idx - 1, 1); 
+
             }
-            else if (key == 13) this.add_text("\n"); // enter
-            else if (key == 8) this.delete(this.cursor.idx - 1, 1); // backspace
-            // else alert("Unregistered control key: " + key);
         } else { // Non command keys
-            this.add_text(key);
+            this.addText(key);
         }
     }
 
-    first_char_on_line_idx(idx) {
-        let txt = this.state.txt;
+    // returns the index of the first character on the current "idx's" line
+    firstCharOnLineIdx(idx) {
+        const txt = this.state.txt;
         let i = idx;
         while (i > 0) {
             if (txt[i - 1] == "\n") {
@@ -93,7 +78,8 @@ class VimEdit {
         return i;
     }
 
-    last_char_on_line_idx(idx) {
+    // returns the index of the last character on the current "idx's" line
+    lastCharOnLineIdx(idx) {
         let txt = this.state.txt;
         let i = idx;
         while (i < txt.length - 1) { 
@@ -103,331 +89,416 @@ class VimEdit {
         return i;
     }
 
-    find_char(char, direction) {
-        let txt = this.state.txt;
+    // this function is used for searching for a character forward or backward
+    // given a char and a direction it will search in the given direction
+    // for that char.
+    findChar(char, direction) {
+        const txt = this.state.txt;
         let i = this.cursor.idx;
         if (direction == "forward") {
             i++; // skip current occurance incase if on the same char
             while (i < txt.length) {
                 let curr = txt[i];
-                if (curr == "\n") return -1;
-                if (curr == char) break;
+                if (curr == "\n") {
+                    return -1;
+                } else if (curr == char) {
+                    break;
+                }
                 i++;
             }
         } else if (direction == "backward") {
             i--; 
             while (i >= 0) {
                 let curr = txt[i];
-                if (curr == char) break;
-                if (curr == "\n" || i == 0) return -1;
+                if (curr == char) {
+                    break;
+                } else if (curr == "\n" || i == 0) {
+                    return -1;
+                }
                 i--;
             }
         }
         return i;
     }
 
-    adj_char_is(char) {
+    // returns whether the adjacent character in either direction is equal to 
+    // the current char
+    adjCharIs(char) {
         return this.state.txt[this.cursor.idx + 1] == char || 
                this.state.txt[this.cursor.idx - 1] == char;
     }
 
-    handle_searching(char, prefix) {
+    // calls the appropriate functions for finding a char given the char and
+    // the prefix
+    handleSearching(char, prefix) {
         let add = 0;
         let direction = "forward"
         if (prefix == "F") {
             direction = "backward";
         } else if (prefix == "T") {
-            if (this.adj_char_is(char)) {
-                this.move_one_char("left");
+            if (this.adjCharIs(char)) {
+                this.moveOneChar("left");
             }
             direction = "backward";
             add = 1;
         } else if (prefix == "t") {
-            if (this.adj_char_is(char)) {
-                this.move_one_char("right");
+            if (this.adjCharIs(char)) {
+                this.moveOneChar("right");
             }
             add = -1;
         } 
-        let idx = this.find_char(char, direction);
+        let idx = this.findChar(char, direction);
         if (idx != -1) {
-            this.find_location_and("move", ...this.get_row_col(idx + add));
+            this.findLocationAnd("move", ...this.getRowCol(idx + add));
         } else {
         }
     }
 
-    repeat_last_search(str) {
+    // repeat the last search that was done on the same char that was searched
+    // for
+    repeatLastSearch(str) {
         if (str == "reversed") {
-            let new_prefix = this.invert_capitalization(this.last_search_prefix);
-            this.handle_searching(this.last_searched_char, new_prefix);
+            let newPrefix = this.invertCapitalization(this.lastSearchPrefix);
+            this.handleSearching(this.lastSearchedChar, newPrefix);
         } else {
-            this.handle_searching(this.last_searched_char, this.last_search_prefix);
+            this.handleSearching(this.lastSearchedChar, this.lastSearchPrefix);
         }
     }
 
     // simply just switches from uppercase to lowercase or lowercase to uppercase
-    invert_capitalization(char) {
+    invertCapitalization(char) {
         return String.fromCharCode(char.charCodeAt() ^ 32);
     }
 
-    capitalize_char(idx) {
-        let char = this.state.txt[idx] 
-        return this.invert_capitalization(char);
+    // inverts capitalization at the given index
+    capitalizeChar(idx) {
+        const char = this.state.txt[idx] 
+        return this.invertCapitalization(char);
     }
 
-    normal_mode(key) {
+    // handles all keystrokes for normal mode
+    normalMode(key) {
         if (typeof key == "string" && key >= 0) { 
-            this.num_multiplier += String(key);
+            this.numMultiplier += String(key);
         } else {
-            if (this.prefix == "r") {
+            if (this.prefix == "r") { // prefix for changing the char currently under the cursor
                 this.state.txt[this.cursor.idx] = key;
                 this.prefix = "";
                 return;
             }
+            // prefixes for searching allows searching for the next typed char
             if (this.prefix == "f" || this.prefix == "t" || this.prefix == "F" || this.prefix == "T") {
-                let prefix = this.prefix; // save prefix before deleting it
-                console.log(prefix);
-                this.last_search_prefix = prefix; // we set the last search prefix
-                this.prefix = ""; // now that we have searched the prefix has been consumed
-                this.last_searched_char = key; // we remember the last searched for char
-                this.handle_searching(key, prefix);
+                let prefix = this.prefix;          // save prefix before deleting it
+                this.lastSearchPrefix = prefix;    // we set the last search prefix
+                this.prefix = "";                  // now that we have searched the prefix has been consumed
+                this.lastSearchedChar = key;       // we remember the last searched for char
+                this.handleSearching(key, prefix);
                 return;
             }
-            this.num_multiplier = Math.min(this.num_multiplier, 100);
-            let amt = this.num_multiplier || 1;
+            //
+            // we dont allow multipliers over 100 as it may break the program
+            this.numMultiplier = Math.min(this.numMultiplier, 100);
+            const amt = this.numMultiplier || 1; // the current amount of times we will perform the given action
             for (let i = 0; i < Number(amt); i++) { 
-                // Entering insert mode
-                if (key == "i") this.mode = "INSERT";
-                else if (key == "I") {
-                    let idx = this.first_char_on_line_idx(this.cursor.idx);
-                    let [row, col] = this.get_row_col(idx);
-                    this.find_location_and("move", row, col);
+                // ********************
+                // ENTERING INSERT MODE
+                // ********************
+                if (key == "i") { // enters insert mode to the left of the cursor
                     this.mode = "INSERT";
-                }
 
-                else if (key == "a") {
+                } else if (key == "I") { // enters insert mode at the first char of the current line
+                    let idx = this.firstCharOnLineIdx(this.cursor.idx);
+                    let [row, col] = this.getRowCol(idx);
+                    this.findLocationAnd("move", row, col);
                     this.mode = "INSERT";
-                    this.move_one_char("right");
-                } else if (key == "A") {
-                    let idx = this.last_char_on_line_idx(this.cursor.idx);
-                    let [row, col] = this.get_row_col(idx);
-                    this.find_location_and("move", row, col + 1);
+
+                } else if (key == "a") { // enters insert mode to the right of the cursor
+                    this.mode = "INSERT";
+                    this.moveOneChar("right");
+
+                } else if (key == "A") { // enters insert mode after the last char on the current line
+                    let idx = this.lastCharOnLineIdx(this.cursor.idx);
+                    let [row, col] = this.getRowCol(idx);
+                    this.findLocationAnd("move", row, col + 1);
                     this.mode = "INSERT"; 
                 }
 
-                else if (key == "v") this.mode = "VISUAL";
+                // ************************
+                // SEARCHING FOR CHARACTERS
+                // ************************
 
-                // SEARCHING
-                else if (key == "f") this.prefix = "f";
-                else if (key == "F") this.prefix = "F";
-                else if (key == "t") this.prefix = "t";
-                else if (key == "T") this.prefix = "T";
-                else if (key == ";" && this.last_searched_char) {
-                    this.repeat_last_search();
-                } else if (key == "," && this.last_searched_char) {
-                    this.repeat_last_search("reversed");
+                else if (key == "f") {
+                    this.prefix = "f";
+
+                } else if (key == "F") {
+                    this.prefix = "F";
+
+                } else if (key == "t") {
+                    this.prefix = "t";
+
+                } else if (key == "T") {
+                    this.prefix = "T";
+
+                } else if (key == ";" && this.lastSearchedChar) { // repeats the last search
+                    this.repeatLastSearch();
+
+                // repeats the last search inversed, so if we searched forwards
+                    // this will search backwards
+                } else if (key == "," && this.lastSearchedChar) { 
+                    this.repeatLastSearch("reversed");
                 }
-                // REPLACING
+
+
+                // ********************
+                // REPLACING CHARACTERS
+                // ********************
                 else if (key == "r") {
                     this.prefix = "r";
                 }
 
+
+                // *************************
                 // MOVING ONE CHAR AT A TIME
-                else if (key == "h") this.move_one_char("left");
-                else if (key == "j") this.move_one_char("down");
-                else if (key == "k") this.move_one_char("up");
-                else if (key == "l") this.move_one_char("right");
+                // *************************
+                else if (key == "h") {
+                    this.moveOneChar("left");
 
+                } else if (key == "j") {
+                    this.moveOneChar("down");
 
-                // CAPITALIZATION
-                else if (key == "~") {
-                    this.capitalize_char(this.cursor.idx);
-                    this.move_one_char("right");
+                } else if (key == "k") {
+                    this.moveOneChar("up");
+
+                } else if (key == "l") {
+                    this.moveOneChar("right");
                 }
 
-                // MOVING TO START OR END OF LINE
+                // ***********************
+                // CAPITALIZING CHARACTERS
+                // ***********************
+                else if (key == "~") { // inverts capitalization
+                    const invertedChar = this.capitalizeChar(this.cursor.idx);
+                    this.state.txt[this.cursor.idx] = invertedChar
+                    this.moveOneChar("right");
+                }
+
+                // **********************************************
+                // MOVING TO THE START OR END OF THE CURRENT LINE
+                // **********************************************
                 else if (key == "^") {
-                    let idx = this.first_char_on_line_idx(this.cursor.idx);
-                    let [row, col] = this.get_row_col(idx);
-                    this.find_location_and("move", row, col);
+                    let idx = this.firstCharOnLineIdx(this.cursor.idx);
+                    let [row, col] = this.getRowCol(idx);
+                    this.findLocationAnd("move", row, col);
                 } else if (key == "$") {
-                    let idx = this.last_char_on_line_idx(this.cursor.idx);
-                    let [row, col] = this.get_row_col(idx);
-                    this.find_location_and("move", row, col);
+                    let idx = this.lastCharOnLineIdx(this.cursor.idx);
+                    let [row, col] = this.getRowCol(idx);
+                    this.findLocationAnd("move", row, col);
                 }
 
-                // TODO REMOVE REPEATED CODE!
-                    else if (key == "w") {
-                        let idx = this.idx_of_next_word_at("right", "start");
+                // **************************************
+                // MOVING AND DELETING ONE WORD AT A TIME
+                // **************************************
+
+                // moves one word forward at a time ending at the first char of
+                // the next word
+                    else if (key == "w") { 
+                        let idx = this.idxOfNextWordAt("right", "start");
+                        // if the prefix is d, we delete it rather then move to
+                        // it
                         if (this.prefix == "d") {
                             this.delete(this.cursor.idx, idx - this.cursor.idx);
                             this.prefix = "";
                         } else if (this.prefix == "") {
-                            this.find_location_and("move", ...this.get_row_col(idx));
+                            this.findLocationAnd("move", ...this.getRowCol(idx));
                         }
 
+                    // moves one word forward at a time ending at the last char
+                    // of the next word
                     } else if (key == "e") {
-                        let idx = this.idx_of_next_word_at("right", "end");
+                        let idx = this.idxOfNextWordAt("right", "end");
+                        // if the prefix is d, we delete it rather then move to
+                        // it
                         if (this.prefix == "d") {
                             this.delete(this.cursor.idx, idx - this.cursor.idx);
                             this.prefix = "";
                         } else if (this.prefix == "") {
-                            this.find_location_and("move", ...this.get_row_col(idx));
+                            this.findLocationAnd("move", ...this.getRowCol(idx));
                         }
 
+                    // moves one word backwards at a time and stops at the
+                    // first char of the word
                     } else if (key == "b") {
-                        let idx = this.idx_of_next_word_at("left", "start");
+                        let idx = this.idxOfNextWordAt("left", "start");
+                        // if the prefix is d, we delete it rather then move to
+                        // it
                         if (this.prefix == "d") {
                             this.delete(idx, this.cursor.idx - idx);
                             this.prefix = "";
-                            this.find_location_and("move", ...this.get_row_col(idx));
+                            this.findLocationAnd("move", ...this.getRowCol(idx));
                         } else if (this.prefix == "") {
-                            this.find_location_and("move", ...this.get_row_col(idx));
+                            this.findLocationAnd("move", ...this.getRowCol(idx));
                         }
                     }
 
-                // Deleting
+                // ***************************
+                // DELETING ONE CHAR AT A TIME
+                // ***************************
                 else if (key == "x") {
-                    let end_of_line_idx = this.last_char_on_line_idx(this.cursor.idx);
+                    let endOfLineIdx = this.lastCharOnLineIdx(this.cursor.idx);
                     this.delete(this.cursor.idx, 1);
-                    if (end_of_line_idx == this.cursor.idx) {
-                        this.move_one_char("left");
+                    if (endOfLineIdx == this.cursor.idx) {
+                        this.moveOneChar("left");
                     }
 
                 }
+
+                // *****************
+                // DELETION PREFIXES
+                // *****************
                 else if (key == "d") {
                     this.prefix = "d";
                 } else if (key == "D") {
-                    let idx = this.last_char_on_line_idx(this.cursor.idx);
+                    let idx = this.lastCharOnLineIdx(this.cursor.idx);
                     this.delete(this.cursor.idx, idx - this.cursor.idx);
                 } 
 
-                // Inserting lines
+                // ***********************************************
+                // INSERTING LINES BELOW OR ABOVE THE CURRENT LINE
+                // ***********************************************
                 else if (key == "o") {
-                    this.insert_line("below")
+                    this.insertLine("below")
                     this.mode = "INSERT"
                 }
                 else if (key == "O") {
-                    this.insert_line("above")
+                    this.insertLine("above")
                     this.mode = "INSERT"
                 }
 
             }
-            this.num_multiplier = "";
+            // after each call in normal mode we reset the number multiplier
+            this.numMultiplier = "";
         }
     }
 
-    visual_mode(key) {
-        if (key === 27) this.mode = "NORMAL";
-    }
-
-    insert_line(option) {
-        let txt = this.state.txt;
+    // inserts lines above or below the current cursor line position
+    insertLine(option) {
+        const txt = this.state.txt;
         if (option == "below") {
-            if (this.on_last_row()) {
+            if (this.onLastRow()) {
                 txt.push("\n")
-                this.move_one_char("down");
+                this.moveOneChar("down");
             } else {
                 for (let i = this.cursor.idx; i < txt.length; i++) {
-                    let c = txt[i];
+                    const c = txt[i];
                     if (c == "\n") {
-                        this.move_cursor_to(...this.get_row_col(i));
+                        this.moveCursorTo(...this.getRowCol(i));
                         break;
                     }
                 }
-                this.add_text("\n");
+                this.addText("\n");
             }
         } else if (option == "above") {
-            if (this.on_top_row()) {
+            if (this.onTopRow()) {
                 this.state.txt.unshift("\n");
-                this.move_one_char("left");
+                this.moveOneChar("left");
             } else {
-                this.move_one_char("up");
-                this.insert_line("below");
+                this.moveOneChar("up");
+                this.insertLine("below");
             }
         }
     }
 
-    move_one_char(dir) {
+    // moves one character up, down, left or right
+    moveOneChar(dir) {
         let [idx, row, col] = [this.cursor.idx, this.cursor.row, this.cursor.col];
         if (dir == "left" && col > 1) {
-            this.move_cursor_to(row, col - 1);
+            this.moveCursorTo(row, col - 1);
 
         } else if (dir == "right") {
             if (this.mode == "NORMAL" && idx < this.state.txt.length - 1) {
-                this.move_cursor_to(row, col + 1);
+                this.moveCursorTo(row, col + 1);
             } else if (this.mode == "INSERT" && idx < this.state.txt.length) {
-                this.move_cursor_to(row, col + 1);
+                this.moveCursorTo(row, col + 1);
             }
 
         } else if (dir == "up" && row > 1) {
-            this.move_cursor_to(row - 1, col);
+            this.moveCursorTo(row - 1, col);
 
-        } else if (dir == "down" && !this.on_last_row()) {
-            this.move_cursor_to(row + 1, col);
+        } else if (dir == "down" && !this.onLastRow()) {
+            this.moveCursorTo(row + 1, col);
 
         } 
     }
 
-    get_row_col(idx) {
+    // given an index, returns the row and column that this index is on
+     getRowCol(idx) {
         let txt = this.state.txt;
         let row = 1; let col = 1;
         for (let i = 0; i < txt.length; i++) {
-            if (i == idx) return [row, col];
-            if (txt[i] == "\n") {row++; col = 1}
+            if (i == idx) {
+                return [row, col];
+            } else if (txt[i] == "\n") {
+                row++;
+                col = 1;
+            }
             else col++;
         }
+         // if we rreach here we want to throw an error so that we know we went
+         // out of bounds and so we stop the execution of the function that
+         // called this
         throw new Error(`${idx} is not in the range 0 - ${this.state.txt.length - 1}`);
     }
 
-    // get the idx of the start, or end of the word before or after the cursor
-    idx_of_next_word_at(dir, loc = "start") {
-        let space_found = false;
+    // get the idx of the start, or end of the word before or after the cursors
+    // current location
+    idxOfNextWordAt(dir, loc = "start") {
+        let spaceFound = false;
         let txt = this.state.txt;
         let i = this.cursor.idx;
-        let char_found;
-        if (dir === "right") { 
+        let charFound;
+        if (dir === "right") {
             if (loc == "start") {
                 while (i < txt.length) {
                     let c =  txt[i];
-                    if ((space_found && c != "\n" && c != " ") ||
+                    if ((spaceFound && c != "\n" && c != " ") ||
                         (txt[i + 1] == undefined)) {
                         return i;
                     }
-                    if (c == " ") space_found = true;
+                    if (c == " ") spaceFound = true;
                     i++;
                 }
 
             } else if (loc == "end") {
                 while (i < txt.length) {
                     let c =  txt[i];
-                    if (char_found && (txt[i+1] == "\n" ||
+                    if (charFound && (txt[i+1] == "\n" ||
                         txt[i+1] == " " ||
                         !txt[i+1])) {
                         return i ;
                     }
-                    if (c != " " && c != "\n") char_found = true;
+                    if (c != " " && c != "\n") charFound = true;
                     i++;
                 }
 
             }
         }
         else if (dir === "left") {
-            let char_found
+            let charFound
             while (i >= 0) {
                 let c =  txt[i];
-                if (char_found && (txt[i-1] == "\n" ||
+                if (charFound && (txt[i-1] == "\n" ||
                     txt[i - 1] == " " ||
                     !txt[i-1])) {
                     return i;
                 }
-                if (c != " " && c != "\n") char_found = true;
+                if (c != " " && c != "\n") charFound = true;
                 i--;
             }
         } 
     }
 
-    // Array data structure may slowly suck in walls of text
-    add_text(char) {
+    // adds text to the text array
+    addText(char) {
         this.state.txt.splice(this.cursor.idx - 0, 0, char);
         if (char === "\n") { // We gotta move the cursor to the next line
             this.cursor.row++;
@@ -439,42 +510,51 @@ class VimEdit {
         }
     }
 
-    find_location_and(action, row, col) {
+    // finds the location of the given row, col and performs the given action
+    // of either 
+    // index: returns the index
+    // or
+    // move: moves to the location
+    findLocationAnd(action, row, col) {
         let token;
-        let curr_col = 1; // We start on col 1, but we initiate it in the loop
-        let curr_row = 1; 
+        let currCol = 1; // We start on col 1, but we initiate it in the loop
+        let currRow = 1; 
         let i = 0;
         for (; i < this.state.txt.length; i++) {
             token = this.state.txt[i]; // the current char at the given idx
-            if (curr_row == row) {
+            if (currRow == row) {
                 if (token == "\n" && this.mode == "NORMAL") {
                     break;
-                } else if (curr_col === col) { 
+                } else if (currCol === col) { 
                     break;
                 } 
             } else {
                 if (token == "\n") {
-                    curr_row++;   // found new line, therefore,  we are on a new row
-                    curr_col = 0; // reset column every time we go to new line
+                    currRow++;   // found new line, therefore,  we are on a new row
+                    currCol = 0; // reset column every time we go to new line
                 }
             }
-            curr_col++;
+            currCol++;
         }
 
         if (action == "index") {
             return match ? token : null;
         } else if (action == "move") {
-            this.cursor.row = curr_row;
-            this.cursor.col = curr_col;
+            this.cursor.row = currRow;
+            this.cursor.col = currCol;
             this.cursor.idx = i;
         }
     }
 
-    on_top_row() {
-        return this.get_row_col(this.cursor.idx)[0] == 1;
+    // whether or not the current cursor position is on the top row of the text
+    // area
+    onTopRow() {
+        return this.getRowCol(this.cursor.idx)[0] == 1;
     }
 
-    on_last_row() {
+    // whether or not the current cursor position is on the last row of the text
+    // area
+    onLastRow() {
         let txt = this.state.txt;
         for (let i = this.cursor.idx; i < txt.length; i++) {
             if (txt[i] == "\n") return false;
@@ -482,14 +562,17 @@ class VimEdit {
         return true;
     }
 
-    get_char_at(row, col) {
-        return this.find_location_and("index", row, col);
+    // gets the character at the given row, col
+    getCharAt(row, col) {
+        return this.findLocationAnd("index", row, col);
     }
 
-    move_cursor_to(row, col) {
-        this.find_location_and("move", row, col);
+    // moves to the given row, col
+    moveCursorTo(row, col) {
+        this.findLocationAnd("move", row, col);
     }
 
+    // deletes from start to start + amt
     delete(start, amt) {
         // Avoid undefined pointers
         if (start >= 0 && start <= this.state.txt.length) {
@@ -500,7 +583,7 @@ class VimEdit {
             } else if (this.mode == "INSERT") {
 
                 if (this.state.txt[start] == "\n") {
-                    this.move_cursor_to(this.cursor.row - 1, 1E7);  
+                    this.moveCursorTo(this.cursor.row - 1, 1E7);  
 
                 } else if (start < this.cursor.idx) {
                     this.cursor.idx--; this.cursor.col--;
@@ -514,27 +597,17 @@ class VimEdit {
         }
     }
 
-    handle_keystrokes(key) {
-        // console.log(`vim key: ${key}`);
-        if (this.mode == "NORMAL") this.normal_mode(key);
-        else if (this.mode == "INSERT") this.insert_mode(key);
-        else if (this.mode == "VISUAL") this.visual_mode(key);
+    // sends the keystrokes recieves to the appropriate functions depending
+    // upon what mode the user is currently in
+    handleKeystrokes(key) {
+        if (this.mode == "NORMAL") this.normalMode(key);
+        else if (this.mode == "INSERT") this.insertMode(key);
     }
 
-    save_text() {
+    // when saving text we need to reset our variables for the next time the
+    // user enters vim mode
+    saveText() {
         this.mode = "NORMAL"
-        this.num_multiplier = "1"
-        this.cursor = 
-            {
-                idx: -1, 
-                width: 4,
-                x: null,
-                y: null,
-                row: 1,
-                col: 1,
-                height: this.state.txt_size * 1.15,
-                color: [57, 255, 20],
-                opacity: 255,
-            }
+        this.numMultiplier = "1"
     }
 }

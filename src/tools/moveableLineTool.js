@@ -1,11 +1,14 @@
+/*
+    every click creates a vertex and draws an edge between each vertex.
+    the user can also alter the vertex position if they switch modes from
+    "Add Verticies" mode to the "Edit Shape" mode.
+*/
 function MoveableLineTool(){
-    //set an icon and a name for the object
+    // set the REQUIRED icon, name and manual for the tool.
     this.icon = "images/moveableLine.jpg";
     this.name = "Moveable Line";
-    this.editMode = false;
-    this.currentPoint = null;
-    this.currentShape = [];
-    this.mouseLocked = false;
+    // this manual gets injected into the tool help for each tool, it must
+    // be written in valid html
     this.manual = 
         `
         <ol>
@@ -16,84 +19,109 @@ function MoveableLineTool(){
         </ol>
         `;
 
-    var self = this
+    this.grabbedVertex = null; // the currently grabbed point
+    this.currentShape = [];    // an array to maintain the current shape of the moveable line
+    this.editMode = false;     // are we currently editing verticies or not?
+    this.mouseLocked = false;  // if we have locked the mouse
 
-    this.draw = function(){
-        updatePixels();
-        if(MOUSE_ON_CANVAS && mouseIsPressed){
-            if(!self.editMode && !self.mouseLocked){
-                self.mouseLocked = true;
-                self.currentShape.push({ x:mouseX, y:mouseY })
-            } else {
-                if (self.currentPoint !== null) {
-                        self.currentShape[self.currentPoint].x = mouseX;
-                        self.currentShape[self.currentPoint].y = mouseY
-                } else {
-                    for(let i = 0; i < self.currentShape.length; i++){
-                        if(dist(self.currentShape[i].x, self.currentShape[i].y,
-                            mouseX, mouseY) < 20){
-                            self.currentPoint = i;
-                        }
+    // the click handler we  use for the buttons cannot access this so we will
+    // save it here so it can later
+    const self = this;
+    this.draw = () => {
+        updatePixels(); // update the pixels so we don't have old lines on the canvas
+        cursor("auto"); // by default the cursor will be the default "auto"
+
+        if (this.editMode) {
+            // we iterate over each vertex in the shape
+            for (let [idx, vertex] of Object.entries(this.currentShape)) {
+                // if we are close (20px) to the vertex
+                if (dist(vertex.x, vertex.y, mouseX, mouseY) < 20) {
+                    // we set the cursor to grab to show the user they can grab it
+                    cursor("grab"); 
+                    if (this.grabbedVertex == null) {
+                        this.grabbedVertex = idx;
                     }
                 }
             }
-        } else {
-            self.currentPoint = null;
-            self.mouseLocked = false;
         }
 
-        loadPixels();
+        if (MOUSE_ON_CANVAS && mouseIsPressed) {
+            if (!this.editMode && !this.mouseLocked) {
+                // we set mouselocked to true to prevent adding another vertex
+                // until the user lifted their mouse
+                this.mouseLocked = true; 
+                this.currentShape.push({x: mouseX, y: mouseY});
+            } else if (this.editMode && this.grabbedVertex) {
+                cursor("grabbing");
+                this.currentShape[this.grabbedVertex].x = mouseX;
+                this.currentShape[this.grabbedVertex].y = mouseY;
+            } 
+        } else {
+            this.mouseLocked = false;
+            this.grabbedVertex = null;
+        }
+
+        loadPixels(); // we save the current pixel state before we draw the shape
         push();
         noFill();
         beginShape();
-
-        for(var i = 0; i < self.currentShape.length; i++){
-            vertex(self.currentShape[i].x,
-                self.currentShape[i].y);
+        // we iterate over all the vertices and draw the shape from the points
+        for(let i = 0; i < this.currentShape.length; i++){
+            vertex(this.currentShape[i].x, this.currentShape[i].y);
         }
         endShape();
-        pop();
-        if(self.editMode){
-        for(var i = 0; i < self.currentShape.length; i++){
-                push();
-                noStroke()
-                fill(255, 0, 0, 180);
-                ellipse(self.currentShape[i].x, self.currentShape[i].y, 20);
-                pop();
+
+        // if we are in edit mode we want to draw an ellipse on each vertex
+        if(this.editMode){
+            noStroke();
+            fill(255, 0, 0, 180);
+            for(let i = 0; i < this.currentShape.length; i++){
+                ellipse(this.currentShape[i].x, this.currentShape[i].y, 20);
             }
         }
+        pop();
     };
 
-    this.unselectTool = function() {
-        updatePixels();
-        self.editMode = false;
-        draw();
-        self.currentShape = [];
-        clearOptions();
+    // when we select another tool
+    this.unselectTool = () => {
+        // reset the edit mode to false before we save the drawing, to remove
+        // the ellipses on the vertices
+        this.editMode = false; 
+        this.draw();           
+        this.currentShape = []; // then we can empty the current shape
     };
 
-    this.populateOptions = function() {
-        select(".tempOptions").html(
-            "<button id='changingVerticies'>Edit shape</button> <button id='finishShape'>Finish shape</button>");
-        // 	//click handler
+    // this is used to disable elements that should not be saved to the canvas
+    this.tempDisable = () => {
+        const oldMode = this.editMode;
+        const oldPoints = this.currentShape;
+        this.editMode = false;
+        this.currentShape = [];
+        setTimeout(() => {
+            this.editMode = oldMode;
+            this.currentShape = oldPoints;
+        }, 1);
+    }
+
+    // popoulate the options of the given tool
+    this.populateOptions = () => {
+        select(".tempOptions").html(`
+            <button id='changingVerticies'>Edit shape</button>
+            <button id='finishShape'>Finish shape</button>
+            `);
+
         select("#changingVerticies").mouseClicked(function() {
-            var button = select("#" + this.elt.id);
-            if (self.editMode) {
-                self.editMode = false;
-                self.draw();
-                button.html("Edit Shape");
-            } else {
-                self.editMode = true;
-                self.draw();
-                button.html("Add Verticies");
-            }
+            const button = select("#" + this.elt.id);
+            // flip the current edit mode and the html in the button
+            button.html(self.editMode ? "Edit Shape" : "Add Verticies");
+            self.editMode = !self.editMode;
         });
 
-        select("#finishShape").mouseClicked(function() {
-            self.editMode = false;
-            self.draw();
+        select("#finishShape").mouseClicked(() => { 
+            this.editMode = false;
+            this.draw();
             loadPixels();
-            self.currentShape = [];
+            this.currentShape = [];
         });
     };
 }

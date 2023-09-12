@@ -1,60 +1,80 @@
-function RectTool(){
+/*
+    Draws a rectangle at the users given mouse position that they can rescale
+    by dragging
+*/
+function RectTool() {
+    // set the REQUIRED icon, name and manual for the tool.
     this.icon = "images/rect.jpg";
     this.name = "Square";
-    this.mode = "fill";
-    let self = this;
-    this.manual = 
+    // this manual gets injected into the tool help for each tool, it must
+    // be written in valid html
+    this.manual =
         `
         <ol>
-            <li>Click and drag to create an rectangle</li>
-            <li>Release once the rectangle is of the desired size</li>
+        <li>Click and drag to create an rectangle</li>
+        <li>Release once the rectangle is of the desired size</li>
         </ol>
         `;
 
-    // The following values store the locations from the last frame, they start at -1 since no drawing has happened yet.
-    var startMouseX = -1;
-    var startMouseY = -1;
-    var drawing = false;
+    this.mode = "fill";
 
-    this.draw = function(){
-        // When the mouse is pressed
+    // the click handler we  use for the buttons cannot access this so we will
+    // save it here so it can later
+    const self = this;
+    // the following values store the locations from the last frame, they start
+    // at -1 since no drawing has happened yet
+    let [startMouseX, startMouseY] = [-1, -1];
+    let drawing = false;
+
+    this.draw = () => {
+        // only start creating the square if the mouse is on the canvas and is
+        // pressed
         if (MOUSE_ON_CANVAS) {
             if (mouseIsPressed) {
                 // If this is the first initial click from the user
                 if (startMouseX == -1) {
-                    // We start the mouse location at the users current mouse location and we set drawing to true
-                    startMouseX = mouseX;
-                    startMouseY = mouseY;
+                    // We start the mouse location at the users current mouse
+                    // location and we set drawing to true
+                    [startMouseX, startMouseY] = [mouseX, mouseY];
                     drawing = true;
-                    // save the current pixel array
-                    loadPixels();
+                    loadPixels(); // save the current pixel array
                 } else {
-                    //update the screen with the saved pixels to hide any previous line between mouse pressed and released
+                    // update the screen with the saved pixels to hide any
+                    // previous line between mouse pressed and released
                     updatePixels();
                     push();
-                    if (self.mode != "fill") noFill();
+                    if (self.mode != "fill") {
+                        noFill();
+                    }
                     rectMode(CORNERS);
-                    rect(startMouseX, startMouseY, mouseX, mouseY)	
+                    rect(startMouseX, startMouseY, mouseX, mouseY);
                     pop();
                 }
 
             }
-            // if the user WAS drawing, but has now lifted their mouseclick, then they are finished that drawing 
-            else if(drawing){
-                // We set drawing to false, and reset the startMouse positions to -1 to prepare for the next time the user clicks to draw again.
-                    drawing = false;
-                startMouseX = -1;
-                startMouseY = -1;
+            // if the user WAS drawing, but has now lifted their mouseclick
+            // then they are finished that drawing 
+            else if (drawing) {
+                // We set drawing to false, and reset the startMouse positions
+                // to -1 to prepare for the next time the user clicks to draw
+                // again
+                drawing = false;
+                startMouseX = startMouseY = -1;
             }
         }
     };
 
-    this.populateOptions = function() {
+    this.populateOptions = () => {
         select(".tempOptions").html(
             `<button id='fill'>${self.mode == "fill" ? "No fill" : "fill"}</button>`);
+
         select("#fill").mouseClicked(function() {
-            var button = select("#" + this.elt.id);
+            const button = select("#" + this.elt.id);
+            // set the buttons html to the current mode
             button.html(self.mode);
+
+            // when this button is clicked, we alternate between fill and no
+            // fill text inside the button
             self.mode = self.mode == "fill" ? "No fill" : "fill";
         });
     };

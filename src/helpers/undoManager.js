@@ -1,61 +1,79 @@
+/*
+    this class manages using undos and redos (ctrl-z ctrl-r)
+    it achieves this by saving copies of the current canvas
+*/
 class UndoManager {
     constructor() {
-        this.undo_stack = [];
-        this.idx = 0;
-        this.ctrl_z_locked = false;
-        this.ctrl_r_locked = false;
-        this.delay_between_undos = 200;
+        this.undoStack = []; // the stack of all the pixel arrays we save
+        this.currentState = 0; // the current canvas we are on
+        // whether or not the ctrl z or ctrl r button is not useable
+        this.ctrlZLocked = false;
+        this.ctrlRLocked = false;
+        // when holding ctrl z or ctrl r, this is dthe delay between each undo/redo
+        this.delayBetweenUndos = 200; 
     }
 
     // every time the user lets go of left click, if there is any
     // difference between the current pixel array and the one before
     // out pointer, we save the state
+
     draw() {
-        let ctrl_z = keyIsDown(CONTROL) && keyIsDown(90);
-        let ctrl_r = keyIsDown(CONTROL) && keyIsDown(82);
+        const CTRL_Z = keyIsDown(CONTROL) && keyIsDown(90);
+        const CTRL_R = keyIsDown(CONTROL) && keyIsDown(82);
         // add the blank screen at the start of the program
-        if (this.undo_stack.length == 0) {
-            this.add_state();
+        if (this.undoStack.length == 0) {
+            const URL = canv.elt.toDataURL();
+            this.addState(URL);
         }
-        if (ctrl_z && !this.ctrl_z_locked) { 
-            this.go_back();
-        } else if (ctrl_r && !this.ctrl_r_locked) {
-            this.go_forward();
+        if (CTRL_Z && !this.ctrlZLocked) { 
+            this.goBack();
+        } else if (CTRL_R && !this.ctrlRLocked) {
+            this.goForward();
         }
     }
 
-    add_state() {
-        let state = get(0, 0, canv.width, canv.height);
-        if (this.idx != this.undo_stack.length - 1) {
-            // if we are not at the end of the stack, we need to remove
-            // all the states after the current one
-            this.undo_stack.splice(this.idx + 1);
-        } 
-        this.undo_stack.push(state);
-        this.idx++;
+    addState(dataURL) {
+        // if this canvas doesn't match the last one then we can add it.
+        // we do this to not add unneccacary states
+        if (dataURL != this.undoStack.at(-1)) {
+            if (this.currentState != this.undoStack.length - 1) {
+                // if we are not at the end of the stack, we need to remove
+                // all the states after the current one
+                this.undoStack.splice(this.currentState + 1);
+            } 
+            this.undoStack.push(dataURL);
+            this.currentState++;
+        }
     }
 
-    // updates the canvas with the canvas provided
-    update_canvas(canvas) {
-        image(canvas, 0, 0);
-        loadPixels();
+    // update the canvas with the given dataurl
+    updateCanvas(dataURL) {
+        loadImage(dataURL, canvas => {
+            image(canvas, 0, 0, width, height);
+            loadPixels();
+        });
         updatePixels();
     }
 
-    go_back() {
-        this.ctrl_z_locked = true;
-        this.idx = Math.max(this.idx - 1, 0);
-        this.update_canvas(this.undo_stack[this.idx]);
+    // we go back one state when this functio is called
+    goBack() {
+        // we do not allow going back before 0 so we cap it here
+        this.currentState = Math.max(this.currentState - 1, 0); 
+        // we update the canvas with the current state after we reduced it by one
+        this.updateCanvas(this.undoStack[this.currentState]);
+        this.ctrlZLocked = true; // we set ctrlZ to locked so it does not go back too fast
+        setTimeout(() => this.ctrlZLocked = false, this.delayBetweenUndos);
         // delay between ctrl-u's (undos)
-        setTimeout(() => this.ctrl_z_locked = false, this.delay_between_undos);
     }
 
-
-    go_forward() {
-        this.ctrl_r_locked = true;
-        this.idx = Math.min(this.idx + 1, this.undo_stack.length - 1);
-        this.update_canvas(this.undo_stack[this.idx]);
+    // we go back one state when this functio is called
+    goForward() {
+        // we ensure we do not go past the arrays length
+        this.currentState = Math.min(this.currentState + 1, this.undoStack.length - 1);
+        // and we update the canvas with this new current state
+        this.updateCanvas(this.undoStack[this.currentState]);
+        this.ctrlRLocked = true; // prevents going through redos too fast
         // delay between ctrl-r's (redos)
-        setTimeout(() => this.ctrl_r_locked = false, this.delay_between_undos);
+        setTimeout(() => this.ctrlRLocked = false, this.delayBetweenUndos);
     }
 }

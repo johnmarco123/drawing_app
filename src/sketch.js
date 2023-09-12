@@ -1,15 +1,13 @@
-// the currently used color (mainly used by color palette);
-let CURRENT_COLOR = null; 
+// our global variables that we use amongst all the functions
 
-// global variable for whether or not the mouse is on the p5.js canvas
-let MOUSE_ON_CANVAS = false;
-
-let STROKE_WEIGHT = 3;
+let CURRENT_COLOR = null;  // the currently used color
+let MOUSE_ON_CANVAS = false; // if the mouse is on the canvas
+let STROKE_WEIGHT = 3; // the current stroke weight
 
 // global variables that will store the toolbox color palette
 // and the helper functions
 let helpers, colorP, toolbox, undo, canv;
-let recovered_canvas = null;
+let recoveredCanvas = null;
 
 function setup() {
     pixelDensity(1);
@@ -31,20 +29,22 @@ function setup() {
 
 
     // add the tools to the toolbox.
-        toolbox.addTools(
+        toolbox.addTools(   
             FreehandTool,
             LineToTool,
-            CopyTool,
+            SprayCanTool,
+            MirrorDrawTool,
+            SelectTool,
             ScissorsTool,
             TextTool,
             GraphMakerTool,
             FillBucketTool,
             MoveableLineTool,
-            MirrorDrawTool,
             RectTool,
             EllipseTool,
+            StarTool,
         );
-    recover_canvas(); // recovers canvas from previous sessions if possible
+    recoverCanvas(); // recovers canvas from previous sessions if possible
 }
 
 function draw() {
@@ -60,38 +60,45 @@ function draw() {
     } else {
         alert("It doesn't look like your tool has a draw method!");
     }
-    
-
-    if (frameCount % 60 == 0) { // save the current canvas to local storage every second
-        save_to_local_storage();
-    }
 }
 
-function recover_canvas() {
-    let data = getItem("saved_canvas");
-    loadImage(data, (img) => {
+// recoveres a saved canvas from local storage
+function recoverCanvas() {
+    const data = getItem("savedCanvas");
+    loadImage(data, img => {
         image(img, 0, 0, width, height);
         loadPixels();
     })
 }
 
-function save_to_local_storage() {
-    storeItem("saved_canvas", canv.elt.toDataURL());
+// saves a canvas to local storage
+function saveCanvasToLocalStorage() {
+    // when saving the canvas we want to ensure we disable features that we do
+    // not want saved on the canvas
+    toolbox.tempDisableTool();
+    storeItem("savedCanvas", canv.elt.toDataURL());
 }
 
+// resize the canvas and update the canvas appropriately
 function windowResized(){
-    let old_canvas = get(0, 0, canv.width, canv.height);
-    resizeCanvas(windowWidth, windowHeight);
-    background(0);
-    image(old_canvas, 0, 0, width, height);
-    loadPixels();
+    // when resizing we want to ensure we disable features that we do not want
+    // saved to the canvas
+    toolbox.tempDisableTool();
+    const oldCanvas = get();                 // first we gather the old canvas
+    resizeCanvas(windowWidth, windowHeight); // then we resize the canvas
+    background(0);                           // then we set the canvas black
+    image(oldCanvas, 0, 0, width, height);   // and place the old canvas on the new resized canvas
+    loadPixels();                            // we then loadPixels so it is visible
 }
 
+// used for the textTool to gather keystrokes, but this is only used for control
+// keys such as up arrow, ctrl, shift etc.
 function keyPressed() {
     // We only want control characters for keypressed
-    if (keyCode < 32 && toolbox.selectedTool.hasOwnProperty("recieve_keystrokes")) {
-        toolbox.selectedTool.recieve_keystrokes(keyCode);
-    } else if (toolbox.selectedTool.name != "text") {
+    if (toolbox.selectedTool.hasOwnProperty("recieveKeystrokes") && keyCode <= 46) {
+            toolbox.selectedTool.recieveKeystrokes(keyCode);
+
+    } else if (toolbox.selectedTool.name != "Text") {
         if (keyCode == 27) { // clear the screen with ESC when not in text mode
             background(0);
             loadPixels();
@@ -99,21 +106,57 @@ function keyPressed() {
     }
 }
 
+// used to pass ascii characters to the textTool class
 function keyTyped () {
     // All ascii chracters we want from key typed
     // We also want to disable the enter key, as we will handle 
     // this seperately
-    let banned_words = ["\r", "\x7F", "|", "Enter"]
-    if (toolbox.selectedTool.hasOwnProperty("recieve_keystrokes")) {
-        if (!banned_words.includes(key)) {
-            toolbox.selectedTool.recieve_keystrokes(key);
+    // words we don't allow in keyTyped
+    const bannedWords = ["\r", "\x7F", "|", "Enter", "Delete"] 
+    if (toolbox.selectedTool.hasOwnProperty("recieveKeystrokes")) {
+        if (!bannedWords.includes(key)) {
+            toolbox.selectedTool.recieveKeystrokes(key);
         }
     }
 }
 
+// when the mouse is released we add the current state to the undo manager.
 function mouseReleased() {
-    undo.add_state();
+    // the canvas can only change if mouse is on canvas
+    if (MOUSE_ON_CANVAS) {
+        // we wait to allow the tools being used to save what they need to save
+        // before we disable them
+        setTimeout(() => {
+            toolbox.tempDisableTool();
+            const URL = canv.elt.toDataURL();
+            undo.addState(URL);
+        }, 20);
+    }
 }
 
-// prevent the user from refreshing the page using ctrl r as we use this for undo tool
-window.addEventListener("keydown", e => (e.key == "r" && e.ctrlKey) ? e.preventDefault : null);
+// prevent the user from refreshing the page using ctrl r
+window.addEventListener("keydown", function(e) {
+    if (e.key == "r" && e.ctrlKey) {
+        e.preventDefault();
+    } 
+})
+
+// allows pasting text for the text tool
+window.addEventListener('paste', e => {
+    let data = e.clipboardData;
+    if (data && toolbox.selectedTool.name == "Text") {
+        toolbox.selectedTool.pasteClipboard(data.getData('text'))
+    }
+});
+
+// detects and updates whether the mouse is on the canvas
+window.addEventListener("mousemove", e => MOUSE_ON_CANVAS = e.target.id == "p5Canvas");
+
+// when the user closes the window we want to save where they left off for the
+// next time they use the app
+window.addEventListener('beforeunload', e => {
+    e.preventDefault();
+    // we disable features that we do not want saved when we save the canvas
+    toolbox.tempDisableTool();
+    saveCanvasToLocalStorage();
+});

@@ -2,35 +2,53 @@
 // Functions to add new tools, select a new tool 
 // and display the manual for the selected tool
 function Toolbox() {
-    this.tools = [];
-    this.selectedTool = null;
-    this.transitioning = false;
-    this.visible = true;
-    this.manual = null;
-    this.fade_time = 5;
-    let self = this;
+    this.tools = [];            // this holds all the tools that the user can use
+    this.selectedTool = null;   // the tool currently being used
 
-    const escape_button = `<button onclick="toolbox.hide_manual()">X</button>`
+    /* variables for the manual */
+    this.transitioning = false; // if the manual is transitioning currently
+    this.visible = true;        // if the manual is currently visible
+    this.manual = null;         // this holds the html for the current manual
 
+    // how long per interval tick until we increase or decrease opacity of the manual
+    this.fadeTime = 5; 
+
+    // tools dont have access to this so we save it here so they can have
+    // access to it when they need to
+    const self = this; 
+
+    // the button on the manual that allows for it to close
+    const escapeButton = `<button onclick="toolbox.hideManual()">X</button>`
+
+    // when a tool is clicked this function gets fired. It highlights the
+    // selected tool and also selects it
     function toolbarItemClick() {
+
         // remove any existing borders
-        var items = selectAll(".sideBarItem");
-        for (var i = 0; i < items.length; i++) {
-            items[i].style('border', '0')
-        }
+        const items = selectAll(".sideBarItem");
 
-        var toolName = this.id().split("sideBarItem")[0];
+        // we set each items border to be nothing
+        items.forEach(item => item.style("border", "0"));
+
+        // the tool that is currently being clickeds name
+        const toolName = this.id().split("sideBarItem")[0];
+
+        // we set the current tool to be the tool that currently got clicked
         self.selectTool(toolName);
-        update_manual_contents();
 
-        // call loadPixels to make sure most recent changes are saved to pixel array
+
+        // we then update the manuals contents so that it can display the
+        // information for this new tool
+        updateManualContents();
+
+        // call loadPixels to make sure most recent changes from previous tools
+        // are saved to pixel array
         loadPixels();
-
     }
 
     // add a new tool icon to the html page
     function addToolIcon(icon, name) {
-        var sideBarItem = createDiv("<img src='" + icon + "'></div>");
+        const sideBarItem = createDiv("<img src='" + icon + "'></div>");
         sideBarItem.class('sideBarItem')
         sideBarItem.id(name + "sideBarItem")
         sideBarItem.parent('sidebar');
@@ -38,46 +56,41 @@ function Toolbox() {
     };
 
     // add a tool to the tools array
-    function add_tool (tool) {
-        //check that the object tool has an icon and a name
+    this.addTool = tool => {
+        //check that the object tool has an icon, name and a manual
         if (!tool.hasOwnProperty("icon") ||
             !tool.hasOwnProperty("name") ||
             !tool.hasOwnProperty("manual")) {
 
-            alert("make sure your tool has a name an icon and a manual!");
+            alert("make sure your tool has a name, icon and a manual!");
         }
-        self.tools.push(tool);
+        this.tools.push(tool);
         addToolIcon(tool.icon, tool.name);
         // if no tool is selected (ie. none have been added so far)
-        // make self tool the selected one.
-            if (!self.selectedTool) {
-                self.selectTool(tool.name);
+        // make this tool the selected one.
+            if (!this.selectedTool) {
+                this.selectTool(tool.name);
             }
     };
 
-    // adds 1 - n tools to the toolbox
-    this.addTools = (...tools) => {
-        for (let tool of tools) {
-            add_tool(new tool()); 
-        }
-    }
-
+    // adds {1, 2, ... n}  tools to the toolbox
+    this.addTools = (...tools) => tools.forEach(tool => this.addTool(new tool));
 
     this.selectTool = function(toolName) {
         //search through the tools for one that's name matches
         //toolName
-        for (var i = 0; i < this.tools.length; i++) {
-            if (this.tools[i].name == toolName) {
+        for (let tool of this.tools) {
+            if (tool.name == toolName) {
                 //if the tool has an unselectTool method run it.
-                    if (this.selectedTool != null && this.selectedTool.hasOwnProperty(
-                        "unselectTool")) {
+                    if (this.selectedTool != null && this.selectedTool.hasOwnProperty("unselectTool")) {
                         this.selectedTool.unselectTool();
+                        select(".tempOptions").html("");
                     }
                 //select the tool and highlight it on the toolbar
-                this.selectedTool = this.tools[i];
+                this.selectedTool = tool;
                 select("#" + toolName + "sideBarItem").style("border", "2px solid blue");
 
-                //if the tool has an .tempOptions area. Populate it now.
+                //if the tool has a populateOptions area. Populate it now.
                     if (this.selectedTool.hasOwnProperty("populateOptions")) {
                         this.selectedTool.populateOptions();
                     }
@@ -86,11 +99,11 @@ function Toolbox() {
     };
 
     // initializes the manual div and hides it
-    function initialize_manual() {
+    function initializeManual() {
         self.manual = createDiv()
         self.manual.id("manual");
         self.manual.html(`
-            ${escape_button}
+            ${escapeButton}
             <ol>
                 <li>Welcome to my drawing program! </li>
                 <li>If you need help using a tool, click on that tool whilst you see this clipboard.</li>
@@ -99,108 +112,143 @@ function Toolbox() {
             </ol>
             `);
     }
-    initialize_manual();
+    initializeManual();
 
-    /// updates the contents of the manual to match the selected tool
-    function update_manual_contents(contents) {
-        if (self.transitioning) return;
-        self.transitioning = true;
-        let fading_in = false;
-        let x = -0.01;
-        let fade = setInterval(() => {
-            let [r, g, b, a] = self.manual.style("color").
+    // fades out the current manual's writing and fades it back in with the new
+    // tools manual
+    function updateManualContents(contents) {
+        // if we are transitioning between tools currently, do not allow the
+        // manual update
+        if (self.transitioning) return; 
+        // if we werent transitioning we are now transitioning so we set it to true
+        self.transitioning = true; 
+        let fadingIn = false; // variable that determins if we are currently fading in or fading out
+        let x = -0.01; // the amt we change the opacity per "self.fadeTime" interval
+
+        // controls the fading of the manual
+        const fade = setInterval(() => {
+            // we get the red, green blue alpha of the manuals color, which
+            // we will use later for changing the opacity of the manual.
+            const [r, g, b, a] = self.manual.style("color").
                 split("").
                 filter(x => x == "." || !isNaN(x)).
                 join("").
                 split(" ");
 
-            if (a <= 0 && !fading_in) {
-                fading_in = true;
-                if (contents) {
+            if (a <= 0 && !fadingIn) { // if the manual is invisible and we are not fading in
+                fadingIn = true;       // then we know we just did a full cycle and faded out the old contents
+                x *= -1;               // we flip the amt we change the opacity to position since we are now fading in
+                if (contents) {        // if we were provided contents we update the manual with those contents
                     self.manual.html(contents);
-                } else {
+                } else { // otherwise we simply supply the tools name and the tools manual
                     self.manual.html(`
-                        ${escape_button}
+                        ${escapeButton}
                         <h2>${self.selectedTool.name} tool </h2>
                         <p>${self.selectedTool.manual}</p>
                         `);
                 }
-                x *= -1;
-
-            } else if (fading_in && a >= 0.99) {
-                self.transitioning = false;
+                
+            } else if (fadingIn && a >= 0.99) { // if we are fading in and the manual is fully visible
+                // then we are no longer transitioning, and have completed one
+                // full cycle of fading out and then fading back in
+                self.transitioning = false; 
+                // we can clear the interval and that completes the transition
                 clearInterval(fade);
-
             } else {
-                self.manual.style("color", `rgba(${r}, ${g}, ${b}, ${+a + x})`);
+                // if we havent reached full transparency or full opacity
+                // then we simply update the manuals opacity till we reach
+                // that point
+                self.manual.style("color", `rgba(${r}, ${g}, ${b}, ${Number(a) + x})`);
             }
-        }, self.fade_time);
+        }, self.fadeTime);
     }
 
     // toggles between hiding and showing the manual
-    this.swap_manual = () => {
-        if (!self.visible) {
-            self.display_manual();
-        } else {
-            self.hide_manual();
+    this.swapManual = () => {
+        if (!self.visible) { // if its not visible we show it
+            self.displayManual();
+        } else { // otherwise we hide it
+            self.hideManual();
         }
     }
 
     // displays the manual for the selected tool
-    this.display_manual = (contents) => {
-        self.visible = true;
-        if (contents) {
+    this.displayManual = contents => {
+        self.visible = true; // the manual is now visible since we are displaying it
+        // if there are contents we use those rather then creating them (mostly
+        // used for when keybindings calls this)
+        if (contents) { 
             self.manual.html(contents);
-        } else {
+        } else { // otherwise we just show the tools name and its own manual
             self.manual.html(`
-                ${escape_button}
+                ${escapeButton}
                 <h2>${self.selectedTool.name} tool </h2>
                 <p>${self.selectedTool.manual}</p>
                 `);
         }
-        self.manual.style("display", "block");
-        let opacity_timer = setInterval(() => {
+        self.manual.style("display", "block"); // the manual is being shown so we should now make it visible
+
+        // we keep increasing the opacity of the manual until it is completely
+        // visible 
+        const opacityTimer = setInterval(() => {
             let curr = self.manual.style("opacity");
             if (curr >= 0.9) {
-                clearInterval(opacity_timer);
+                clearInterval(opacityTimer);
             } else {
                 self.manual.style("opacity", Number(curr) + 0.01);
             }
 
-        }, self.fade_time);
+        }, self.fadeTime);
 
     }
 
     // hides the manual for the selected tool
-    this.hide_manual = () => {
-        self.visible = false;
-        let opacity_timer = setInterval(() => {
+    this.hideManual = () => {
+        self.visible = false; // its being hidden so it is not visible
+
+        // we keep reducing the opacity of the manual until it is not visible
+        // when that occurs we set its display property to none
+        const opacityTimer = setInterval(() => {
             let curr = self.manual.style("opacity");
             if (curr <= 0) {
                 self.manual.style("display", "none");
-                clearInterval(opacity_timer);
+                clearInterval(opacityTimer);
             } else {
                 self.manual.style("opacity", Number(curr) - 0.01);
             }
 
-        }, self.fade_time);
+        }, self.fadeTime);
     }
 
-    this.show_keybindings = () => {
+
+    this.tempDisableTool = () => {
+        if (this.selectedTool.hasOwnProperty("tempDisable")) { 
+            this.selectedTool.tempDisable();
+            this.selectedTool.draw();
+        }
+    }
+
+
+    // this is used to show all the keybindings that our program supports
+    // in a sense it is its own "manual" but since we have no keybindings tool
+    // we will keep the keybindings information within here
+    this.showKeybindings = () => {
         if (self.transitioning) return;
         let contents = 
             `
-        ${escape_button}
-            <h2>Keybindings</h2>
+        ${escapeButton}
+            <h1>Keybindings</h1>
             <ul>
-                <li>Ctrl + Z: Undo</li>   
-                <li>Ctrl + R: Redo</li>
+                <li>Ctrl + z: Undo</li>   
+                <li>Ctrl + r: Redo</li>
+                <li>ESC: Clear canvas</li>
+                <li>Ctrl + v (when using the text tool) to paste the clipboard in the text box</li>
             </ul>
             `;
-        if (self.visible) {
-            update_manual_contents(contents);
-        } else {
-            self.display_manual(contents);
+        if (self.visible) { // if it was visible when we called this function then we update its contents
+            updateManualContents(contents);
+        } else { // otherwise we display manual with the contents
+            self.displayManual(contents);
         }
     }
 }

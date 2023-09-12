@@ -1,3 +1,6 @@
+# This document kept track of various features and bugs that i have fixed
+# and have been kept here for documentation sake;
+
 # New features:
 ++ Added a way to CTRL Z and CTRL R to undo and redo
 ++ Added a stroke weight bar 
@@ -17,7 +20,7 @@ switch off the freehand tool
 ++ Added two modes for the typing tool 
 ++ made vim mode pretty functional but still has massive bugs
 ++ Add a way to grab a a box of "elements" and move them
-
+++ Added a manual for each tool and made it manditory for any new tools
 
 
     # Bugs Fixed: 
@@ -32,8 +35,6 @@ beginning for some reason
 ++ Scissor tool now has no bugs, fixed bug where it would occasionally fail to paste
 
 
-
-
     # Major bugs fixed: 
  +++ Added a way to detect if mouse is actually on the canvas (AND HAVE THIS
  ONLY STOP FROM DRAWING, this.draw on every tool should still work, but the act
@@ -43,11 +44,6 @@ beginning for some reason
 ===============================================================================
 
 # MAJOR BUGS TO FIX
-     * After resizing, the bottom menu no longer blocks drawing...
-     * When the user hides the side and bottom bar, it causes the mouseoncanvas
-       function to fail to detect where the bottom bar is
-     * AFTER RESIZING THE CANVAS BECOMES WHITE RATHER THEN BLACK, THIS OCCURS WHEN 
-       CLICKING F11 OR F12 ASWELL!
 
 # Last bug tested date: 2023/08/06
     * drawing tool: no bugs
@@ -58,22 +54,12 @@ beginning for some reason
     * mirror tool: no bugs
     * scissors tool: no bugs
     * graph tool: no bugs
-    * fill bucket tool:
-        * Leaves a nasty border around the fill
-        * Also leaves a line at the bottom of the screen
-
-    * text tool:
-        * vim mode:
-            * There is currently no paste option, any time you delete, or yank
-              it should go directly to the clipboard? or maybe a buffer?
-            * shift s should delete the entire line and go into insert mode on
-              that line
-
-# Bugs found:
-    * Friday, 18, aug when fullscreening it doesn't update the canvas size
+    * fill bucket tool: no bugs
+    * text tool: no bugs
+    * vim mode: no bugs
 
 # Currently working on: 
-    * A little tutorial for each tool, or a manual on how to use each tool.
 
-# Features to add:
-    * Make all current vim features work as intended
+    
+# Things to do: 
+    * Remove ".git" and files like this before uploading
