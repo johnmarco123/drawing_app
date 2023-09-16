@@ -18,37 +18,42 @@ button {
     color: #000;
     cursor: pointer;
     border-radius: 20px;
-    opacity: 0.7;
     transition: 0.2s;
-    box-shadow: 0 3px #999;
+    box-shadow: 0 3px #000;
 }
 
-#color-picker{
+#color-picker {
     border_radius: 10%;
     width: 45px;
     height: 45px;
 }
 
 button:active {
-    transform: translateY(2px);
+    transform: translateY(3px);
     box-shadow: 0 1px #999;
 }
 
 button:hover {
-    opacity: 1;
+    background-color: #CCF;
 }
 
 #content {
 	grid-area: content;
 }
 
-#dropDown {
+#dropdown {
     background-color: #444;
     color: #fff;
+    fontSize: 40;
     margin: 0px 5px;
     width: 60px;
     height: 30px;
     border-radius: 8px;
+}
+
+#dropdown:hover {
+    background-color: #CCF;
+    color: #000;
 }
 
 .header {
@@ -67,43 +72,49 @@ button:hover {
 }
 
 
-.sideBarItem{
+.sideBarItem {
 	max-height: 50px;
 	max-width: 50px;
 	padding:5px;
 }
 
-.sideBarItem img{
+.sideBarItem img {
 	max-height: 50px;
 	max-Width:50px;
 }
 
-.colorPalette{
+.colorPalette {
 	grid-area: colorP;
 	display:flex;
 	flex-direction:grid;
 	flex-flow: wrap;
 }
 
-.options{
+.options {
 	grid-area: options;
 	padding: 15px;
 }
 
-.colorSwatches{
+.colorSwatches {
 	box-sizing: border-box;
 	width: 40px;
 	height: 40px;
 	max-height: 40px;
 	max-width: 40px;
 	margin: 5px;
+    transition: 0.2s;
 }
+
+.colorSwatches:hover {
+    transform: scale(1.15);
+}
+
 
 .wrapper {
     display: grid;
     height: 100%;
-    grid-template-columns: 70px 230px  minmax(500px, 1fr);
-    grid-template-rows: 35px minmax(500px, 1fr) 160px;
+    grid-template-columns: 70px 230px  minmax(300px, 1fr);
+    grid-template-rows: 35px minmax(300px, 1fr) 160px;
     grid-template-areas:
     "header header header"
     "sidebar content content"
@@ -186,41 +197,60 @@ button:hover {
 /* undo manager buttons */
 
 .undo-manager {
-    width: 60px;
-    height: 30px;
+    width: 70px;
+    height: 25px;
 }
 
+ 
+/***************************************************
+ Title: How TO - Hoverable Dropdown
+ Author: W3Schools
+ Date: N/a
+ Code version: N/a
+ Availability: https://www.w3schools.com/howto/howto_css_dropdown.asp
+ Notes: The author also wrote the comments in the code below this citation
+
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+.dropdown-content a:hover {background-color: #ddd;}
+.dropdown:hover .dropdown-content {display: block;}
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+
+ ***************************************************/
 /* DROPDOWN BUTTON MENU */
-/* When the size of the screen gets smaller we display the small menu button */
-@media screen and ( max-width: 1300px ) {
-    .menu-items {
-        display: none;
-    }
-
-    .dropbtn {
-        background: #FF0000;
-        display: hidden;
-    }
-}
-
-/* Dropdown Button */
+/* The Dropdown Button */
 .dropbtn {
-    background-color: #04AA6D;
-    color: white;
+    display: none;
+    background-color: #DDD;
+    color: #000;
     font-size: 16px;
     width: 100px;
-    height: 30px;
+    height: 25px;
     border: none;
 }
 
-/* The container <div> - needed to position the dropdown content */
-.dropDown {
+/* The container for the drop btn */
+.dropdown {
+    margin-right: 10px;
+    float: right;
     position: relative;
-    display: inline-block;
+    display: none;
 }
 
-/* Dropdown Content (Hidden by Default) */
+/* The dropdown content that holds the buttons for dropdown */
 .dropdown-content {
+    border-radius: 5%;
+    right: 0px;
     display: none;
     position: absolute;
     background-color: #f1f1f1;
@@ -232,7 +262,22 @@ button:hover {
     padding-right: 12px;
 }
 
-/* Links inside the dropdown */
+/* When the size of the screen gets smaller we display the small menu button */
+@media screen and ( max-width: 1300px ) {
+    .menu-items {
+        display: none;
+    }
+
+    .dropdown {
+        display: inline;
+    }
+
+    .dropbtn {
+        display: inline;
+    }
+}
+
+/* The buttons inside the dropdown */
 .dropdown-content button {
     color: black;
     margin-top: 10px;
@@ -243,17 +288,18 @@ button:hover {
 }
 
 
-/* Change color of dropdown links on hover */
-.dropdown-content a:hover {
+/* Change color of dropdown buttons on hover */
+.dropdown-content button:hover {
     background-color: #ddd;
 }
 
-/* Show the dropdown menu on hover */
+/* Show the dropdown menu when the user hovers it */
 .dropdown:hover .dropdown-content {
     display: block;
 }
 
-/* Change the background color of the dropdown button when the dropdown content is shown */
+/*When dropdown is shown we change the color of it */
 .dropdown:hover .dropbtn {
-    background-color: #3e8e41;
+    background: #444;
+    color: #FFF;
 }

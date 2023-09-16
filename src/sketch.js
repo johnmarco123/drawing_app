@@ -44,7 +44,7 @@ function setup() {
             EllipseTool,
             StarTool,
         );
-    recoverCanvas(); // recovers canvas from previous sessions if possible
+    recoverLocalStorage(); // recovers canvas from previous sessions if possible
 }
 
 function draw() {
@@ -63,20 +63,46 @@ function draw() {
 }
 
 // recoveres a saved canvas from local storage
-function recoverCanvas() {
+function recoverLocalStorage() {
     const data = getItem("savedCanvas");
     loadImage(data, img => {
         image(img, 0, 0, width, height);
         loadPixels();
     })
+   
+    // if the manual was hidden before we want to keep it hidden, otherwise we
+    // want to display it
+    const manualState = getItem("isManualVisible");
+
+    let manualVisible = false;
+
+    // since maual state is undefined, this means that nothing is in local
+    // storage, therefore this is the first time the user has used the
+    // application and we want to show the manual
+    if (manualState === undefined) { 
+        manualVisible = true;
+
+    // if the manual state is false, then the use closed the manual in the last
+    // session, therefore we will not show the manual
+    } else if (manualState === false) {
+        manualVisible = false;
+        
+    // the user had the manual open in the last session so we show it
+    } else if (manualState === true) {
+        manualVisible = true;
+
+    }
+    toolbox.initializeManual(manualVisible);
 }
 
 // saves a canvas to local storage
-function saveCanvasToLocalStorage() {
+function saveToLocalStorage() {
     // when saving the canvas we want to ensure we disable features that we do
     // not want saved on the canvas
     toolbox.tempDisableTool();
     storeItem("savedCanvas", canv.elt.toDataURL());
+    // we want the manual to be shown by default, so we will save the opposite
+    storeItem("isManualVisible", toolbox.visible);
 }
 
 // resize the canvas and update the canvas appropriately
@@ -158,5 +184,5 @@ window.addEventListener('beforeunload', e => {
     e.preventDefault();
     // we disable features that we do not want saved when we save the canvas
     toolbox.tempDisableTool();
-    saveCanvasToLocalStorage();
+    saveToLocalStorage();
 });

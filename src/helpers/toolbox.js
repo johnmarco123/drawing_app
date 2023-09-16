@@ -99,27 +99,38 @@ function Toolbox() {
     };
 
     // initializes the manual div and hides it
-    function initializeManual() {
-        self.manual = createDiv()
-        self.manual.id("manual");
-        self.manual.html(`
-            ${escapeButton}
-            <ol>
-                <li>Welcome to my drawing program! </li>
-                <li>If you need help using a tool, click on that tool whilst you see this clipboard.</li>
-                <li>You can toggle the visibility of this clipboard by clicking the "Tool Help" button</li>
-                <li>Enjoy using the program!</li>
-            </ol>
-            `);
-    }
-    initializeManual();
+     this.initializeManual = visible => {
+         // we set the visibility to the provided value
+         // we create the manual
+         self.manual = createDiv()
+         self.manual.id("manual");
+         self.manual.html(`
+             ${escapeButton}
+                 <h1>Welcome!</h1>
+             <ol>
+                 <li>If you need help using a tool, click on that tool whilst you see this clipboard.</li>
+                 <li>You can toggle the visibility of this clipboard by clicking the "Tool Help" button</li>
+                 <li>Enjoy using the program!</li>
+             </ol>
+             `);
+         // if it is not visible we want to ensure we hide it
+         self.visible = visible;
+         if (visible) {
+             self.manual.style("display", "block");
+         } else {
+             self.manual.style("display", "none");
+             self.manual.style("opacity", 0.01);
+         }
+     }
 
     // fades out the current manual's writing and fades it back in with the new
-    // tools manual
+        // tools manual
     function updateManualContents(contents) {
         // if we are transitioning between tools currently, do not allow the
         // manual update
-        if (self.transitioning) return; 
+        if (self.transitioning) {
+            return;
+        }
         // if we werent transitioning we are now transitioning so we set it to true
         self.transitioning = true; 
         let fadingIn = false; // variable that determins if we are currently fading in or fading out
@@ -129,29 +140,29 @@ function Toolbox() {
         const fade = setInterval(() => {
             // we get the red, green blue alpha of the manuals color, which
             // we will use later for changing the opacity of the manual.
-            const [r, g, b, a] = self.manual.style("color").
+                const [r, g, b, a] = self.manual.style("color").
                 split("").
                 filter(x => x == "." || !isNaN(x)).
                 join("").
                 split(" ");
 
             if (a <= 0 && !fadingIn) { // if the manual is invisible and we are not fading in
-                fadingIn = true;       // then we know we just did a full cycle and faded out the old contents
+                    fadingIn = true;       // then we know we just did a full cycle and faded out the old contents
                 x *= -1;               // we flip the amt we change the opacity to position since we are now fading in
-                if (contents) {        // if we were provided contents we update the manual with those contents
-                    self.manual.html(contents);
-                } else { // otherwise we simply supply the tools name and the tools manual
-                    self.manual.html(`
-                        ${escapeButton}
-                        <h2>${self.selectedTool.name} tool </h2>
-                        <p>${self.selectedTool.manual}</p>
-                        `);
-                }
-                
+                    if (contents) {        // if we were provided contents we update the manual with those contents
+                        self.manual.html(contents);
+                    } else { // otherwise we simply supply the tools name and the tools manual
+                        self.manual.html(`
+                            ${escapeButton}
+                            <h2>${self.selectedTool.name} tool </h2>
+                            <p>${self.selectedTool.manual}</p>
+                            `);
+                    }
+
             } else if (fadingIn && a >= 0.99) { // if we are fading in and the manual is fully visible
                 // then we are no longer transitioning, and have completed one
                 // full cycle of fading out and then fading back in
-                self.transitioning = false; 
+                    self.transitioning = false; 
                 // we can clear the interval and that completes the transition
                 clearInterval(fade);
             } else {
@@ -176,7 +187,7 @@ function Toolbox() {
     this.displayManual = contents => {
         self.visible = true; // the manual is now visible since we are displaying it
         // if there are contents we use those rather then creating them (mostly
-        // used for when keybindings calls this)
+            // used for when keybindings calls this)
         if (contents) { 
             self.manual.html(contents);
         } else { // otherwise we just show the tools name and its own manual
@@ -229,26 +240,35 @@ function Toolbox() {
     }
 
 
+    // the manual we show for displaying the keybindings available
+    const keybindingManual = `
+    ${escapeButton}
+        <h1>Keybindings</h1>
+        <ul>
+        <li>Ctrl + z: Undo</li>   
+        <li>Ctrl + r: Redo</li>
+        <li>ESC: Clear canvas</li>
+        <li>Ctrl + v (when using the text tool) to paste the clipboard in the text box</li>
+        </ul>
+        `;
     // this is used to show all the keybindings that our program supports
     // in a sense it is its own "manual" but since we have no keybindings tool
     // we will keep the keybindings information within here
     this.showKeybindings = () => {
-        if (self.transitioning) return;
-        let contents = 
-            `
-        ${escapeButton}
-            <h1>Keybindings</h1>
-            <ul>
-                <li>Ctrl + z: Undo</li>   
-                <li>Ctrl + r: Redo</li>
-                <li>ESC: Clear canvas</li>
-                <li>Ctrl + v (when using the text tool) to paste the clipboard in the text box</li>
-            </ul>
-            `;
-        if (self.visible) { // if it was visible when we called this function then we update its contents
-            updateManualContents(contents);
-        } else { // otherwise we display manual with the contents
-            self.displayManual(contents);
+        // if we are currently transitioning do not allow the changing of the
+        // menu to the keybindings
+        if (self.transitioning) {
+            return;
+
+        // if the manual is being shown we can update its contents to the
+        // key binding manual
+        } else if (self.visible) { 
+            updateManualContents(keybindingManual);
+
+        // otherwise we display manual with the contents
+        } else { 
+            self.displayManual(keybindingManual);
+
         }
     }
 }

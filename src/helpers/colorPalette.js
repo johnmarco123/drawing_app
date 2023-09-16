@@ -12,6 +12,7 @@ function ColorPalette() {
             color(0, 255, 0),     // green
             color(0, 0, 255),     // blue
         ];
+    // max possible capacity is 9 as we allow quick color switching with 1-9
     this.capacity = 5; // the max allowed colors in our LRU cache this.colors
 
     // we keep track of the current color for the entire program here in the
@@ -42,8 +43,6 @@ function ColorPalette() {
         }
         return changed;
     }
-
-
 
     // the main draw loop
     this.draw = () => {
@@ -92,7 +91,7 @@ function ColorPalette() {
     // when a color swatch is clicked it calls this function which changes
     // the current color to the color to the color that was clicked
     function colorClick() {
-        let idx = this.id().split("color-")[1];
+        const idx = this.id().split("color-")[1];
         CURRENT_COLOR = self.colors[idx];
         self.changeColor();
     }
@@ -100,8 +99,8 @@ function ColorPalette() {
     // this is used to draw each of the swatches
     this.drawSwatches = () =>{
         for (let i = 0; i < this.colors.length; i++) {
-            let colorID = `color-${i}`;
-            let curr = select("#" + colorID);
+            const colorID = `color-${i}`;
+            const curr = select("#" + colorID);
             curr.style("background-color", this.colors[i]);
             if (i == 0) {
                 curr.style("border", "2px solid blue"); 
@@ -113,7 +112,7 @@ function ColorPalette() {
     (function initializeSwatches() {
         //for each color create a new div in the html for the colorSwatches
         for (let i = self.capacity - 1; i >= 0; i--) {
-            let colorID = `color-${i}`; // rightmost color should be most recent
+            const colorID = `color-${i}`; // rightmost color should be most recent
             //using p5.dom add the swatch to the palette and set its background color
             //to be the color value
             const colorSwatch = createDiv()

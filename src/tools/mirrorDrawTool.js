@@ -25,9 +25,16 @@ function MirrorDrawTool() {
     //mouse coordinates for the other side of the Line of symmetry.
     let [previousOppositeMouseX, previousOppositeMouseY] = [-1, -1]
 
+    this.disabled = false;
+
     this.draw = () => {
         // display the last save state of pixels
         updatePixels();
+
+        // if the tool is disabled to not draw anything
+        if (this.disabled) { 
+            return
+        }
 
         // do the drawing if the mouse is pressed
         if (mouseIsPressed) {
@@ -52,9 +59,8 @@ function MirrorDrawTool() {
                 line(previousOppositeMouseX, previousOppositeMouseY, oX, oY);
                 [previousOppositeMouseX, previousOppositeMouseY] = [oX, oY];
             }
-        }
         // if the mouse isn't pressed reset the previous values to -1
-        else {
+        } else {
             previousMouseX = previousMouseY = -1;
             previousOppositeMouseX = previousOppositeMouseY = -1;
         }
@@ -72,7 +78,7 @@ function MirrorDrawTool() {
         if (this.axis == "x") {
             this.lineOfSymmetry = width / 2;
             line(width / 2, 0, width / 2, height);
-        } else if (this.axis == "y") {
+        } else {
             this.lineOfSymmetry = height / 2;
             line(0, height / 2, width, height / 2);
         }
@@ -93,9 +99,9 @@ function MirrorDrawTool() {
                 return n;
             }
 
-            //if n is less than the line of symmetry return a coorindate
-            //that is far greater than the line of symmetry by the distance from
-            //n to that line.
+                //if n is less than the line of symmetry return a coorindate
+                //that is far greater than the line of symmetry by the distance
+                //from n to that line.
                 if (n < this.lineOfSymmetry) {
                     return this.lineOfSymmetry + (this.lineOfSymmetry - n);
                 }
@@ -110,9 +116,8 @@ function MirrorDrawTool() {
 
     // this is used to disable elements that should not be saved to the canvas
     this.tempDisable = () => {
-        const oldAxis = this.axis;
-        this.axis = null;
-        setTimeout(() => this.axis = oldAxis, 1);
+        this.disabled = true;
+        setTimeout(() => this.disabled = false, 10);
     }
 
     //when the tool is deselected update the pixels to just show the drawing and
@@ -121,6 +126,7 @@ function MirrorDrawTool() {
     //adds a button and click handler to the.tempOptions area. When clicked
     //toggle the line of symmetry between horizonatl to vertical
     this.populateOptions = function() {
+        self.axis = "x";
         select(".tempOptions").html(
             "<button id='directionButton'>Make Horizontal</button>");
         //click handler

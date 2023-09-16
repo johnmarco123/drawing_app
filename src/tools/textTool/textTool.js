@@ -141,6 +141,10 @@ function TextTool() {
         pop();
     }
 
+    this.evaluate = () => {
+
+    }
+
     // renders the text in the states text in the textbox
     this.renderText = () => {
         push()
@@ -167,7 +171,7 @@ function TextTool() {
                     txt = txt.slice(0, this.state.txt.length - 1);
                 }
                 // we save the result if it works
-                this.state.result = eval(txt.join(""));
+                this.state.result = this.evaluate(txt);
             } catch(err) {
                 // if it does not work we set the result to the error
                 this.state.result = `You got an error!\n ${err}`;

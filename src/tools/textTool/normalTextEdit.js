@@ -45,11 +45,11 @@ class NormalEdit {
     moveCursorTo(row, col) {
         let currRow = 1;
         let currCol = 1;
-        let idx= 0;
+        let idx = 0;
         while (idx < this.state.txt.length) {
             let char = this.state.txt[idx];
             if (currRow == row && ((char == "\n" || currCol == col) || currCol >= col)) {
-                this.cursor.idx = i;
+                this.cursor.idx = idx;
                 this.cursor.row = currRow;
                 this.cursor.col = currCol;
                 return;

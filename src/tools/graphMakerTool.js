@@ -50,9 +50,11 @@ function GraphMakerTool() {
                     fill(255);
                     translate(start.x, start.y);
                     if (self.nodeMode == "node") {
-                        ellipse(0, 0, nodeDiameter, nodeDiameter);
+                        noStroke();
+                        ellipse(0, 0, nodeDiameter);
                     }
                     stroke(255);
+                    strokeWeight(5);
                     line(0, 0, curr.x, curr.y);
                     push()
                     // we have to get the heading of the current position

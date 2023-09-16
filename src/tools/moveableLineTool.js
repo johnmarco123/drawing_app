@@ -29,6 +29,12 @@ function MoveableLineTool(){
     const self = this;
     this.draw = () => {
         updatePixels(); // update the pixels so we don't have old lines on the canvas
+
+        // if the tool is disabled we don't want to draw anything else
+        if (this.disabled) {
+            return;
+        }
+
         cursor("auto"); // by default the cursor will be the default "auto"
 
         if (this.editMode) {
@@ -92,15 +98,10 @@ function MoveableLineTool(){
     };
 
     // this is used to disable elements that should not be saved to the canvas
+    //let oldPoints = []
     this.tempDisable = () => {
-        const oldMode = this.editMode;
-        const oldPoints = this.currentShape;
-        this.editMode = false;
-        this.currentShape = [];
-        setTimeout(() => {
-            this.editMode = oldMode;
-            this.currentShape = oldPoints;
-        }, 1);
+        this.disabled = true;
+        setTimeout(() => this.disabled = false, 1);
     }
 
     // popoulate the options of the given tool

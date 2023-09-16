@@ -3,6 +3,8 @@ function HelperFunctions() {
     // start we don't need to do that here because the event will
     // be added to the button and doesn't 'belong' to the object
 
+    // we iterate twice, since we have two of each button since we have one
+    // for the normal size screen and one when the users screen is small
     for (let i = 0; i < 2; i++) {
         // call loadPixels to update the drawing state
         // this is needed for the mirror tool
@@ -49,8 +51,8 @@ function HelperFunctions() {
     // bar when the user first goes onto the program
     let hidden = false;
     // handles the drop down menu hiding and showing the side bar and bottom bar
-    select("#dropDown").mouseClicked(() => {
-        toolbox.tempDisableTool(); // we disable the current tool
+    select("#dropdown").mouseClicked(() => {
+        windowResized()             // we then resize the window accordingly
         const currentCanvas = get(); // we save the current canvas's state
         if (hidden) { // if the menu is hidden, we reveal it
             select('#sidebar').show();
@@ -66,7 +68,6 @@ function HelperFunctions() {
             select('.wrapper').style('grid-template-areas',
                 '"header header header" "content content content" "content content content"')
         }
-        windowResized()             // we then resize the window accordingly
         background(0);              // set the background to black
         image(currentCanvas, 0, 0); // and re add the old canvas on top
         loadPixels();               // we then call loadPixels so it is all visible

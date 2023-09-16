@@ -590,10 +590,7 @@ class VimEdit {
                 }
 
                 this.state.txt.splice(start, amt);
-            } else {
-                alert("TODO IN DELETE")
             }
-
         }
     }
 

@@ -38,52 +38,11 @@
 
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
-    <!--<body>
-        <div class="wrapper">
-            <div class="box header">
-                <button id="dropDown">=</button>
-                Drawing App
-                <button id="clearButton">Clear</button>
-                <button id="saveImageButton">Save Image</button>
-                <button id="fullscreen">Fullscreen</button>
-                <button id="tool-help">Tool Help</button>
-                <button id="Keybindings">Key Bindings</button>
-                <button class="undo-manager" id="undo">Undo</button>
-                <button class="undo-manager" id="redo">Redo</button>
-
-                <div class="dropdown">
-                    <button class="dropbtn">Dropdown</button>
-                    <div class="dropdown-content">
-                        <button>Redo</button>
-                        <button>Redo</button>
-                        <button>Redo</button>
-                        <button>Redo</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="content"></div>
-            <div class="box" id="sidebar"></div>
-            <div class="box colorPalette">
-                <input type="color" id="color-picker" value="#ff0000">
-            </div>
-            <div class="box options">
-                Stroke weight:
-                <input type='range'
-                min='3'
-                max='15'
-                value='3'
-                class='slider'
-                id='strokeSize'>
-                <div class="tempOptions"></div>
-            </div>
-        </div>
-    </body> -->
     <body>
         <div class="wrapper">
             <div class="box header">
                 <!--big screen dropdown-->
-                <button id="dropDown">=</button>
+                <button id="dropdown">=</button>
                 Drawing App
                 <button class="menu-items clearButton">Clear</button>
                 <button class="menu-items saveImageButton">Save Image</button>
@@ -93,20 +52,35 @@
                 <button class="menu-items undo undo-manager">Undo</button>
                 <button class="menu-items redo undo-manager">Redo</button>
 
-                <!--small screen dropdown-->
-                <div class="dropDown">
+                <!--------------------------------------------------
+                    Title: How TO - Hoverable Dropdown
+                    Author: W3Schools
+                    Date: Unkonwn
+                    Code version: Unknown
+                    Availability: https://www.w3schools.com/howto/howto_css_dropdown.asp
+
+                    <div class="dropdown">
                     <button class="dropbtn">Dropdown</button>
                     <div class="dropdown-content">
-                        <button class="clearButton">Clear</button>
-                        <button class="saveImageButton">Save Image</button>
-                        <button class="fullscreen">Fullscreen</button>
-                        <button class="tool-help">Tool Help</button>
-                        <button class="Keybindings">Key Bindings</button>
-                        <button class="undo undo-manager">Undo</button>
-                        <button class="redo undo-manager">Redo</button>
+                    <a href="#">Link 1</a>
+                    <a href="#">Link 2</a>
+                    <a href="#">Link 3</a>
                     </div>
-                </div>
-
+                    </div>
+                    ------------------------------------------------>
+                    <!--small screen dropdown-->
+                    <div class="dropdown">
+                        <button class="dropbtn">Dropdown</button>
+                        <div class="dropdown-content">
+                            <button class="clearButton">Clear</button>
+                            <button class="saveImageButton">Save Image</button>
+                            <button class="fullscreen">Fullscreen</button>
+                            <button class="tool-help">Tool Help</button>
+                            <button class="Keybindings">Key Bindings</button>
+                            <button class="undo undo-manager">Undo</button>
+                            <button class="redo undo-manager">Redo</button>
+                        </div>
+                    </div>
             </div>
 
             <div id="content"></div>

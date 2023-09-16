@@ -59,6 +59,7 @@ beginning for some reason
     * vim mode: no bugs
 
 # Currently working on: 
+    * Fixing Mirror tool gets bugged when changing full screen/resize
 
     
 # Things to do: 
