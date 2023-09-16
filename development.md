@@ -1,5 +1,5 @@
 # This document kept track of various features and bugs that i have fixed
-# and have been kept here for documentation sake;
+# and have been kept here for documentation sake
 
 # New features:
 ++ Added a way to CTRL Z and CTRL R to undo and redo
