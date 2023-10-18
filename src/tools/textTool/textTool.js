@@ -141,10 +141,6 @@ function TextTool() {
         pop();
     }
 
-    this.evaluate = () => {
-
-    }
-
     // renders the text in the states text in the textbox
     this.renderText = () => {
         push()
@@ -292,7 +288,7 @@ function TextTool() {
             <button id='typingMode'>
             ${self.typingMode == "Normal" ? "Vim" : "Normal"} mode</button>
             <button id='eval'>Evaluate JS</button>
-            Text size: <input type='range' min='18' max='25' value='20' class='slider' id='text-size'>
+            Text size: <input type='range' min='18' max='25' value='18' class='slider' id='text-size'>
             `);
 
         // when the save button is clicked it will save what is currently being
